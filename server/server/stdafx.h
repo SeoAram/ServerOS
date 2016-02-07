@@ -11,7 +11,11 @@
 #include <tchar.h>
 
 #include <iostream>
-#include <boost\asio.hpp>
+#include <algorithm>
+#include <string>
+#include <list>
+#include <boost/bind.hpp>
+#include <boost/asio.hpp>
 
 using namespace std;
 
