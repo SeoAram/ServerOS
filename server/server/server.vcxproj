@@ -81,19 +81,27 @@
     <Text Include="ReadMe.txt" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="ClientInfo.h" />
+    <ClInclude Include="ClientInfoManager.h" />
+    <ClInclude Include="GameObject.h" />
     <ClInclude Include="GameServer.h" />
     <ClInclude Include="MemoryPool.h" />
     <ClInclude Include="NetworkEngine.h" />
     <ClInclude Include="PacketProcess.h" />
+    <ClInclude Include="PointVector3D.h" />
     <ClInclude Include="protocol.h" />
     <ClInclude Include="stdafx.h" />
     <ClInclude Include="targetver.h" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="ClientInfo.cpp" />
+    <ClCompile Include="ClientInfoManager.cpp" />
+    <ClCompile Include="GameObject.cpp" />
     <ClCompile Include="GameServer.cpp" />
     <ClCompile Include="MemoryPool.cpp" />
     <ClCompile Include="NetworkEngine.cpp" />
     <ClCompile Include="PacketProcess.cpp" />
+    <ClCompile Include="PointVector3D.cpp" />
     <ClCompile Include="server.cpp" />
     <ClCompile Include="stdafx.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Create</PrecompiledHeader>

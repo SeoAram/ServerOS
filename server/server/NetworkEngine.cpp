@@ -204,10 +204,11 @@ int NetworkEngine::workerThread(){
 		}
 
 	}*/
+	return 0;
 
 }
 
-void NetworkEngine::recvPacket(DWORD Obj_id, OVER_EX *overlapped, const DWORD IObyte)
+/*void NetworkEngine::recvPacket(DWORD Obj_id, OVER_EX *overlapped, const DWORD IObyte)
 {
 	//PlayerInfoManager* pManager = PlayerInfoManager::getInstance();
 	// DoAction : 받은 패킷을 처리하고 다시 리시브함수를 호출한다.
@@ -216,7 +217,7 @@ void NetworkEngine::recvPacket(DWORD Obj_id, OVER_EX *overlapped, const DWORD IO
 	// Param_3 : 리시브한 바이트 수
 	// TODO : 완성된 패킷은 패킷 처리 루틴으로 처리를 하고 완성되지 않은 패킷은 버퍼에 저장해둔다.
 	//		  받은 패킷 처리가 끝났으면 새로 리시브를 호출한다.
-	/*
+	
 	// 받아서 처리해야할 바이트 수는 IObyte
 	int rest_byte = IObyte;
 	// 처리해야 할 버퍼는 overlapped의 RecvBuffer
@@ -273,17 +274,17 @@ void NetworkEngine::recvPacket(DWORD Obj_id, OVER_EX *overlapped, const DWORD IO
 		{
 			err_display(L"WSARecv()");
 		}
-	}*/
-}
+	}
+}*/
 
-void NetworkEngine::sendPacket(const int obj_id, const char* buf, const int size)
+/*void NetworkEngine::sendPacket(const int obj_id, const char* buf, const int size)
 {
 	// DoAction : 클라이언트에게 패킷을 보낸다
 	// Param_1 : 받을 클라이언트의 Obj_id
 	// Param_2 : 보낼 버퍼의 포인터
 	// Param_3 : 보낼 버퍼의 사이즈
 	// TODO : 보낼 클라이언트의 Obj_id를 플레이어 매니저 클래스에서 찾아 패킷을 보냄.
-	/*PlayerInfoManager *pManager = PlayerInfoManager::getInstance();
+	PlayerInfoManager *pManager = PlayerInfoManager::getInstance();
 	ClientInfo *Client = pManager->m_playerVector[obj_id];
 	if (Client == nullptr) return;
 
@@ -296,9 +297,9 @@ void NetworkEngine::sendPacket(const int obj_id, const char* buf, const int size
 	DWORD SendByte;
 	int ret = WSASend(Client->getSocket(), &Send->m_stBuf.m_WsaBuf, 1,
 		&SendByte, 0, &Send->m_stBuf.m_Overlapped, NULL);
-	*/
-}
-void NetworkEngine::sendPacketToViewList(const int obj_id, const char* buf)
+	
+}*/
+/*void NetworkEngine::sendPacketToViewList(const int obj_id, const char* buf)
 {
 
-}
+}*/

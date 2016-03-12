@@ -29,8 +29,8 @@ public:
 
 	vector<ClientInfo*> m_arClient;		//클라이언트 관리 벡터
 
-	vector<thread*> m_workerThreadPool;	//작업 스레드
-	thread* m_accpetThread;				//accept스레드
+	vector<boost::thread*> m_workerThreadPool;	//작업 스레드
+	boost::thread* m_accpetThread;				//accept스레드
 
 	PacketProcess* m_pProcess;			//패킷 처리를 위한 프로세스
 	MemoryPool* m_pMemory;				//메모리 관리
@@ -51,9 +51,9 @@ public:
 	int workerThread();					//워커 스레드 함수
 
 	//send, recv작업 필요
-	void recvPacket(DWORD Obj_id, OVER_EX *overlapped, const DWORD IObyte);
+	//void recvPacket(DWORD Obj_id, OVER_EX *overlapped, const DWORD IObyte);
 
-	void sendPacket(const int obj_id, const char* buf, const int size);
-	void sendPacketToViewList(const int obj_id, const char* buf);
+	//void sendPacket(const int obj_id, const char* buf, const int size);
+	//void sendPacketToViewList(const int obj_id, const char* buf);
 };
 

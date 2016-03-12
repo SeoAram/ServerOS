@@ -28,6 +28,7 @@ bool PacketProcess::packetProcess(const DWORD& objID, char* buf){
 		return false;
 	}
 	*/
+	return false;
 }
 
 void PacketProcess::playerLogin(unsigned int objID, char* buf){

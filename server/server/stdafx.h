@@ -14,20 +14,29 @@
 #include <algorithm>
 #include <string>
 #include <list>
+#include <vector>
+#include <queue>
+#include <unordered_map>
 #include <boost/bind.hpp>
 #include <boost/asio.hpp>
+#include <boost/thread.hpp>
 
 using namespace std;
 
+
+#define WORKED_THREAD 1
+const unsigned int MAX_CONNECT_CLIENT = 3000;
 // TODO: 프로그램에 필요한 추가 헤더는 여기에서 참조합니다.
 #include "protocol.h"
-#include "PacketProcess.h"
+#include "PointVector3D.h"
+
+#include "GameObject.h"
+#include "ClientInfo.h"
+
+#include "ClientInfoManager.h"
+
 #include "MemoryPool.h"
+#include "PacketProcess.h"
 #include "NetworkEngine.h"
-
-
-
-
-
 
 #include "GameServer.h"
