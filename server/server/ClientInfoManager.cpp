@@ -19,6 +19,7 @@ ClientInfoManager::~ClientInfoManager()
 }
 
 
+//accept에서 connect처리 해야 함
 void ClientInfoManager::connectClient(boost::asio::io_service& io_service){
 	
 }
