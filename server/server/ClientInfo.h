@@ -23,5 +23,7 @@ private:
 	std::string m_WriteMessage;
 	std::array<char, 128> m_ReceiveBuffer;
 	GameObject* m_pObject;	//object클래스(객체 이동 관리)
+
+	void initSocket(boost::asio::io_service& io_service);
 };
 

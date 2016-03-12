@@ -61,7 +61,6 @@ int main()
 
 	io_service.run();
 
-
 	std::cout << "네트웍 접속 종료" << std::endl;
 
 	getchar();

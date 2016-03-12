@@ -3,6 +3,7 @@
 //3DVector
 class PointVector3D
 {
+private:
 public:
 	unsigned int x, y, z;
 	PointVector3D();
