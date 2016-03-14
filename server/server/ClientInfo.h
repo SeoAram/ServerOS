@@ -14,6 +14,7 @@ public:
 	}
 
 	void PostReceive();
+	void initSocket(boost::asio::io_service& io_service);
 
 private:
 	void handle_write(const boost::system::error_code& /*error*/, size_t /*bytes_transferred*/);
@@ -24,6 +25,5 @@ private:
 	std::array<char, 128> m_ReceiveBuffer;
 	GameObject* m_pObject;	//object클래스(객체 이동 관리)
 
-	void initSocket(boost::asio::io_service& io_service);
 };
 

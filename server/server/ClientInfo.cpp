@@ -75,5 +75,7 @@ void ClientInfo::handle_receive(const boost::system::error_code& error, size_t b
 }
 
 void ClientInfo::initSocket(boost::asio::io_service& io_service){
-	//m_Socket = io_service;
+	//m_Socket.(io_service);
+	//m_Socket(io_service);
+	//this(0, io_service);
 }
