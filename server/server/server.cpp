@@ -26,9 +26,12 @@ public:
 private:
 	void StartAccept()
 	{
+		ClientInfoManager* cpManager = ClientInfoManager::getInstance();
 		std::cout << "클라이언트 접속 대기....." << std::endl;
 
-		m_pSession = new ClientInfo(0, m_acceptor.get_io_service());
+
+		m_pSession = cpManager->connectClient(m_acceptor.get_io_service());
+		//m_pSession = new ClientInfo(0, m_acceptor.get_io_service());
 
 		m_acceptor.async_accept(m_pSession->Socket(),
 			boost::bind(&TCP_Server::handle_accept,
@@ -55,6 +58,7 @@ private:
 
 int main()
 {
+	ClientInfoManager * cpManager = ClientInfoManager::getInstance();
 	boost::asio::io_service io_service;
 
 	TCP_Server server(io_service);

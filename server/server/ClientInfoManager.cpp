@@ -21,7 +21,10 @@ ClientInfoManager::~ClientInfoManager()
 
 
 //accept에서 connect처리 해야 함
-void ClientInfoManager::connectClient(boost::asio::io_service& io_service){
-	m_vClient[getConnectCount()]->initSocket(io_service);
-
+ClientInfo* ClientInfoManager::connectClient(boost::asio::io_service& io_service){
+	ClientInfo c(getConnectCount(), io_service);
+	int i = getConnectCount();
+	memcpy(m_vClient[getConnectCount()], &c, sizeof(ClientInfo));
+	addConnextCount();
+	return m_vClient[i];
 }

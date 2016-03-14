@@ -20,6 +20,6 @@ public:
 	unsigned int getConnectCount(){ return m_uConnCount; }
 	bool addConnextCount(){ if (m_uConnCount < MAX_CONNECT_CLIENT) { m_uConnCount++; return true; } return false; }
 
-	void connectClient(boost::asio::io_service& io_service);
+	ClientInfo* connectClient(boost::asio::io_service& io_service);
 };
 
