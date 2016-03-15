@@ -26,6 +26,7 @@ using namespace std;
 
 #define WORKED_THREAD 1
 const unsigned int MAX_CONNECT_CLIENT = 3000;
+const unsigned short PORT_NUMBER = 31400;
 // TODO: 프로그램에 필요한 추가 헤더는 여기에서 참조합니다.
 #include "protocol.h"
 #include "PointVector3D.h"

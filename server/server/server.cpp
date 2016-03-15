@@ -3,7 +3,6 @@
 
 #include "stdafx.h"
 
-const unsigned short PORT_NUMBER = 31400;
 
 class TCP_Server
 {

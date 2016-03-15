@@ -5,13 +5,22 @@
 
 #pragma once
 
+#pragma comment(lib, "ws2_32")
+
 #include "targetver.h"
 
 #include <stdio.h>
 #include <tchar.h>
+#include <winsock2.h>
+
 #include <iostream>
 #include <boost/bind.hpp>
 #include <boost/asio.hpp>
 
 
 // TODO: 프로그램에 필요한 추가 헤더는 여기에서 참조합니다.
+#define SERVERIP   "127.0.0.1"
+#define SERVERPORT 13400
+#define BUFSIZE    128
+
+using namespace std;
