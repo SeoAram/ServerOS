@@ -8,14 +8,12 @@ class PlayerInfoManager;
 class NetworkEngine
 {
 private:
-	NetworkEngine();
-	~NetworkEngine();
-	
+	int m_nSeqNumber;
+	boost::asio::ip::tcp::acceptor m_acceptor;
+	ClientInfo* m_pSession;
 public:
-	static NetworkEngine* getInstance(){
-		static NetworkEngine instance;
-		return &instance;
-	}
+	NetworkEngine(boost::asio::io_service& io_service);
+	~NetworkEngine();
 
 	enum MsgType{
 		RECVmsg = 1,
@@ -25,6 +23,8 @@ public:
 
 	vector<boost::thread*> m_workerThreadPool;	//작업 스레드
 	boost::thread* m_accpetThread;				//accept스레드
+
+	void handle_accept(ClientInfo* pSession, const boost::system::error_code& error);
 
 	PacketProcess* m_pProcess;			//패킷 처리를 위한 프로세스
 	MemoryPool* m_pMemory;				//메모리 관리
@@ -36,11 +36,5 @@ public:
 
 	int acceptThread();					//Accept 스레드 함수
 	int workerThread();					//워커 스레드 함수
-
-	//send, recv작업 필요
-	//void recvPacket(DWORD Obj_id, OVER_EX *overlapped, const DWORD IObyte);
-
-	//void sendPacket(const int obj_id, const char* buf, const int size);
-	//void sendPacketToViewList(const int obj_id, const char* buf);
 };
 

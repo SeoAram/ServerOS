@@ -2,12 +2,15 @@
 #include "NetworkEngine.h"
 
 
-NetworkEngine::NetworkEngine() :
+NetworkEngine::NetworkEngine(boost::asio::io_service& io_service)
+: m_acceptor(io_service, boost::asio::ip::tcp::endpoint(boost::asio::ip::tcp::v4(), PORT_NUMBER)), 
 m_accpetThread(nullptr),
 m_pProcess(nullptr)
 {
+	m_pSession = nullptr;
+	ClientInfoManager* cpManager = ClientInfoManager::getInstance();
+	cpManager->initializeClientInfoManager(io_service);
 }
-
 
 NetworkEngine::~NetworkEngine()
 {
@@ -47,96 +50,35 @@ void NetworkEngine::initNetworkEngine(){
 
 	//네트워크 엔진을 초기화 한다.
 	// asio생성
-	//memorypool / packetprocess초기화
-	//threadpool에 workerthread생성
-	/*if (!initWinsock()) return;
-	cout << "Winsock init" << endl;
-
-	if (!createIOCP()) return;
-	cout << "IOCP handle create" << endl;
-
-	for (int i = 0; i < MAX_THREAD; ++i){
-		m_workerThreadPool.push_back(new thread(mem_fun(&NetworkEngine::workerThread), this));
-		cout << "Workerthread Create" << endl;
-	}
-
-	m_accpetThread = new thread(mem_fun(&NetworkEngine::acceptThread), this);
-	cout << "Acceptthread Create" << endl;
-
-	m_pMemory = MemoryPool::getInstance();
-	m_pProcess = PacketProcess::getInstance();*/
+	
 }
 
 int NetworkEngine::acceptThread(){
 	//accept를 작업하는 thread. 이곳에서 리슨 소켓이 클라이언트의 접속을 받고 처리한다.
-	/*int retval;
 
-	PlayerInfoManager* pPlayerManager = PlayerInfoManager::getInstance();
-	ClientInfo* pClient = pPlayerManager->m_playerVector[getConnectId()];
+	ClientInfoManager* cpManager = ClientInfoManager::getInstance();
+	std::cout << "클라이언트 접속 대기....." << std::endl;
 
-	// socket()
-	SOCKET listen_sock = WSASocket(AF_INET, SOCK_STREAM, IPPROTO_TCP, NULL, 0, WSA_FLAG_OVERLAPPED);
-	if (listen_sock == INVALID_SOCKET) err_quit(L"socket()");
+	//클라이언트 접속해서 반환해주는 부분
+	m_pSession = cpManager->connectClient();
 
-	SOCKADDR_IN serveraddr;
-	ZeroMemory(&serveraddr, sizeof(serveraddr));
-	serveraddr.sin_family = AF_INET;
-	serveraddr.sin_port = htons(SERVERPORT);
-	serveraddr.sin_addr.s_addr = htonl(INADDR_ANY);
-
-	// bind()
-	retval = ::bind(listen_sock, (SOCKADDR *)&serveraddr, sizeof(serveraddr));
-	if (retval == SOCKET_ERROR) err_quit(L"bind()");
-
-	// listen()
-	retval = listen(listen_sock, SOMAXCONN);
-	if (retval == SOCKET_ERROR) err_quit(L"listen()");
-
-	SOCKADDR_IN clientaddr;
-	int addrlen = sizeof(clientaddr);
-
-	while (1){
-		// 클라이언트 접속 받기 및 대기
-		cout << "Curent Accept Count : " << getConnectId() << endl;
-
-		SOCKET clientSock = accept(listen_sock, (SOCKADDR*)&clientaddr, &addrlen);
-		if (clientSock == INVALID_SOCKET){
-			err_display(L"Accept()");
-			continue;
-		}
-		pPlayerManager->insertPlayer(clientSock, getConnectId());
-
-		ZeroMemory(&pClient->m_stOver.m_Overlapped, sizeof(WSAOVERLAPPED));
-		pClient->m_stOver.m_nOperation = RECVmsg;
-		pClient->m_stOver.m_nPacketSize = 0;
-		pClient->m_stOver.m_nStoredSize = 0;
-		//Client와 IOCP객체 연결
-		CreateIoCompletionPort((HANDLE)clientSock, m_iocpHandle, getConnectId(), 0);
-		DWORD flags = 0;
-		//최초 데이터 전송 작업 필요
-		retval = WSARecv(clientSock, &pClient->m_stOver.m_Wsabuf, 1, NULL, &flags, &pClient->m_stOver.m_Overlapped, NULL);
-
-		if (retval == SOCKET_ERROR){
-			if (WSAGetLastError() != ERROR_IO_PENDING){
-				pPlayerManager->deletePlayer(getConnectId());
-				continue;
-			}
-		}
-		pClient->setOpenClient();
-
-		PlayerPacket pPack;
-		pPack.id = getConnectId();
-		pPack.dx = pPack.dy = pPack.dz = pPack.x = pPack.y = pPack.z = 0;
-		pPack.packetSize = sizeof(pPack);
-		pPack.protocol = PacketType::PLAYER_PACKET;
-		sendPacket(getConnectId(), (const char*)&pPack, sizeof(pPack));
-
-		sendPacket(getConnectId(), (const char*)&(RobbyManager::getInstance()->m_listPack), sizeof(RoomListPacket));
-
-		addConnectId();
-
-	}*/
+	m_acceptor.async_accept(m_pSession->Socket(),
+		boost::bind(&NetworkEngine::handle_accept,
+		this,
+		m_pSession,
+		boost::asio::placeholders::error)
+	);
 	return 0;
+}
+
+void NetworkEngine::handle_accept(ClientInfo* pSession, const boost::system::error_code& error)
+{
+	if (!error)
+	{
+		std::cout << "클라이언트 접속 성공" << std::endl;
+
+		pSession->PostReceive();
+	}
 }
 
 int NetworkEngine::workerThread(){
