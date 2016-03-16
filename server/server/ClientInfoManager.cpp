@@ -26,7 +26,7 @@ ClientInfo* ClientInfoManager::connectClient(){
 	return m_vClient[nConnId];
 }
 
-bool ClientInfoManager::initializeClientInfoManager(boost::asio::io_service& io_service){
+bool ClientInfoManager::initClientInfoManager(boost::asio::io_service& io_service){
 	if (!m_bInit){
 		for (unsigned int i = 0; i < MAX_CONNECT_CLIENT; ++i){
 			m_vClient.push_back(new ClientInfo(i, io_service));

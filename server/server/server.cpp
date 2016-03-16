@@ -5,18 +5,11 @@
 
 int main()
 {
-	ClientInfoManager* cpManager = ClientInfoManager::getInstance();
+	GameServer gServer;
 	boost::asio::io_service io_service;
 
-	cpManager->initializeClientInfoManager(io_service);
-
-	NetworkEngine server(io_service);
-
-	server.acceptThread();
-	io_service.run();
-
-	std::cout << "네트웍 접속 종료" << std::endl;
-
-	getchar();
+	gServer.initServer(io_service);
+	gServer.startServer(io_service);
+	gServer.loopServer(&io_service);
 	return 0;
 }

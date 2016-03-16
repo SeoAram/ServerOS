@@ -3,7 +3,6 @@
 class PacketProcess;
 class MemoryPool;
 class GameEventProcess;
-class PlayerInfoManager;
 
 class NetworkEngine
 {
@@ -11,9 +10,20 @@ private:
 	int m_nSeqNumber;
 	boost::asio::ip::tcp::acceptor m_acceptor;
 	ClientInfo* m_pSession;
-public:
 	NetworkEngine(boost::asio::io_service& io_service);
+public:
 	~NetworkEngine();
+	static NetworkEngine* getInstance(boost::asio::io_service& io_service){
+		//static bool bInit = false;
+		static NetworkEngine* instance = nullptr;
+		if (instance == nullptr){
+			instance = new NetworkEngine(io_service);
+			//static NetworkEngine instance(io_service);
+			//bInit = true;
+			//return &instance;
+		}
+		return instance;
+	}
 
 	enum MsgType{
 		RECVmsg = 1,

@@ -5,11 +5,10 @@
 NetworkEngine::NetworkEngine(boost::asio::io_service& io_service)
 : m_acceptor(io_service, boost::asio::ip::tcp::endpoint(boost::asio::ip::tcp::v4(), PORT_NUMBER)), 
 m_accpetThread(nullptr),
-m_pProcess(nullptr)
+m_pProcess(nullptr),
+m_pSession(nullptr)
 {
-	m_pSession = nullptr;
-	ClientInfoManager* cpManager = ClientInfoManager::getInstance();
-	cpManager->initializeClientInfoManager(io_service);
+	cout << "Init Engine" << endl;
 }
 
 NetworkEngine::~NetworkEngine()
@@ -47,10 +46,15 @@ void NetworkEngine::err_display(wchar_t *msg)
 }
 
 void NetworkEngine::initNetworkEngine(){
-
 	//네트워크 엔진을 초기화 한다.
-	// asio생성
-	
+
+	for (int i = 0; i < WORKED_THREAD; ++i){
+		m_workerThreadPool.push_back(new boost::thread(mem_fun(&NetworkEngine::workerThread), this));
+		cout << "Workerthread Create" << endl;
+	}
+
+	m_accpetThread = new boost::thread(mem_fun(&NetworkEngine::acceptThread), this);
+	cout << "Acceptthread Create" << endl;
 }
 
 int NetworkEngine::acceptThread(){
@@ -62,22 +66,28 @@ int NetworkEngine::acceptThread(){
 	//클라이언트 접속해서 반환해주는 부분
 	m_pSession = cpManager->connectClient();
 
-	m_acceptor.async_accept(m_pSession->Socket(),
+	if (m_pSession != nullptr){
+		m_acceptor.async_accept(m_pSession->Socket(),
 		boost::bind(&NetworkEngine::handle_accept,
 		this,
 		m_pSession,
 		boost::asio::placeholders::error)
-	);
+		);
+	}
 	return 0;
 }
 
 void NetworkEngine::handle_accept(ClientInfo* pSession, const boost::system::error_code& error)
 {
+	//accept성공시 호출되는 함수
 	if (!error)
 	{
 		std::cout << "클라이언트 접속 성공" << std::endl;
 
 		pSession->PostReceive();
+	}
+	else{
+		cout << error << endl;
 	}
 }
 
