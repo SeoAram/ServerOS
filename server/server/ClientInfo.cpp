@@ -15,12 +15,8 @@ ClientInfo::ClientInfo(boost::asio::io_service& io_service)
 ClientInfo::ClientInfo(unsigned int i, boost::asio::io_service& io_service)
 : m_Socket(io_service)
 {
-	//m_pObject = new GameObject(i);
+	m_pObject = new GameObject(i);
 }
-
-//ClientInfo::ClientInfo(unsigned int i){
-//	m_pObject = new GameObject(i);
-//}
 
 void ClientInfo::PostReceive()
 {
