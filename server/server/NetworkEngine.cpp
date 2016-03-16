@@ -3,12 +3,9 @@
 
 
 NetworkEngine::NetworkEngine() :
-m_iocpHandle(nullptr),
 m_accpetThread(nullptr),
 m_pProcess(nullptr)
 {
-	//엔진 생성 후 미리 최대로 받을 수 있는 메모리 확보
-	m_arClient.reserve(0);
 }
 
 
@@ -68,21 +65,6 @@ void NetworkEngine::initNetworkEngine(){
 
 	m_pMemory = MemoryPool::getInstance();
 	m_pProcess = PacketProcess::getInstance();*/
-}
-
-bool NetworkEngine::initWinsock(){
-	//소켓 초기화
-	if (WSAStartup(MAKEWORD(2, 2), &m_Wsa) != 0)
-		return false;
-	return true;
-}
-
-bool NetworkEngine::createIOCP(){
-	//iocp객체 생성 -> asio객체 생성으로 변경해야 함
-	m_iocpHandle = CreateIoCompletionPort(INVALID_HANDLE_VALUE, NULL, 0, 0);
-	if (m_iocpHandle == nullptr)
-		return false;
-	return true;
 }
 
 int NetworkEngine::acceptThread(){

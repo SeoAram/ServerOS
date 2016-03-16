@@ -23,7 +23,7 @@ private:
 	boost::asio::ip::tcp::socket m_Socket;
 	std::string m_WriteMessage;
 	std::array<char, 128> m_ReceiveBuffer;
-	//GameObject* m_pObject;	//object클래스(객체 이동 관리)
+	GameObject* m_pObject;	//object클래스(객체 이동 관리)
 
 };
 

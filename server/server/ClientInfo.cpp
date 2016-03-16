@@ -9,7 +9,7 @@
 ClientInfo::ClientInfo(boost::asio::io_service& io_service)
 : m_Socket(io_service)
 {
-	//m_pObject = new GameObject(0);
+	m_pObject = new GameObject(0);
 }
 
 ClientInfo::ClientInfo(unsigned int i, boost::asio::io_service& io_service)

@@ -11,6 +11,8 @@ public:
 		: m_acceptor(io_service, boost::asio::ip::tcp::endpoint(boost::asio::ip::tcp::v4(), PORT_NUMBER))
 	{
 		m_pSession = nullptr;
+		ClientInfoManager* cpManager = ClientInfoManager::getInstance();
+		cpManager->initializeClientInfoManager(io_service);
 		StartAccept();
 	}
 
@@ -28,8 +30,8 @@ private:
 		ClientInfoManager* cpManager = ClientInfoManager::getInstance();
 		std::cout << "클라이언트 접속 대기....." << std::endl;
 
-
-		m_pSession = cpManager->connectClient(m_acceptor.get_io_service());
+		//클라이언트 접속해서 반환해주는 부분
+		m_pSession = cpManager->connectClient();
 		//m_pSession = new ClientInfo(0, m_acceptor.get_io_service());
 
 		m_acceptor.async_accept(m_pSession->Socket(),

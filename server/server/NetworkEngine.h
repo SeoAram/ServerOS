@@ -11,7 +11,6 @@ private:
 	NetworkEngine();
 	~NetworkEngine();
 	
-	DWORD connectId;
 public:
 	static NetworkEngine* getInstance(){
 		static NetworkEngine instance;
@@ -24,11 +23,6 @@ public:
 		EVENTmsg
 	};
 
-	HANDLE m_iocpHandle;				//IOCP핸들
-	WSADATA m_Wsa;
-
-	vector<ClientInfo*> m_arClient;		//클라이언트 관리 벡터
-
 	vector<boost::thread*> m_workerThreadPool;	//작업 스레드
 	boost::thread* m_accpetThread;				//accept스레드
 
@@ -38,14 +32,7 @@ public:
 	void err_quit(wchar_t *msg);
 	void err_display(wchar_t *msg);
 
-	DWORD getConnectId(){ return connectId; }	//현재 플레이어 번호
-	void addConnectId(){ ++connectId; }
-	void deleteConnectId(){ --connectId; }
-
 	void initNetworkEngine();		//네트워크 초기화
-
-	bool createIOCP();					//IOCP생성
-	bool initWinsock();			//윈속 초기화
 
 	int acceptThread();					//Accept 스레드 함수
 	int workerThread();					//워커 스레드 함수
