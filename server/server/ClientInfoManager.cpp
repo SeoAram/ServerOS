@@ -19,8 +19,6 @@ ClientInfo* ClientInfoManager::connectClient(){
 		return nullptr;
 	
 	unsigned int nConnId = m_qWaitNum.front();
-	
-	//acceptor.async_accept(m_vClient[nConnId]->Socket(), boost::bind(nullptr, this, m_vClient[nConnId], boost::asio::placeholders::error));
 
 	m_qWaitNum.pop();
 	return m_vClient[nConnId];
@@ -36,4 +34,10 @@ bool ClientInfoManager::initClientInfoManager(boost::asio::io_service& io_servic
 		return true;
 	}
 	return false;
+}
+
+void ClientInfoManager::closeClient(const unsigned int nObjId){
+	cout << "Client Close :: " << nObjId << endl;
+	m_vClient[nObjId]->Socket().close();
+	m_qWaitNum.push(nObjId);
 }

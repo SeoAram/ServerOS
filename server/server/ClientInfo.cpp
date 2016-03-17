@@ -49,6 +49,8 @@ void ClientInfo::handle_receive(const boost::system::error_code& error, size_t b
 		{
 			std::cout << "error No: " << error.value() << " error Message: " << error.message() << std::endl;
 		}
+		//이런 구조는 에비 지지입니다. 쓰지 맙시다.
+		ClientInfoManager::getInstance()->closeClient(m_pObject->getObjId());
 	}
 	else
 	{
@@ -68,7 +70,4 @@ void ClientInfo::handle_receive(const boost::system::error_code& error, size_t b
 
 		PostReceive();
 	}
-}
-
-void ClientInfo::initSocket(boost::asio::io_service& io_service){
 }

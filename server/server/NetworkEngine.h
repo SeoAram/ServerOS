@@ -11,16 +11,14 @@ private:
 	boost::asio::ip::tcp::acceptor m_acceptor;
 	ClientInfo* m_pSession;
 	NetworkEngine(boost::asio::io_service& io_service);
+
+	bool m_bIsAccepting;
 public:
 	~NetworkEngine();
 	static NetworkEngine* getInstance(boost::asio::io_service& io_service){
-		//static bool bInit = false;
 		static NetworkEngine* instance = nullptr;
 		if (instance == nullptr){
 			instance = new NetworkEngine(io_service);
-			//static NetworkEngine instance(io_service);
-			//bInit = true;
-			//return &instance;
 		}
 		return instance;
 	}

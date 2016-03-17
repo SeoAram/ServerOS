@@ -24,12 +24,12 @@ void GameServer::startServer(boost::asio::io_service& io_service){
 	//네트워크 엔진 객체 초기화 / 실행
 
 	m_pNetEngine = NetworkEngine::getInstance(io_service);
+	m_pNetEngine->initNetworkEngine();
 }
 
 void GameServer::loopServer(boost::asio::io_service* io_service){
 	//메인 루프->일정 주기마다 이벤트를 처리함
 
-	m_pNetEngine->initNetworkEngine();
 	//m_pNetEngine->acceptThread();
 
 	io_service->run();

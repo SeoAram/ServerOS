@@ -4,6 +4,7 @@
 
 NetworkEngine::NetworkEngine(boost::asio::io_service& io_service)
 : m_acceptor(io_service, boost::asio::ip::tcp::endpoint(boost::asio::ip::tcp::v4(), PORT_NUMBER)), 
+m_bIsAccepting(false),
 m_accpetThread(nullptr),
 m_pProcess(nullptr),
 m_pSession(nullptr)
@@ -61,18 +62,22 @@ int NetworkEngine::acceptThread(){
 	//accept를 작업하는 thread. 이곳에서 리슨 소켓이 클라이언트의 접속을 받고 처리한다.
 
 	ClientInfoManager* cpManager = ClientInfoManager::getInstance();
-	std::cout << "클라이언트 접속 대기....." << std::endl;
+	while (true){
+		Sleep(1);
+		//std::cout << "클라이언트 접속 대기....." << std::endl;
 
-	//클라이언트 접속해서 반환해주는 부분
-	m_pSession = cpManager->connectClient();
+		//클라이언트 접속해서 반환해주는 부분
+		m_pSession = cpManager->connectClient();
 
-	if (m_pSession != nullptr){
-		m_acceptor.async_accept(m_pSession->Socket(),
-		boost::bind(&NetworkEngine::handle_accept,
-		this,
-		m_pSession,
-		boost::asio::placeholders::error)
-		);
+		if (m_pSession != nullptr){
+			//m_bIsAccepting = true;
+			m_acceptor.async_accept(m_pSession->Socket(),
+				boost::bind(&NetworkEngine::handle_accept,
+				this,
+				m_pSession,
+				boost::asio::placeholders::error)
+				);
+		}
 	}
 	return 0;
 }
@@ -82,7 +87,7 @@ void NetworkEngine::handle_accept(ClientInfo* pSession, const boost::system::err
 	//accept성공시 호출되는 함수
 	if (!error)
 	{
-		std::cout << "클라이언트 접속 성공" << std::endl;
+		std::cout << "클라이언트 접속 성공 :: " << pSession->getObject()->getObjId() << std::endl;
 
 		pSession->PostReceive();
 	}

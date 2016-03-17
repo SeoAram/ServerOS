@@ -14,7 +14,7 @@ public:
 	}
 
 	void PostReceive();
-	void initSocket(boost::asio::io_service& io_service);
+	GameObject* getObject(){ return m_pObject; }
 
 private:
 	void handle_write(const boost::system::error_code& /*error*/, size_t /*bytes_transferred*/);
