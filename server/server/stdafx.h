@@ -33,8 +33,10 @@ const unsigned short PORT_NUMBER = 31400;
 
 #include "GameObject.h"
 #include "ClientInfo.h"
+#include "GameMap.h"
 
 #include "ClientInfoManager.h"
+#include "GameMapManager.h"
 
 #include "MemoryPool.h"
 #include "PacketProcess.h"

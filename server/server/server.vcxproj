@@ -83,6 +83,8 @@
   <ItemGroup>
     <ClInclude Include="ClientInfo.h" />
     <ClInclude Include="ClientInfoManager.h" />
+    <ClInclude Include="GameMap.h" />
+    <ClInclude Include="GameMapManager.h" />
     <ClInclude Include="GameObject.h" />
     <ClInclude Include="GameServer.h" />
     <ClInclude Include="MemoryPool.h" />
@@ -96,6 +98,8 @@
   <ItemGroup>
     <ClCompile Include="ClientInfo.cpp" />
     <ClCompile Include="ClientInfoManager.cpp" />
+    <ClCompile Include="GameMap.cpp" />
+    <ClCompile Include="GameMapManager.cpp" />
     <ClCompile Include="GameObject.cpp" />
     <ClCompile Include="GameServer.cpp" />
     <ClCompile Include="MemoryPool.cpp" />
