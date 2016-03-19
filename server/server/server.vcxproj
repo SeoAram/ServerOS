@@ -87,6 +87,7 @@
     <ClInclude Include="GameMapManager.h" />
     <ClInclude Include="GameObject.h" />
     <ClInclude Include="GameServer.h" />
+    <ClInclude Include="iniRead.h" />
     <ClInclude Include="MemoryPool.h" />
     <ClInclude Include="NetworkEngine.h" />
     <ClInclude Include="PacketProcess.h" />

@@ -4,6 +4,7 @@
 
 PointVector3D::PointVector3D()
 {
+	x = y = z = 0;
 }
 
 

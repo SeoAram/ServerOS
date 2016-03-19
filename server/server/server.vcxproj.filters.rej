@@ -1,0 +1,218 @@
+diff a/server/server/server.vcxproj.filters b/server/server/server.vcxproj.filters	(rejected hunks)
+@@ -1,108 +0,108 @@
+-﻿<?xml version="1.0" encoding="utf-8"?>
+-<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+-  <ItemGroup>
+-    <Filter Include="소스 파일">
+-      <UniqueIdentifier>{4FC737F1-C7A5-4376-A066-2A32D752A2FF}</UniqueIdentifier>
+-      <Extensions>cpp;c;cc;cxx;def;odl;idl;hpj;bat;asm;asmx</Extensions>
+-    </Filter>
+-    <Filter Include="헤더 파일">
+-      <UniqueIdentifier>{93995380-89BD-4b04-88EB-625FBE52EBFB}</UniqueIdentifier>
+-      <Extensions>h;hh;hpp;hxx;hm;inl;inc;xsd</Extensions>
+-    </Filter>
+-    <Filter Include="리소스 파일">
+-      <UniqueIdentifier>{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}</UniqueIdentifier>
+-      <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav;mfcribbon-ms</Extensions>
+-    </Filter>
+-    <Filter Include="소스 파일\Object">
+-      <UniqueIdentifier>{0cbcec4e-42ff-43ce-8d2c-e16e59250121}</UniqueIdentifier>
+-    </Filter>
+-    <Filter Include="소스 파일\Engine">
+-      <UniqueIdentifier>{8c968039-83f7-4e37-9810-6d220969476a}</UniqueIdentifier>
+-    </Filter>
+-    <Filter Include="소스 파일\Manager">
+-      <UniqueIdentifier>{fc88bc0e-8659-4e87-b459-2b7f9446bcf4}</UniqueIdentifier>
+-    </Filter>
+-  </ItemGroup>
+-  <ItemGroup>
+-    <Text Include="ReadMe.txt" />
+-  </ItemGroup>
+-  <ItemGroup>
+-    <ClInclude Include="stdafx.h">
+-      <Filter>헤더 파일</Filter>
+-    </ClInclude>
+-    <ClInclude Include="targetver.h">
+-      <Filter>헤더 파일</Filter>
+-    </ClInclude>
+-    <ClInclude Include="GameServer.h">
+-      <Filter>소스 파일\Engine</Filter>
+-    </ClInclude>
+-    <ClInclude Include="MemoryPool.h">
+-      <Filter>소스 파일\Engine</Filter>
+-    </ClInclude>
+-    <ClInclude Include="NetworkEngine.h">
+-      <Filter>소스 파일\Engine</Filter>
+-    </ClInclude>
+-    <ClInclude Include="PacketProcess.h">
+-      <Filter>소스 파일\Engine</Filter>
+-    </ClInclude>
+-    <ClInclude Include="protocol.h">
+-      <Filter>소스 파일\Engine</Filter>
+-    </ClInclude>
+-    <ClInclude Include="ClientInfo.h">
+-      <Filter>소스 파일\Object</Filter>
+-    </ClInclude>
+-    <ClInclude Include="GameObject.h">
+-      <Filter>소스 파일\Object</Filter>
+-    </ClInclude>
+-    <ClInclude Include="PointVector3D.h">
+-      <Filter>소스 파일\Object</Filter>
+-    </ClInclude>
+-    <ClInclude Include="ClientInfoManager.h">
+-      <Filter>소스 파일\Manager</Filter>
+-    </ClInclude>
+-    <ClInclude Include="GameMap.h">
+-      <Filter>소스 파일\Object</Filter>
+-    </ClInclude>
+-    <ClInclude Include="GameMapManager.h">
+-      <Filter>소스 파일\Manager</Filter>
+-    </ClInclude>
+-  </ItemGroup>
+-  <ItemGroup>
+-    <ClCompile Include="stdafx.cpp">
+-      <Filter>소스 파일</Filter>
+-    </ClCompile>
+-    <ClCompile Include="server.cpp">
+-      <Filter>소스 파일</Filter>
+-    </ClCompile>
+-    <ClCompile Include="GameServer.cpp">
+-      <Filter>소스 파일\Engine</Filter>
+-    </ClCompile>
+-    <ClCompile Include="MemoryPool.cpp">
+-      <Filter>소스 파일\Engine</Filter>
+-    </ClCompile>
+-    <ClCompile Include="NetworkEngine.cpp">
+-      <Filter>소스 파일\Engine</Filter>
+-    </ClCompile>
+-    <ClCompile Include="PacketProcess.cpp">
+-      <Filter>소스 파일\Engine</Filter>
+-    </ClCompile>
+-    <ClCompile Include="ClientInfo.cpp">
+-      <Filter>소스 파일\Object</Filter>
+-    </ClCompile>
+-    <ClCompile Include="GameObject.cpp">
+-      <Filter>소스 파일\Object</Filter>
+-    </ClCompile>
+-    <ClCompile Include="PointVector3D.cpp">
+-      <Filter>소스 파일\Object</Filter>
+-    </ClCompile>
+-    <ClCompile Include="ClientInfoManager.cpp">
+-      <Filter>소스 파일\Manager</Filter>
+-    </ClCompile>
+-    <ClCompile Include="GameMap.cpp">
+-      <Filter>소스 파일\Object</Filter>
+-    </ClCompile>
+-    <ClCompile Include="GameMapManager.cpp">
+-      <Filter>소스 파일\Manager</Filter>
+-    </ClCompile>
+-  </ItemGroup>
++﻿<?xml version="1.0" encoding="utf-8"?>
++<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
++  <ItemGroup>
++    <Filter Include="소스 파일">
++      <UniqueIdentifier>{4FC737F1-C7A5-4376-A066-2A32D752A2FF}</UniqueIdentifier>
++      <Extensions>cpp;c;cc;cxx;def;odl;idl;hpj;bat;asm;asmx</Extensions>
++    </Filter>
++    <Filter Include="헤더 파일">
++      <UniqueIdentifier>{93995380-89BD-4b04-88EB-625FBE52EBFB}</UniqueIdentifier>
++      <Extensions>h;hh;hpp;hxx;hm;inl;inc;xsd</Extensions>
++    </Filter>
++    <Filter Include="리소스 파일">
++      <UniqueIdentifier>{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}</UniqueIdentifier>
++      <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav;mfcribbon-ms</Extensions>
++    </Filter>
++    <Filter Include="소스 파일\Object">
++      <UniqueIdentifier>{0cbcec4e-42ff-43ce-8d2c-e16e59250121}</UniqueIdentifier>
++    </Filter>
++    <Filter Include="소스 파일\Engine">
++      <UniqueIdentifier>{8c968039-83f7-4e37-9810-6d220969476a}</UniqueIdentifier>
++    </Filter>
++    <Filter Include="소스 파일\Manager">
++      <UniqueIdentifier>{fc88bc0e-8659-4e87-b459-2b7f9446bcf4}</UniqueIdentifier>
++    </Filter>
++  </ItemGroup>
++  <ItemGroup>
++    <Text Include="ReadMe.txt" />
++  </ItemGroup>
++  <ItemGroup>
++    <ClInclude Include="stdafx.h">
++      <Filter>헤더 파일</Filter>
++    </ClInclude>
++    <ClInclude Include="targetver.h">
++      <Filter>헤더 파일</Filter>
++    </ClInclude>
++    <ClInclude Include="GameServer.h">
++      <Filter>소스 파일\Engine</Filter>
++    </ClInclude>
++    <ClInclude Include="MemoryPool.h">
++      <Filter>소스 파일\Engine</Filter>
++    </ClInclude>
++    <ClInclude Include="NetworkEngine.h">
++      <Filter>소스 파일\Engine</Filter>
++    </ClInclude>
++    <ClInclude Include="PacketProcess.h">
++      <Filter>소스 파일\Engine</Filter>
++    </ClInclude>
++    <ClInclude Include="protocol.h">
++      <Filter>소스 파일\Engine</Filter>
++    </ClInclude>
++    <ClInclude Include="ClientInfo.h">
++      <Filter>소스 파일\Object</Filter>
++    </ClInclude>
++    <ClInclude Include="GameObject.h">
++      <Filter>소스 파일\Object</Filter>
++    </ClInclude>
++    <ClInclude Include="PointVector3D.h">
++      <Filter>소스 파일\Object</Filter>
++    </ClInclude>
++    <ClInclude Include="ClientInfoManager.h">
++      <Filter>소스 파일\Manager</Filter>
++    </ClInclude>
++    <ClInclude Include="GameMap.h">
++      <Filter>소스 파일\Object</Filter>
++    </ClInclude>
++    <ClInclude Include="GameMapManager.h">
++      <Filter>소스 파일\Manager</Filter>
++    </ClInclude>
++  </ItemGroup>
++  <ItemGroup>
++    <ClCompile Include="stdafx.cpp">
++      <Filter>소스 파일</Filter>
++    </ClCompile>
++    <ClCompile Include="server.cpp">
++      <Filter>소스 파일</Filter>
++    </ClCompile>
++    <ClCompile Include="GameServer.cpp">
++      <Filter>소스 파일\Engine</Filter>
++    </ClCompile>
++    <ClCompile Include="MemoryPool.cpp">
++      <Filter>소스 파일\Engine</Filter>
++    </ClCompile>
++    <ClCompile Include="NetworkEngine.cpp">
++      <Filter>소스 파일\Engine</Filter>
++    </ClCompile>
++    <ClCompile Include="PacketProcess.cpp">
++      <Filter>소스 파일\Engine</Filter>
++    </ClCompile>
++    <ClCompile Include="ClientInfo.cpp">
++      <Filter>소스 파일\Object</Filter>
++    </ClCompile>
++    <ClCompile Include="GameObject.cpp">
++      <Filter>소스 파일\Object</Filter>
++    </ClCompile>
++    <ClCompile Include="PointVector3D.cpp">
++      <Filter>소스 파일\Object</Filter>
++    </ClCompile>
++    <ClCompile Include="ClientInfoManager.cpp">
++      <Filter>소스 파일\Manager</Filter>
++    </ClCompile>
++    <ClCompile Include="GameMap.cpp">
++      <Filter>소스 파일\Object</Filter>
++    </ClCompile>
++    <ClCompile Include="GameMapManager.cpp">
++      <Filter>소스 파일\Manager</Filter>
++    </ClCompile>
++  </ItemGroup>
+ </Project>
+\ No newline at end of file

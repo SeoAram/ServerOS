@@ -2,8 +2,10 @@
 #include "GameMapManager.h"
 
 
-GameMapManager::GameMapManager()
+GameMapManager::GameMapManager():
+m_cIsFileLoad(0)
 {
+	//m_pgMap = new GameMap(m_cIsFileLoad++);
 }
 
 
