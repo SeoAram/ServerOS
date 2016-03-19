@@ -67,7 +67,9 @@ void ClientInfo::handle_receive(const boost::system::error_code& error, size_t b
 			boost::asio::placeholders::bytes_transferred)
 			);
 
-
+		//이런 구조는 에비 지지입니다. 쓰지 맙시다222222
+		//ㅓ클라리언트에게 모든 것을 보내줍시다
+		ClientInfoManager::getInstance();
 		PostReceive();
 	}
 }
