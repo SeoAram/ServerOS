@@ -5,9 +5,9 @@ class PointVector3D
 {
 private:
 public:
-	unsigned int x, y, z;
+	float x, y, z;
 	PointVector3D();
-	PointVector3D(unsigned int x, unsigned int y, unsigned int z) :x(x), y(y), z(z){}
+	PointVector3D(float x, float y, float z) :x(x), y(y), z(z){}
 	~PointVector3D();
 
 	PointVector3D& operator+(PointVector3D& p){
@@ -17,11 +17,27 @@ public:
 		return *this;
 	}
 
-	PointVector3D& operator*(unsigned int k){
+	PointVector3D& operator*(float k){
 		this->x *= k;
 		this->y *= k;
 		this->z *= k;
 		return *this;
+	}
+
+	void vectorNormalization(){
+		float tmp = InvSqrt(x*x + y*y + z*z);
+		x = x * tmp;
+		y = y * tmp;
+		z = z * tmp;
+	}
+
+	float InvSqrt(float x){
+		float xhalf = 0.5f * x;
+		int i = *(int*)&x;            // store floating-point bits in integer
+		i = 0x5f3759df - (i >> 1);    // initial guess for Newton's method
+		x = *(float*)&i;              // convert new bits into float
+		x = x*(1.5f - xhalf*x*x);     // One round of Newton's method
+		return x;
 	}
 };
 
