@@ -16,7 +16,6 @@ void GameServer::initServer(boost::asio::io_service& io_service){
 	//싱글톤 객체들 생성, 필요한 메모리들 미리 할당 받음
 	IniData* pIniData = IniData::getInstance();
 	GameMap* pGMap = GameMap::getInstance();
-	//GameMapManager* pMapManager = GameMapManager::getInstance();
 	ClientInfoManager* pClientManager = ClientInfoManager::getInstance();
 
 	pClientManager->initClientInfoManager(io_service);

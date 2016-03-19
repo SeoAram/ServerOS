@@ -26,12 +26,13 @@ void GameObject::moveObject(){
 	GameMap* pGameMap = GameMap::getInstance();
 
 	*m_pPosition = *m_pPosition + *m_pDirect;
-	int bx = (int)m_pPosition->x / BLOCK_COUNT;
-	int bz = (int)m_pPosition->z / BLOCK_COUNT;
+	int bx = ((int)m_pPosition->x + 2048) / BLOCK_COUNT;
+	int bz = ((int)m_pPosition->z + 2048) / BLOCK_COUNT;
 
 	if (m_wBlockX != bx || m_wBlockZ != bz){
 		
 		//기존 블록에서 objID제거 -> 다른 블록에 objID입력
-		//pGameMap
+		pGameMap->deleteObjId(bx, bz, m_iObjId);
+		pGameMap->insertObjId(bx, bz, m_iObjId);
 	}
 }

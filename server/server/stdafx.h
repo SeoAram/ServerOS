@@ -26,7 +26,7 @@ using namespace std;
 
 
 #define WORKED_THREAD 1
-#define BLOCK_COUNT 20
+#define BLOCK_COUNT 32
 
 const unsigned short MAX_CONNECT_CLIENT = 3000;
 const unsigned short PORT_NUMBER = 31400;

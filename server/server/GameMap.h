@@ -12,7 +12,9 @@ public:
 		static GameMap instance;
 		return &instance;
 	}
-	GameMap(char m_cIsLoadMap);
 	~GameMap();
+
+	void insertObjId(short x, short z, unsigned int objId);
+	bool deleteObjId(short x, short z, unsigned int objId);
 };
 
