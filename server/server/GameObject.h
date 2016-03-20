@@ -4,6 +4,7 @@ class GameObject
 {
 private:
 	unsigned int m_iObjId;		//객체 Id//함부로 변경 불가
+	unsigned short m_wSpeed;
 public:
 	GameObject();
 	GameObject(unsigned int i);
