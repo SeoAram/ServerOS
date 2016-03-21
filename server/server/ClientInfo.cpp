@@ -50,6 +50,7 @@ void ClientInfo::handle_receive(const boost::system::error_code& error, size_t b
 			std::cout << "error No: " << error.value() << " error Message: " << error.message() << std::endl;
 		}
 		//이런 구조는 에비 지지입니다. 쓰지 맙시다.
+		GameMap::getInstance()->deleteObjId(m_pObject->m_pPosition->x, m_pObject->m_pPosition->z, m_pObject->getObjId());
 		ClientInfoManager::getInstance()->closeClient(m_pObject->getObjId());
 	}
 	else

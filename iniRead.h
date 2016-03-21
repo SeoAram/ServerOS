@@ -1,5 +1,10 @@
 #pragma once
-#include "stdafx.h"
+#include <unordered_map>
+#include <algorithm>
+#include <string>
+#include <iostream>
+
+using namespace std;
 
 pair<string, int> INIT_DATA;
 
@@ -9,15 +14,15 @@ private:
 		FILE* iniFile;
 		if (fopen_s(&iniFile, "../../data.dat", "r")){
 			cout << "Ini File Load Fail!!" << endl;
-			m_umIniData.insert({ (string)"MAP_HEIGHT", 2048 });
-			m_umIniData.insert({ (string)"MAP_WIDTH", 2048 });
+			//m_umIniData.insert({ (string)"MAP_HEIGHT", 2048 });
+			//m_umIniData.insert({ (string)"MAP_WIDTH", 2048 });
 			//m_umIniData.insert({ (string)"MAP_HEIGHT", m_umIniData.find("MAP_HEIGHT") });
 			//m_umIniData.insert({ (string)"MAP_WIDTH", 2048 * 2 });
 		}
 		else{
 			cout << "Ini File Load Success!!!" << endl;
-			m_umIniData.insert({ (string)"MAP_HEIGHT", 2048 });
-			m_umIniData.insert({ (string)"MAP_WIDTH", 2048 });
+			//m_umIniData.insert({ (string)"MAP_HEIGHT", 2048 });
+			//m_umIniData.insert({ (string)"MAP_WIDTH", 2048 });
 			fclose(iniFile);
 		}
 	}

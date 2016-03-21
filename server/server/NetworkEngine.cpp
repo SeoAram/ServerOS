@@ -1,4 +1,4 @@
-#include "stdafx.h"
+ï»¿#include "stdafx.h"
 #include "NetworkEngine.h"
 
 
@@ -7,7 +7,9 @@ NetworkEngine::NetworkEngine(boost::asio::io_service& io_service)
 m_bIsAccepting(false),
 m_accpetThread(nullptr),
 m_pProcess(nullptr),
-m_pSession(nullptr)
+m_pSession(nullptr),
+m_pClientInfoManager(ClientInfoManager::getInstance()),
+m_pGameMap(GameMap::getInstance())
 {
 	cout << "Init Engine" << endl;
 }
@@ -19,7 +21,7 @@ NetworkEngine::~NetworkEngine()
 
 void NetworkEngine::err_quit(wchar_t *msg)
 {
-	//¿¡·¯·Î Á¾·áµÇ´Â °æ¿ì È£Ãâ
+	//ì—ëŸ¬ë¡œ ì¢…ë£Œë˜ëŠ” ê²½ìš° í˜¸ì¶œ
 	LPVOID lpMsgBuf;
 	FormatMessage(
 		FORMAT_MESSAGE_ALLOCATE_BUFFER |
@@ -34,7 +36,7 @@ void NetworkEngine::err_quit(wchar_t *msg)
 
 void NetworkEngine::err_display(wchar_t *msg)
 {
-	//¿¡·¯ ·Î±×¸¦ È­¸é¿¡ Ãâ·Â
+	//ì—ëŸ¬ ë¡œê·¸ë¥¼ í™”ë©´ì— ì¶œë ¥
 	LPVOID lpMsgBuf;
 	FormatMessage(
 		FORMAT_MESSAGE_ALLOCATE_BUFFER |
@@ -47,7 +49,7 @@ void NetworkEngine::err_display(wchar_t *msg)
 }
 
 void NetworkEngine::initNetworkEngine(){
-	//³×Æ®¿öÅ© ¿£ÁøÀ» ÃÊ±âÈ­ ÇÑ´Ù.
+	//ë„¤íŠ¸ì›Œí¬ ì—”ì§„ì„ ì´ˆê¸°í™” í•œë‹¤.
 
 	for (int i = 0; i < WORKED_THREAD; ++i){
 		m_workerThreadPool.push_back(new boost::thread(mem_fun(&NetworkEngine::workerThread), this));
@@ -59,14 +61,14 @@ void NetworkEngine::initNetworkEngine(){
 }
 
 int NetworkEngine::acceptThread(){
-	//accept¸¦ ÀÛ¾÷ÇÏ´Â thread. ÀÌ°÷¿¡¼­ ¸®½¼ ¼ÒÄÏÀÌ Å¬¶óÀÌ¾ğÆ®ÀÇ Á¢¼ÓÀ» ¹Ş°í Ã³¸®ÇÑ´Ù.
+	//acceptë¥¼ ì‘ì—…í•˜ëŠ” thread. ì´ê³³ì—ì„œ ë¦¬ìŠ¨ ì†Œì¼“ì´ í´ë¼ì´ì–¸íŠ¸ì˜ ì ‘ì†ì„ ë°›ê³  ì²˜ë¦¬í•œë‹¤.
 
 	ClientInfoManager* cpManager = ClientInfoManager::getInstance();
 	while (true){
 		Sleep(1);
-		//std::cout << "Å¬¶óÀÌ¾ğÆ® Á¢¼Ó ´ë±â....." << std::endl;
+		//std::cout << "í´ë¼ì´ì–¸íŠ¸ ì ‘ì† ëŒ€ê¸°....." << std::endl;
 
-		//Å¬¶óÀÌ¾ğÆ® Á¢¼ÓÇØ¼­ ¹İÈ¯ÇØÁÖ´Â ºÎºĞ
+		//í´ë¼ì´ì–¸íŠ¸ ì ‘ì†í•´ì„œ ë°˜í™˜í•´ì£¼ëŠ” ë¶€ë¶„
 		m_pSession = cpManager->connectClient();
 
 		if (m_pSession != nullptr){
@@ -84,12 +86,16 @@ int NetworkEngine::acceptThread(){
 
 void NetworkEngine::handle_accept(ClientInfo* pSession, const boost::system::error_code& error)
 {
-	//accept¼º°ø½Ã È£ÃâµÇ´Â ÇÔ¼ö
+	//acceptì„±ê³µì‹œ í˜¸ì¶œë˜ëŠ” í•¨ìˆ˜
 	if (!error)
 	{
-		std::cout << "Å¬¶óÀÌ¾ğÆ® Á¢¼Ó ¼º°ø :: " << pSession->getObject()->getObjId() << std::endl;
+		std::cout << "í´ë¼ì´ì–¸íŠ¸ ì ‘ì† ì„±ê³µ :: " << pSession->getObject()->getObjId() << std::endl;
 
 		pSession->PostReceive();
+		//í´ë¼ì´ì–¸íŠ¸ ì ‘ì† ì„±ê³µí•œ ê²½ìš° í˜„ì¬ ì¡´ì¬í•˜ëŠ” ëª¨ë“  í´ë¼ì´ì–¸íŠ¸ì—ê²Œ ì ‘ì† ì—¬ë¶€ë¥¼ ì•Œë¦°ë‹¤.
+		//ëª¨ë“  í´ë¼ì—ê²Œ ì•Œë ¤ì•¼ í•˜ë‚˜....ë§µì—ì„œë§Œ ì²´í¬í•©ì‹œë‹¤
+		m_pGameMap->insertObjId(pSession->getObject()->m_pPosition->x, pSession->getObject()->m_pPosition->z, pSession->getObject()->getObjId());
+		//m_pClientInfoManager->
 	}
 	else{
 		cout << error << endl;
@@ -97,7 +103,7 @@ void NetworkEngine::handle_accept(ClientInfo* pSession, const boost::system::err
 }
 
 int NetworkEngine::workerThread(){
-	//ÀÛ¾÷ ½º·¹µå. send/recv/eventÃ³¸®¸¦ ºĞ·ùÇÏ¿© ÀÛ¾÷ Ã³¸®
+	//ì‘ì—… ìŠ¤ë ˆë“œ. send/recv/eventì²˜ë¦¬ë¥¼ ë¶„ë¥˜í•˜ì—¬ ì‘ì—… ì²˜ë¦¬
 
 	/*int retval;
 	DWORD objID;
@@ -108,8 +114,8 @@ int NetworkEngine::workerThread(){
 	PlayerInfoManager* pPlayerManager = PlayerInfoManager::getInstance();
 	ClientInfo* pClient = pPlayerManager->m_playerVector[getConnectId()];
 	while (true){
-	//IOCPÅ¥¿¡¼­ ¿Ï·áµÈ ÀÛ¾÷À» °¡Áö°í ¿Â´Ù
-	//Ã³À½ ½º·¹µå°¡ È£Ãâ µÈ °æ¿ì ½º·¹µå Ç®¿¡ µî·ÏÇÑ´Ù
+	//IOCPíì—ì„œ ì™„ë£Œëœ ì‘ì—…ì„ ê°€ì§€ê³  ì˜¨ë‹¤
+	//ì²˜ìŒ ìŠ¤ë ˆë“œê°€ í˜¸ì¶œ ëœ ê²½ìš° ìŠ¤ë ˆë“œ í’€ì— ë“±ë¡í•œë‹¤
 	retval = GetQueuedCompletionStatus(m_iocpHandle, &IOByte, &objID, reinterpret_cast<LPOVERLAPPED*>(&overlapped), INFINITE);
 	if (retval == 0 || IOByte == 0){
 	if (retval == 0){
@@ -141,95 +147,3 @@ int NetworkEngine::workerThread(){
 	return 0;
 
 }
-
-/*void NetworkEngine::recvPacket(DWORD Obj_id, OVER_EX *overlapped, const DWORD IObyte)
-{
-//PlayerInfoManager* pManager = PlayerInfoManager::getInstance();
-// DoAction : ¹ŞÀº ÆĞÅ¶À» Ã³¸®ÇÏ°í ´Ù½Ã ¸®½ÃºêÇÔ¼ö¸¦ È£ÃâÇÑ´Ù.
-// Param_1 : ÆĞÅ¶À» º¸³½ Å¬¶óÀÌ¾ğÆ®ÀÇ Obj_id
-// Param_2 : ¸®½ÃºêÇÑ µ¥ÀÌÅÍ°¡ ´ã°ÜÀÖ´Â OVER_ExÀÇ Æ÷ÀÎÅÍ
-// Param_3 : ¸®½ÃºêÇÑ ¹ÙÀÌÆ® ¼ö
-// TODO : ¿Ï¼ºµÈ ÆĞÅ¶Àº ÆĞÅ¶ Ã³¸® ·çÆ¾À¸·Î Ã³¸®¸¦ ÇÏ°í ¿Ï¼ºµÇÁö ¾ÊÀº ÆĞÅ¶Àº ¹öÆÛ¿¡ ÀúÀåÇØµĞ´Ù.
-//		  ¹ŞÀº ÆĞÅ¶ Ã³¸®°¡ ³¡³µÀ¸¸é »õ·Î ¸®½Ãºê¸¦ È£ÃâÇÑ´Ù.
-
-// ¹Ş¾Æ¼­ Ã³¸®ÇØ¾ßÇÒ ¹ÙÀÌÆ® ¼ö´Â IObyte
-int rest_byte = IObyte;
-// Ã³¸®ÇØ¾ß ÇÒ ¹öÆÛ´Â overlappedÀÇ RecvBuffer
-char* buffer = overlapped->m_arRecvBuffer;
-// ¹ŞÀº ÆĞÅ¶ÀÇ »çÀÌÁî´Â overlappedÀÇ ÆĞÅ¶ »çÀÌÁî
-int packet_size = overlapped->m_nPacketSize;
-// ÇöÀç ÆĞÅ¶ ¹öÆÛ¿¡ ÀúÀåµÈ ÆĞÅ¶ÀÇ »çÀÌÁî
-int received = overlapped->m_nStoredSize;
-// ¹ŞÀº ¹öÆÛ¸¦ ´Ù Ã³¸®ÇÒ¶§±îÁö while¹® ¾È¿¡¼­ Ã³¸®ÇÔ
-while (rest_byte != 0)
-{
-if (packet_size == 0)// ÇöÀç Ã³¸®ÇØ¾ßÇÒ ÆĞÅ¶ÀÇ »çÀÌÁî°¡ 0ÀÌ¸é
-{
-//ÆĞÅ¶ÀÇ »çÀÌÁî¸¦ ÀĞ¾î¼­
-BYTE *size = reinterpret_cast<BYTE *>(buffer);
-//ÆĞÅ¶ÀÇ »çÀÌÁî¸¦ ÁöÁ¤
-packet_size = *size;
-}
-// ¿ä±¸µÇ´Â »çÀÌÁî´Â ÇöÀç ÆĞÅ¶ÀÇ »çÀÌÁî¿¡¼­ ÀúÀåµÈ »çÀÌÁî¸¦ »« ¸¸Å­ ¿ä±¸µÊ
-int required_size = packet_size - received;
-if (rest_byte >= required_size)//ÆĞÅ¶ÀÌ Á¶¸³ °¡´ÉÇÏ´Ï ¹ŞÀº ÆĞÅ¶À» Ã³¸®ÇÔ
-{
-memcpy(overlapped->m_arPacketbuffer + received, buffer, required_size);
-// ¿©±â¼­ ÆĞÅ¶ Ã³¸® ÇÏ´Â ºÎºĞ Ãß°¡
-bool value = m_pProcess->packetProcess(Obj_id, overlapped->m_arPacketbuffer);
-if (value == false) 	cout << "packet error" << endl;
-packet_size = 0;
-received = 0;
-buffer += required_size;
-rest_byte -= required_size;
-}
-else // ÆĞÅ¶ Á¶¸³ ºÒ°¡´É, ¼ö½Å ´úµÈ ÆĞÅ¶ÀÌ Á¸ÀçÇÔ
-{
-//Á¶¸³ ºÒ°¡´ÉÇÑ ¹öÆÛ¸¦ ÆĞÅ¶ ¹öÆÛ¿¡ ÀúÀå
-memcpy(overlapped->m_arPacketbuffer, buffer, IObyte);
-received += rest_byte;
-rest_byte = 0;
-}
-}
-// ÆĞÅ¶ Ã³¸®°¡ ³¡³µÀ¸¸é »õ·Î¿î ÆĞÅ¶ ¼ö½Å
-ZeroMemory(&(overlapped->m_Overlapped), sizeof(WSAOVERLAPPED));
-overlapped->m_nOperation = RECVmsg;
-overlapped->m_nPacketSize = packet_size;
-overlapped->m_nStoredSize = received;
-DWORD flags = 0;
-int ret = WSARecv(PlayerInfoManager::getInstance()->m_playerVector[Obj_id]->getSocket(), &overlapped->m_Wsabuf, 1, NULL
-, &flags, &overlapped->m_Overlapped, NULL);
-if (ret == SOCKET_ERROR)
-{
-// WSA_IO_PENDING ÀÛ¾÷ÁßÀÌ¹Ç·Î ¿À·ù°¡ ¾Æ´Ô
-if (WSAGetLastError() != WSA_IO_PENDING)
-{
-err_display(L"WSARecv()");
-}
-}
-}*/
-
-/*void NetworkEngine::sendPacket(const int obj_id, const char* buf, const int size)
-{
-// DoAction : Å¬¶óÀÌ¾ğÆ®¿¡°Ô ÆĞÅ¶À» º¸³½´Ù
-// Param_1 : ¹ŞÀ» Å¬¶óÀÌ¾ğÆ®ÀÇ Obj_id
-// Param_2 : º¸³¾ ¹öÆÛÀÇ Æ÷ÀÎÅÍ
-// Param_3 : º¸³¾ ¹öÆÛÀÇ »çÀÌÁî
-// TODO : º¸³¾ Å¬¶óÀÌ¾ğÆ®ÀÇ Obj_id¸¦ ÇÃ·¹ÀÌ¾î ¸Å´ÏÀú Å¬·¡½º¿¡¼­ Ã£¾Æ ÆĞÅ¶À» º¸³¿.
-PlayerInfoManager *pManager = PlayerInfoManager::getInstance();
-ClientInfo *Client = pManager->m_playerVector[obj_id];
-if (Client == nullptr) return;
-NODE *Send = m_pMemory->getMemory();
-Send->m_stBuf.m_nOperation = SENDmsg;
-ZeroMemory(&Send->m_stBuf.m_Overlapped, sizeof(WSAOVERLAPPED));
-Send->m_stBuf.m_WsaBuf.buf = Send->m_stBuf.m_arPacketBuf;
-Send->m_stBuf.m_WsaBuf.len = size;
-memcpy(Send->m_stBuf.m_arPacketBuf, buf, size);
-DWORD SendByte;
-int ret = WSASend(Client->getSocket(), &Send->m_stBuf.m_WsaBuf, 1,
-&SendByte, 0, &Send->m_stBuf.m_Overlapped, NULL);
-
-}*/
-/*void NetworkEngine::sendPacketToViewList(const int obj_id, const char* buf)
-{
-}*/

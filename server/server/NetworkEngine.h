@@ -10,6 +10,8 @@ private:
 	int m_nSeqNumber;
 	boost::asio::ip::tcp::acceptor m_acceptor;
 	ClientInfo* m_pSession;
+	ClientInfoManager* m_pClientInfoManager;
+	GameMap* m_pGameMap;
 	NetworkEngine(boost::asio::io_service& io_service);
 
 	bool m_bIsAccepting;
