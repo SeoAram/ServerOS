@@ -1,11 +1,6 @@
 #include "stdafx.h"
 #include "ClientInfo.h"
 
-
-//ClientInfo::ClientInfo()
-//{
-//}
-
 ClientInfo::ClientInfo(boost::asio::io_service& io_service)
 : m_Socket(io_service)
 {

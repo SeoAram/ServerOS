@@ -46,5 +46,9 @@ public:
 
 	int acceptThread();					//Accept 스레드 함수
 	int workerThread();					//워커 스레드 함수
+
+
+	void handle_receive(const boost::system::error_code& error, size_t bytes_transferred);
+	void handle_write(const boost::system::error_code& /*error*/, size_t /*bytes_transferred*/);
 };
 

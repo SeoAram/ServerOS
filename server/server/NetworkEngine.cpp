@@ -147,3 +147,94 @@ int NetworkEngine::workerThread(){
 	return 0;
 
 }
+
+void NetworkEngine::handle_receive(const boost::system::error_code& error, size_t bytes_transferred){
+	//PlayerInfoManager* pManager = PlayerInfoManager::getInstance();
+	// DoAction : 받은 패킷을 처리하고 다시 리시브함수를 호출한다.
+	// Param_1 : 패킷을 보낸 클라이언트의 Obj_id
+	// Param_2 : 리시브한 데이터가 담겨있는 OVER_Ex의 포인터
+	// Param_3 : 리시브한 바이트 수
+	// TODO : 완성된 패킷은 패킷 처리 루틴으로 처리를 하고 완성되지 않은 패킷은 버퍼에 저장해둔다.
+	//		  받은 패킷 처리가 끝났으면 새로 리시브를 호출한다.
+
+	// 받아서 처리해야할 바이트 수는 IObyte
+	//int rest_byte = IObyte;
+	// 처리해야 할 버퍼는 overlapped의 RecvBuffer
+	//char* buffer = overlapped->m_arRecvBuffer;
+	// 받은 패킷의 사이즈는 overlapped의 패킷 사이즈
+	//int packet_size = overlapped->m_nPacketSize;
+	// 현재 패킷 버퍼에 저장된 패킷의 사이즈
+	//int received = overlapped->m_nStoredSize;
+
+	// 받은 버퍼를 다 처리할때까지 while문 안에서 처리함
+	/*while (rest_byte != 0)
+	{
+		if (packet_size == 0)// 현재 처리해야할 패킷의 사이즈가 0이면
+		{
+			//패킷의 사이즈를 읽어서
+			BYTE *size = reinterpret_cast<BYTE *>(buffer);
+			//패킷의 사이즈를 지정
+			packet_size = *size;
+		}
+		// 요구되는 사이즈는 현재 패킷의 사이즈에서 저장된 사이즈를 뺀 만큼 요구됨
+		int required_size = packet_size - received;
+
+		if (rest_byte >= required_size)//패킷이 조립 가능하니 받은 패킷을 처리함
+		{
+			memcpy(overlapped->m_arPacketbuffer + received, buffer, required_size);
+			// 여기서 패킷 처리 하는 부분 추가
+			bool value = m_pProcess->packetProcess(Obj_id, overlapped->m_arPacketbuffer);
+			if (value == false) 	cout << "packet error" << endl;
+			packet_size = 0;
+			received = 0;
+			buffer += required_size;
+			rest_byte -= required_size;
+		}
+		else // 패킷 조립 불가능, 수신 덜된 패킷이 존재함
+		{
+			//조립 불가능한 버퍼를 패킷 버퍼에 저장
+			memcpy(overlapped->m_arPacketbuffer, buffer, IObyte);
+			received += rest_byte;
+			rest_byte = 0;
+		}
+	}
+	// 패킷 처리가 끝났으면 새로운 패킷 수신
+	ZeroMemory(&(overlapped->m_Overlapped), sizeof(WSAOVERLAPPED));
+	overlapped->m_nOperation = RECVmsg;
+	overlapped->m_nPacketSize = packet_size;
+	overlapped->m_nStoredSize = received;
+	DWORD flags = 0;
+	int ret = WSARecv(PlayerInfoManager::getInstance()->m_playerVector[Obj_id]->getSocket(), &overlapped->m_Wsabuf, 1, NULL
+		, &flags, &overlapped->m_Overlapped, NULL);
+	if (ret == SOCKET_ERROR)
+	{
+		// WSA_IO_PENDING 작업중이므로 오류가 아님
+		if (WSAGetLastError() != WSA_IO_PENDING)
+		{
+			err_display(L"WSARecv()");
+		}
+	}*/
+}
+
+void NetworkEngine::handle_write(const boost::system::error_code& /*error*/, size_t /*bytes_transferred*/)
+{
+	// DoAction : 클라이언트에게 패킷을 보낸다
+	// Param_1 : 받을 클라이언트의 Obj_id
+	// Param_2 : 보낼 버퍼의 포인터
+	// Param_3 : 보낼 버퍼의 사이즈
+	// TODO : 보낼 클라이언트의 Obj_id를 플레이어 매니저 클래스에서 찾아 패킷을 보냄.
+	ClientInfoManager *pClientInfoManager = ClientInfoManager::getInstance();
+	/*ClientInfo *Client = pClientInfoManager->m_playerVector[obj_id];
+	if (Client == nullptr) return;
+
+	NODE *Send = m_pMemory->getMemory();
+	Send->m_stBuf.m_nOperation = SENDmsg;
+	ZeroMemory(&Send->m_stBuf.m_Overlapped, sizeof(WSAOVERLAPPED));
+	Send->m_stBuf.m_WsaBuf.buf = Send->m_stBuf.m_arPacketBuf;
+	Send->m_stBuf.m_WsaBuf.len = size;
+	memcpy(Send->m_stBuf.m_arPacketBuf, buf, size);
+	DWORD SendByte;
+	int ret = WSASend(Client->getSocket(), &Send->m_stBuf.m_WsaBuf, 1,
+		&SendByte, 0, &Send->m_stBuf.m_Overlapped, NULL);
+		*/
+}

@@ -22,3 +22,4 @@ bool GameMap::deleteObjId(short x, short z, unsigned int objId){// false°¡ ¹ÝÈ¯µ
 	}
 	return result;
 }
+

@@ -45,9 +45,6 @@
     <ClInclude Include="PacketProcess.h">
       <Filter>소스 파일\Engine</Filter>
     </ClInclude>
-    <ClInclude Include="protocol.h">
-      <Filter>소스 파일\Engine</Filter>
-    </ClInclude>
     <ClInclude Include="ClientInfo.h">
       <Filter>소스 파일\Object</Filter>
     </ClInclude>
