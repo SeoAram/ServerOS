@@ -15,7 +15,7 @@ public:
 
 	unordered_map<PacketType, function<void(unsigned int, char*)>> m_mapPacketRoutine;
 	void funcRegisterd();
-	bool packetProcess(const DWORD& objID, char* buf);
+	bool packetProcess(const unsigned int& objID, char* buf);
 
 	void playerLogin(unsigned int objID, char* buf);
 	void playerMove(unsigned int objID, char* buf);

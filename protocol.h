@@ -1,5 +1,6 @@
 #pragma once
-enum class RoomType : char;
+
+#define MAX_RECEIVE_BUFFER_LEN 128
 
 enum class PacketType : unsigned char{
 	LOGIN_PACKET = 1,

@@ -55,22 +55,45 @@ void ClientInfo::handle_receive(const boost::system::error_code& error, size_t b
 	}
 	else
 	{
-		const std::string strRecvMessage = m_ReceiveBuffer.data();
-		std::cout << "클라이언트에서 받은 메시지: " << strRecvMessage << ", 받은 크기: " << bytes_transferred << std::endl;
+		memcpy(&m_PacketBuffer[m_nPacketBufferMark], m_ReceiveBuffer.data(), bytes_transferred);
 
-		char szMessage[128] = { 0, };
-		sprintf_s(szMessage, 128 - 1, "Re:%s", strRecvMessage.c_str());
-		m_WriteMessage = szMessage;
+		int nPacketData = m_nPacketBufferMark + bytes_transferred;
+		int nReadData = 0;
 
-		boost::asio::async_write(m_Socket, boost::asio::buffer(m_WriteMessage),
-			boost::bind(&ClientInfo::handle_write, this,
-			boost::asio::placeholders::error,
-			boost::asio::placeholders::bytes_transferred)
-			);
+		while (nPacketData > 0)
+		{
+			if (nPacketData < sizeof(PacketHeader))
+			{
+				break;
+			}
 
-		//이런 구조는 에비 지지입니다. 쓰지 맙시다222222
-		//ㅓ클라리언트에게 모든 것을 보내줍시다
-		ClientInfoManager::getInstance();
+			PacketHeader* pHeader = (PacketHeader*)&m_PacketBuffer[nReadData];
+
+			if (pHeader->packetSize <= nPacketData)
+			{
+				//packet process로 보내야됨
+				PacketProcess* pProcess = PacketProcess::getInstance();
+				//m_pServer->ProcessPacket(m_nSessionID, &m_PacketBuffer[nReadData]);
+
+				nPacketData -= pHeader->packetSize;
+				nReadData += pHeader->packetSize;
+			}
+			else
+			{
+				break;
+			}
+		}
+
+		if (nPacketData > 0)
+		{
+			char TempBuffer[MAX_RECEIVE_BUFFER_LEN] = { 0, };
+			memcpy(&TempBuffer[0], &m_PacketBuffer[nReadData], nPacketData);
+			memcpy(&m_PacketBuffer[0], &TempBuffer[0], nPacketData);
+		}
+
+		m_nPacketBufferMark = nPacketData;
+
+		//현재 주변에 있는 클라에게 데이터를 전송해주는 구조를 만들어봅시다.
 		PostReceive();
 	}
 }
