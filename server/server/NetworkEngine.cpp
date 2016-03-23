@@ -3,21 +3,23 @@
 
 
 NetworkEngine::NetworkEngine(boost::asio::io_service& io_service)
-: m_acceptor(io_service, boost::asio::ip::tcp::endpoint(boost::asio::ip::tcp::v4(), PORT_NUMBER)),
-m_bIsAccepting(false),
+: m_io_service(io_service), 
+m_acceptor(io_service, boost::asio::ip::tcp::endpoint(boost::asio::ip::tcp::v4(), PORT_NUMBER)),
 m_accpetThread(nullptr),
 m_pProcess(nullptr),
 m_pSession(nullptr),
 m_pClientInfoManager(ClientInfoManager::getInstance()),
 m_pGameMap(GameMap::getInstance())
 {
+	m_spWork.reset(new boost::asio::io_service::work(m_io_service));
 	cout << "Init Engine" << endl;
 }
 
 NetworkEngine::~NetworkEngine()
 {
+	m_spWork.reset(); 
+	m_tGroup.join_all();
 }
-
 
 void NetworkEngine::err_quit(wchar_t *msg)
 {
@@ -50,9 +52,8 @@ void NetworkEngine::err_display(wchar_t *msg)
 
 void NetworkEngine::initNetworkEngine(){
 	//네트워크 엔진을 초기화 한다.
-
 	for (int i = 0; i < WORKED_THREAD; ++i){
-		m_workerThreadPool.push_back(new boost::thread(mem_fun(&NetworkEngine::workerThread), this));
+		m_tGroup.create_thread(boost::bind(&boost::asio::io_service::run, &m_io_service));
 		cout << "Workerthread Create" << endl;
 	}
 
@@ -94,7 +95,7 @@ void NetworkEngine::handle_accept(ClientInfo* pSession, const boost::system::err
 		pSession->PostReceive();
 		//클라이언트 접속 성공한 경우 현재 존재하는 모든 클라이언트에게 접속 여부를 알린다.
 		//모든 클라에게 알려야 하나....맵에서만 체크합시다
-		m_pGameMap->insertObjId(pSession->getObject()->m_pPosition->x, pSession->getObject()->m_pPosition->z, pSession->getObject()->getObjId());
+		m_pGameMap->insertObjId(pSession->getObject()->m_wBlockX, pSession->getObject()->m_wBlockZ, pSession->getObject()->getObjId());
 		//m_pClientInfoManager->
 	}
 	else{
@@ -104,7 +105,7 @@ void NetworkEngine::handle_accept(ClientInfo* pSession, const boost::system::err
 
 int NetworkEngine::workerThread(){
 	//작업 스레드. send/recv/event처리를 분류하여 작업 처리
-
+	cout << ::GetCurrentThreadId() << endl; 
 	/*int retval;
 	DWORD objID;
 	DWORD IOByte;

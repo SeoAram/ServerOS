@@ -31,14 +31,13 @@ void GameServer::startServer(boost::asio::io_service& io_service){
 void GameServer::loopServer(boost::asio::io_service* io_service){
 	//메인 루프->일정 주기마다 이벤트를 처리함
 
-	//m_pNetEngine->acceptThread();
-
-	io_service->run();
-
 
 	while (true){
 		Sleep(1);
+		m_pNetEngine->post(boost::bind(&NetworkEngine::workerThread, NetworkEngine::getInstance(*io_service)));
 	}
+
+	io_service->run();
 
 	std::cout << "네트웍 접속 종료" << std::endl;
 
@@ -60,6 +59,7 @@ void GameServer::loopServer(boost::asio::io_service* io_service){
 			}
 		}
 		pEvent->leaveCriticalSection();
+		
 	}*/
 }
 

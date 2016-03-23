@@ -15,3 +15,8 @@ struct PacketHeader{
 	int packetSize;
 	PacketType protocol;
 };
+
+struct PacketLogin{
+	PacketHeader head;
+	unsigned int id;
+};

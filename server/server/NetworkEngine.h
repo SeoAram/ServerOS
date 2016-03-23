@@ -8,13 +8,20 @@ class NetworkEngine
 {
 private:
 	int m_nSeqNumber;
-	boost::asio::ip::tcp::acceptor m_acceptor;
+	boost::asio::ip::tcp::acceptor m_acceptor;			//accept
+	boost::asio::io_service& m_io_service;
+	boost::shared_ptr<boost::asio::io_service::work> m_spWork;
+
+	boost::thread_group m_tGroup;				//thread pool
+	boost::thread* m_accpetThread;				//accept스레드
+
+	GameMap* m_pGameMap;
+	PacketProcess* m_pProcess;			//패킷 처리를 위한 프로세스
+	MemoryPool* m_pMemory;				//메모리 관리
 	ClientInfo* m_pSession;
 	ClientInfoManager* m_pClientInfoManager;
-	GameMap* m_pGameMap;
-	NetworkEngine(boost::asio::io_service& io_service);
 
-	bool m_bIsAccepting;
+	NetworkEngine(boost::asio::io_service& io_service); // 생성자
 public:
 	~NetworkEngine();
 	static NetworkEngine* getInstance(boost::asio::io_service& io_service){
@@ -31,13 +38,8 @@ public:
 		EVENTmsg
 	};
 
-	vector<boost::thread*> m_workerThreadPool;	//작업 스레드
-	boost::thread* m_accpetThread;				//accept스레드
-
 	void handle_accept(ClientInfo* pSession, const boost::system::error_code& error);
 
-	PacketProcess* m_pProcess;			//패킷 처리를 위한 프로세스
-	MemoryPool* m_pMemory;				//메모리 관리
 
 	void err_quit(wchar_t *msg);
 	void err_display(wchar_t *msg);
@@ -50,5 +52,10 @@ public:
 
 	void handle_receive(const boost::system::error_code& error, size_t bytes_transferred);
 	void handle_write(const boost::system::error_code& /*error*/, size_t /*bytes_transferred*/);
+
+	template <class F>
+	void post(F f){
+		m_io_service.post(f);
+	}
 };
 
