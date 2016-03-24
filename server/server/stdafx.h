@@ -47,6 +47,7 @@ const unsigned short PORT_NUMBER = 31400;
 
 #include "MemoryPool.h"
 #include "PacketProcess.h"
+#include "GameEventProcess.h"
 #include "NetworkEngine.h"
 
 #include "GameServer.h"

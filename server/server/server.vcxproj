@@ -85,6 +85,7 @@
     <ClInclude Include="..\..\protocol.h" />
     <ClInclude Include="ClientInfo.h" />
     <ClInclude Include="ClientInfoManager.h" />
+    <ClInclude Include="GameEventProcess.h" />
     <ClInclude Include="GameMap.h" />
     <ClInclude Include="GameMapManager.h" />
     <ClInclude Include="GameObject.h" />
@@ -99,6 +100,7 @@
   <ItemGroup>
     <ClCompile Include="ClientInfo.cpp" />
     <ClCompile Include="ClientInfoManager.cpp" />
+    <ClCompile Include="GameEventProcess.cpp" />
     <ClCompile Include="GameMap.cpp" />
     <ClCompile Include="GameMapManager.cpp" />
     <ClCompile Include="GameObject.cpp" />
