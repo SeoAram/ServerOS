@@ -4,10 +4,9 @@
 #include <string>
 #include <iostream>
 #include <fstream>
+#include <climits>
 
 using namespace std;
-
-pair<string, int> INIT_DATA;
 
 class IniData{
 private:
@@ -49,7 +48,7 @@ public:
 	int getData(string key){
 		m_umIter = m_umIniData.find(key);
 		if (m_umIter == m_umIniData.end())
-			return -1;
+			return INT_MIN;
 		else
 			return m_umIniData.find(key)->second;
 	}

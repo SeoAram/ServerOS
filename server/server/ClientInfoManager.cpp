@@ -20,7 +20,10 @@ ClientInfo* ClientInfoManager::connectClient(){
 	
 	unsigned int nConnId = m_qWaitNum.front();
 
-	m_qWaitNum.pop();
+	//cout << nConnId << endl;
+	if (m_vClient[nConnId]->getObject()->m_wState != IniData::getInstance()->getData("GAME_OBJECT_STAT")){
+		m_qWaitNum.pop();
+	}
 	return m_vClient[nConnId];
 }
 
@@ -30,6 +33,7 @@ bool ClientInfoManager::initClientInfoManager(boost::asio::io_service& io_servic
 			m_vClient.push_back(new ClientInfo(i, io_service));
 			m_qWaitNum.push(i);
 		}
+		cout << "Create Object :: " << m_vClient.size() << " :: " << m_qWaitNum.front() << endl;
 		m_bInit = true;
 		return true;
 	}

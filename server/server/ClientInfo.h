@@ -4,10 +4,8 @@
 class ClientInfo
 {
 public:
-	//ClientInfo();
 	ClientInfo(boost::asio::io_service& io_service);
 	ClientInfo(unsigned int i, boost::asio::io_service& io_service);
-	//ClientInfo(unsigned int i);
 
 	boost::asio::ip::tcp::socket& Socket(){
 		return m_Socket;

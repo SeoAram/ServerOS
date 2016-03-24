@@ -6,7 +6,6 @@ class TCP_Server;
 class ClientInfoManager
 {
 private:
-	queue<int> m_qLeaveId;
 	vector<ClientInfo*> m_vClient;
 	queue<unsigned int> m_qWaitNum;
 	bool m_bInit;
