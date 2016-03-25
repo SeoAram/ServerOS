@@ -57,7 +57,7 @@ void NetworkEngine::initNetworkEngine(){
 		cout << "Workerthread Create" << endl;
 	}
 
-	//m_accpetThread = new boost::thread(mem_fun(&NetworkEngine::acceptThread), this);
+	m_accpetThread = new boost::thread(mem_fun(&NetworkEngine::acceptThread), this);
 	cout << "Acceptthread Create" << endl;
 
 }
@@ -66,8 +66,10 @@ int NetworkEngine::acceptThread(){
 	//accept를 작업하는 thread. 이곳에서 리슨 소켓이 클라이언트의 접속을 받고 처리한다.
 
 	ClientInfoManager* cpManager = ClientInfoManager::getInstance();
-	//while (true){
-		//Sleep(1);
+	//m_io_service.run();
+	while (true){
+		Sleep(1);
+		
 		std::cout << "클라이언트 접속 대기....." << std::endl;
 
 		//클라이언트 접속해서 반환해주는 부분
@@ -81,7 +83,7 @@ int NetworkEngine::acceptThread(){
 				boost::asio::placeholders::error)
 				);
 		}
-	//}
+	}
 	return 0;
 }
 
@@ -100,7 +102,7 @@ void NetworkEngine::handle_accept(ClientInfo* pSession, const boost::system::err
 		//m_pGameMap->insertObjId(pSession->getObject()->m_wBlockX, pSession->getObject()->m_wBlockZ, pSession->getObject()->getObjId());
 		//m_pClientInfoManager->
 
-		acceptThread();
+		//acceptThread();
 	}
 	else{
 		cout << "accept error :: " << error << endl;
