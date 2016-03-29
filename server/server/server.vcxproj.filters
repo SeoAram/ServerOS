@@ -22,6 +22,9 @@
     <Filter Include="소스 파일\Manager">
       <UniqueIdentifier>{fc88bc0e-8659-4e87-b459-2b7f9446bcf4}</UniqueIdentifier>
     </Filter>
+    <Filter Include="소스 파일\Common">
+      <UniqueIdentifier>{60708475-3d9f-4b06-8f1e-13656770c34d}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <Text Include="ReadMe.txt" />
@@ -51,9 +54,6 @@
     <ClInclude Include="GameObject.h">
       <Filter>소스 파일\Object</Filter>
     </ClInclude>
-    <ClInclude Include="PointVector3D.h">
-      <Filter>소스 파일\Object</Filter>
-    </ClInclude>
     <ClInclude Include="ClientInfoManager.h">
       <Filter>소스 파일\Manager</Filter>
     </ClInclude>
@@ -63,14 +63,17 @@
     <ClInclude Include="GameMapManager.h">
       <Filter>소스 파일\Manager</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\iniRead.h">
-      <Filter>헤더 파일</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\protocol.h">
-      <Filter>헤더 파일</Filter>
-    </ClInclude>
     <ClInclude Include="GameEventProcess.h">
       <Filter>소스 파일\Engine</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\common\iniRead.h">
+      <Filter>소스 파일\Common</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\common\PointVector3D.h">
+      <Filter>소스 파일\Common</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\common\protocol.h">
+      <Filter>소스 파일\Common</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -95,9 +98,6 @@
     <ClCompile Include="GameObject.cpp">
       <Filter>소스 파일\Object</Filter>
     </ClCompile>
-    <ClCompile Include="PointVector3D.cpp">
-      <Filter>소스 파일\Object</Filter>
-    </ClCompile>
     <ClCompile Include="ClientInfoManager.cpp">
       <Filter>소스 파일\Manager</Filter>
     </ClCompile>
@@ -115,6 +115,8 @@
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <None Include="..\..\data.dat" />
+    <None Include="..\..\common\data.dat">
+      <Filter>소스 파일\Common</Filter>
+    </None>
   </ItemGroup>
 </Project>

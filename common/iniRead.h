@@ -13,7 +13,7 @@ private:
 	IniData(){
 
 		ifstream infile;
-		infile.open("../../data.dat");
+		infile.open("../../common/data.dat");
 
 		if (infile.is_open()){
 

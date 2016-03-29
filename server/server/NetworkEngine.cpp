@@ -66,14 +66,13 @@ int NetworkEngine::acceptThread(){
 	//accept를 작업하는 thread. 이곳에서 리슨 소켓이 클라이언트의 접속을 받고 처리한다.
 
 	ClientInfoManager* cpManager = ClientInfoManager::getInstance();
-	//m_io_service.run();
 	while (true){
 		Sleep(1);
 		
-		std::cout << "클라이언트 접속 대기....." << std::endl;
 
 		//클라이언트 접속해서 반환해주는 부분
 		m_pSession = cpManager->connectClient();
+		std::cout << "클라이언트 접속 대기....." << m_pSession->getObject()->getObjId() << std::endl;
 
 		if (m_pSession != nullptr){
 			m_acceptor.async_accept(m_pSession->Socket(),
@@ -83,6 +82,7 @@ int NetworkEngine::acceptThread(){
 				boost::asio::placeholders::error)
 				);
 		}
+	m_io_service.run();
 	}
 	return 0;
 }
@@ -111,7 +111,7 @@ void NetworkEngine::handle_accept(ClientInfo* pSession, const boost::system::err
 
 int NetworkEngine::workerThread(){
 	//작업 스레드. send/recv/event처리를 분류하여 작업 처리
-	cout << ::GetCurrentThreadId() << endl; 
+	//cout << ::GetCurrentThreadId() << endl; 
 	/*int retval;
 	DWORD objID;
 	DWORD IOByte;
