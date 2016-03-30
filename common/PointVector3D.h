@@ -13,10 +13,17 @@ public:
 
 	PointVector3D(float x, float y, float z) :x(x), y(y), z(z){}
 
-	PointVector3D& operator+(PointVector3D& p){
-		this->x += p.x;
-		this->y += p.y;
-		this->z += p.z;
+	PointVector3D& operator+(PointVector3D* p){
+		this->x += p->x;
+		this->y += p->y;
+		this->z += p->z;
+		return *this;
+	}
+
+	PointVector3D& operator+=(PointVector3D* p){
+		this->x += p->x;
+		this->y += p->y;
+		this->z += p->z;
 		return *this;
 	}
 
@@ -48,5 +55,6 @@ public:
 		os << "(" << this->x << ", " << this->y << ", " << this->z << ")";
 		return os;
 	}
+
 };
 

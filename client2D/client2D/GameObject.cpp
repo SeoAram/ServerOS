@@ -2,7 +2,7 @@
 #include "GameObject.h"
 
 
-CGameObject::CGameObject() : m_fCos(-90), m_fSin(90)
+CGameObject::CGameObject() : m_fCos(-90), m_fSin(90), m_wSpeed(IniData::getInstance()->getData("OBJECT_SPEED"))
 {
 	float z = IniData::getInstance()->getData("MAP_HEIGHT");
 	float x = IniData::getInstance()->getData("MAP_WIDTH");
@@ -23,7 +23,7 @@ void CGameObject::turnLeft()
 		m_fCos = -180;
 
 	m_pvDir->x *= cosf(m_fCos * RADIAN);
-	m_pvDir->vectorNormalization();
+	//m_pvDir->vectorNormalization();
 }
 void CGameObject::turnRight()
 {
@@ -32,7 +32,7 @@ void CGameObject::turnRight()
 		m_fCos = 0;
 
 	m_pvDir->x *= cosf(m_fCos * RADIAN);
-	m_pvDir->vectorNormalization();
+	//m_pvDir->vectorNormalization();
 }
 void CGameObject::turnUp()
 {
@@ -41,7 +41,7 @@ void CGameObject::turnUp()
 		m_fSin = 90;
 
 	m_pvDir->z *= sinf(m_fSin * RADIAN);
-	m_pvDir->vectorNormalization();
+	//m_pvDir->vectorNormalization();
 }
 void CGameObject::turnDown()
 {
@@ -50,5 +50,12 @@ void CGameObject::turnDown()
 		m_fSin = -90;
 
 	m_pvDir->z *= sinf(m_fSin * RADIAN);
+	//m_pvDir->vectorNormalization();
+}
+
+void CGameObject::move()
+{
+	m_pvDir->vectorNormalization();
+	*m_pvPos += &(*m_pvDir * m_wSpeed);
 	m_pvDir->vectorNormalization();
 }

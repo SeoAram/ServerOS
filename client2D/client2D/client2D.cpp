@@ -149,9 +149,16 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 			return DefWindowProc(hWnd, message, wParam, lParam);
 		}
 		break;
+	case WM_TIMER:
+		if (0 == wParam){
+			pGamePlayer->move();
+			InvalidateRgn(hWnd, NULL, FALSE);
+		}
+		break;
 	case WM_PAINT:
 		hdc = BeginPaint(hWnd, &ps);
 		// TODO: 여기에 그리기 코드를 추가합니다.
+		Rectangle(hdc, pGamePlayer->m_pvPos->x - 2048 - 2, pGamePlayer->m_pvPos->z - 2048 - 2, pGamePlayer->m_pvPos->x - 2048 + 2, pGamePlayer->m_pvPos->z - 2048 + 2);
 		EndPaint(hWnd, &ps);
 		break;
 	case WM_KEYDOWN:
@@ -168,14 +175,13 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 			pGamePlayer->turnRight();
 		}
 		pGamePlayer->m_pvDir->operator<<(cout) << endl;
-		//cout << pGamePlayer->m_pvDir << endl;
-		//cout << cos(pGamePlayer->m_fCos * RADIAN) << " :: " << pGamePlayer->m_fSin << endl;
 		break;
 	case WM_DESTROY:
 		PostQuitMessage(0);
 		break;
 	case WM_CREATE:
 		pGamePlayer = new CGameObject();
+		SetTimer(hWnd, 0, 100 / 1000, NULL);
 		break;
 	default:
 		return DefWindowProc(hWnd, message, wParam, lParam);
