@@ -6,14 +6,24 @@ class PointVector3D
 private:
 public:
 	float x, y, z;
-	PointVector3D();
-	PointVector3D(float x, float y, float z) :x(x), y(y), z(z){}
-	~PointVector3D();
 
-	PointVector3D& operator+(PointVector3D& p){
-		this->x += p.x;
-		this->y += p.y;
-		this->z += p.z;
+	PointVector3D() : x(0), y(0), z(0){	}
+
+	~PointVector3D(){}
+
+	PointVector3D(float x, float y, float z) :x(x), y(y), z(z){}
+
+	PointVector3D& operator+(PointVector3D* p){
+		this->x += p->x;
+		this->y += p->y;
+		this->z += p->z;
+		return *this;
+	}
+
+	PointVector3D& operator+=(PointVector3D* p){
+		this->x += p->x;
+		this->y += p->y;
+		this->z += p->z;
 		return *this;
 	}
 
@@ -39,5 +49,12 @@ public:
 		x = x*(1.5f - xhalf*x*x);     // One round of Newton's method
 		return x;
 	}
+	
+	ostream& operator<<(ostream& os)
+	{
+		os << "(" << this->x << ", " << this->y << ", " << this->z << ")";
+		return os;
+	}
+
 };
 

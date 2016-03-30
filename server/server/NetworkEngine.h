@@ -46,7 +46,7 @@ public:
 
 	void initNetworkEngine();		//네트워크 초기화
 
-	int acceptThread();					//Accept 스레드 함수
+	int acceptThread(/*boost::asio::io_service& io_service*/);					//Accept 스레드 함수
 	int workerThread();					//워커 스레드 함수
 
 
