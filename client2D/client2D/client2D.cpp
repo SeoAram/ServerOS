@@ -174,14 +174,15 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 		if (VK_RIGHT == wParam){
 			pGamePlayer->turnRight();
 		}
-		pGamePlayer->m_pvDir->operator<<(cout) << endl;
+		
+		//pGamePlayer->m_pvDir->operator<<(cout) << endl;
 		break;
 	case WM_DESTROY:
 		PostQuitMessage(0);
 		break;
 	case WM_CREATE:
 		pGamePlayer = new CGameObject();
-		SetTimer(hWnd, 0, 100 / 1000, NULL);
+		SetTimer(hWnd, 0, 60 / 1000, NULL);
 		break;
 	default:
 		return DefWindowProc(hWnd, message, wParam, lParam);

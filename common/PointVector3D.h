@@ -1,5 +1,25 @@
 #pragma once
 
+class Matrix{
+public:
+	Matrix() 
+	{
+		for (int i = 0; i < 3; ++i){
+			for (int j = 0; j < 3; ++j)
+				cube[i][j] = 0;
+		}
+		cube[0][0] = cube[2][2] = 1;
+		cube[0][2] = cube[2][0] = 1;
+	};
+	float cube[3][3];
+	void RotateY(int sinTheta, int cosTheta){
+		cube[0][0] = cos(cosTheta * RADIAN);
+		cube[2][2] = cos(cosTheta * RADIAN);
+		cube[0][2] = -1 * sin(sinTheta * RADIAN);
+		cube[2][0] = sin(sinTheta * RADIAN);
+	}
+};
+
 //3DVector
 class PointVector3D
 {
@@ -56,5 +76,12 @@ public:
 		return os;
 	}
 
+	PointVector3D& operator*(Matrix& m){
+		PointVector3D tmp;
+		tmp.x = this->x * m.cube[0][0] + this->y * m.cube[1][0] + this->z * m.cube[2][0];
+		tmp.y = this->x * m.cube[0][1] + this->y * m.cube[1][1] + this->z * m.cube[2][1];
+		tmp.z = this->x * m.cube[0][2] + this->y * m.cube[1][2] + this->z * m.cube[2][2];
+		return tmp;
+	}
 };
 
