@@ -29,7 +29,7 @@ void GameObject::moveObject(){
 
 	if (m_wState == IniData::getInstance()->getData("GAME_OBJECT_MOVE")){
 		GameMap* pGameMap = GameMap::getInstance();
-		*m_pPosition = *m_pPosition + (*m_pDirect * m_wSpeed);
+		//*m_pPosition = *m_pPosition + (*m_pDirect * m_wSpeed);
 
 		int bx = ((int)m_pPosition->x + IniData::getInstance()->getData("GAME_MAP_WIDTH")) / BLOCK_COUNT;
 		int bz = ((int)m_pPosition->z + IniData::getInstance()->getData("GAME_MAP_HEIGHT")) / BLOCK_COUNT;

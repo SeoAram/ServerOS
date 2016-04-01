@@ -12,12 +12,6 @@ public:
 		cube[0][2] = cube[2][0] = 1;
 	};
 	float cube[3][3];
-	void RotateY(int sinTheta, int cosTheta){
-		cube[0][0] = cos(cosTheta * RADIAN);
-		cube[2][2] = cos(cosTheta * RADIAN);
-		cube[0][2] = -1 * sin(sinTheta * RADIAN);
-		cube[2][0] = sin(sinTheta * RADIAN);
-	}
 };
 
 //3DVector
