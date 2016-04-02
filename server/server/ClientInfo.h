@@ -12,7 +12,12 @@ public:
 	}
 
 	void PostReceive();
+	void PostSend(const bool bImmediately, const int nSize, char* pData);
 	GameObject* getObject(){ return m_pObject; }
+
+	void zeroSetBufferMark(){
+		m_nPacketBufferMark = 0;
+	}
 
 private:
 	void handle_write(const boost::system::error_code& /*error*/, size_t /*bytes_transferred*/);
@@ -29,6 +34,7 @@ private:
 	char m_PacketBuffer[MAX_RECEIVE_BUFFER_LEN * 2];
 
 	std::deque< char* > m_SendDataQueue;
+
 
 };
 
