@@ -89,6 +89,7 @@
     <ClInclude Include="GameEventProcess.h" />
     <ClInclude Include="GameMap.h" />
     <ClInclude Include="GameMapManager.h" />
+    <ClInclude Include="GameNetwork.h" />
     <ClInclude Include="GameObject.h" />
     <ClInclude Include="GameServer.h" />
     <ClInclude Include="MemoryPool.h" />
@@ -103,6 +104,7 @@
     <ClCompile Include="GameEventProcess.cpp" />
     <ClCompile Include="GameMap.cpp" />
     <ClCompile Include="GameMapManager.cpp" />
+    <ClCompile Include="GameNetwork.cpp" />
     <ClCompile Include="GameObject.cpp" />
     <ClCompile Include="GameServer.cpp" />
     <ClCompile Include="MemoryPool.cpp" />

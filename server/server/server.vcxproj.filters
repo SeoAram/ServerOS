@@ -75,6 +75,9 @@
     <ClInclude Include="..\..\common\protocol.h">
       <Filter>소스 파일\Common</Filter>
     </ClInclude>
+    <ClInclude Include="GameNetwork.h">
+      <Filter>소스 파일\Engine</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="stdafx.cpp">
@@ -111,6 +114,9 @@
       <Filter>소스 파일\Engine</Filter>
     </ClCompile>
     <ClCompile Include="GameEventProcess.cpp">
+      <Filter>소스 파일\Engine</Filter>
+    </ClCompile>
+    <ClCompile Include="GameNetwork.cpp">
       <Filter>소스 파일\Engine</Filter>
     </ClCompile>
   </ItemGroup>
