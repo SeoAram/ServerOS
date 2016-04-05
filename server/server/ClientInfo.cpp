@@ -7,10 +7,24 @@ ClientInfo::ClientInfo(boost::asio::io_service& io_service)
 	m_pObject = new GameObject(0);
 }
 
-ClientInfo::ClientInfo(unsigned int i, boost::asio::io_service& io_service)
-: m_Socket(io_service)
+ClientInfo::ClientInfo(boost::asio::io_service& io_service, GameNetwork* pGameNet)
+: m_Socket(io_service), m_pGameNet(pGameNet)
+{
+	m_pObject = new GameObject(0);
+}
+
+ClientInfo::ClientInfo(unsigned int i, boost::asio::io_service& io_service, GameNetwork* pGameNet)
+: m_Socket(io_service), m_pGameNet(pGameNet)
 {
 	m_pObject = new GameObject(i);
+}
+
+ClientInfo::~ClientInfo(){
+	while (m_SendDataQueue.empty() == false)
+	{
+		delete[] m_SendDataQueue.front();
+		m_SendDataQueue.pop_front();
+	}
 }
 
 void ClientInfo::PostReceive()
@@ -23,7 +37,6 @@ void ClientInfo::PostReceive()
 		boost::asio::placeholders::bytes_transferred)
 
 		);
-
 }
 
 
@@ -41,8 +54,6 @@ void ClientInfo::PostSend(const bool bImmediately, const int nSize, char* pData)
 	{
 		pSendData = pData;
 	}
-
-
 
 	if (bImmediately == false && m_SendDataQueue.size() > 1)
 	{
@@ -83,9 +94,7 @@ void ClientInfo::handle_receive(const boost::system::error_code& error, size_t b
 		{
 			std::cout << "error No: " << error.value() << " error Message: " << error.message() << std::endl;
 		}
-		//이런 구조는 에비 지지입니다. 쓰지 맙시다.
-		//GameMap::getInstance()->deleteObjId(m_pObject->m_wBlockX, m_pObject->m_wBlockZ, m_pObject->getObjId());
-		ClientInfoManager::getInstance()->closeClient(m_pObject->getObjId());
+		m_pGameNet->CloseClientInfo(m_pObject->getObjId());
 	}
 	else
 	{
