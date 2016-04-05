@@ -65,9 +65,9 @@ void ClientInfo::handle_write(const boost::system::error_code& /*error*/, size_t
 	{
 		char* pData = m_SendDataQueue.front();
 
-		/*PACKET_HEADER* pHeader = (PACKET_HEADER*)pData;
+		PacketHeader* pHeader = (PacketHeader*)pData;
 
-		PostSend(true, pHeader->nSize, pData);*/
+		PostSend(true, pHeader->packetSize, pData);
 	}
 }
 
