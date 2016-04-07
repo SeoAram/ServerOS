@@ -18,6 +18,7 @@
 #include <malloc.h>
 #include <memory.h>
 #include <tchar.h>
+#include <winsock2.h>
 
 #include <cmath>
 

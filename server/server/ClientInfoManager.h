@@ -24,6 +24,10 @@ public:
 
 	//클라이언트 연결하는 부분인데 이건 그냥 여유있는 클라이언트 찾아서 반환해주는 것으로 변경해야 함.
 	ClientInfo* connectClient();
-	void closeClient(const unsigned int nObjId);
+
+	ClientInfo* getClient(const unsigned int nObjId){
+		return m_vClient[nObjId];
+	}
+	void returnClient(const unsigned int nObjId){ m_qWaitNum.push(nObjId); }
 };
 

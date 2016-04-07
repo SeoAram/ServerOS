@@ -1,6 +1,8 @@
 #pragma once
 #include "stdafx.h"
 
+class GameNetwork;
+
 class ClientInfo
 {
 public:
@@ -16,7 +18,6 @@ public:
 	void PostReceive();
 	void PostSend(const bool bImmediately, const int nSize, char* pData);
 	GameObject* getObject(){ return m_pObject; }
-	boost::asio::ip::tcp::socket& Socket() { return m_Socket; }
 
 	void Init(){ m_nPacketBufferMark = 0; };
 
@@ -25,8 +26,6 @@ private:
 	//접속 패킷을 받아봅시다
 	void handle_receive(const boost::system::error_code& error, size_t bytes_transferred);
 	boost::asio::ip::tcp::socket m_Socket;
-
-
 
 	std::string m_WriteMessage;		// sendpacket같은데, 변경 필요함
 	GameObject* m_pObject;	//object클래스(객체 이동 관리)

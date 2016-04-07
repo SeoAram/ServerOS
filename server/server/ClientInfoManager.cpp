@@ -10,6 +10,15 @@ ClientInfoManager::ClientInfoManager()
 
 ClientInfoManager::~ClientInfoManager()
 {
+	for (size_t i = 0; i < m_vClient.size(); ++i)
+	{
+		if (m_vClient[i]->Socket().is_open())
+		{
+			m_vClient[i]->Socket().close();
+		}
+
+		delete m_vClient[i];
+	}
 }
 
 
@@ -21,9 +30,9 @@ ClientInfo* ClientInfoManager::connectClient(){
 	unsigned int nConnId = m_qWaitNum.front();
 
 	//cout << nConnId << endl;
-	if (m_vClient[nConnId]->getObject()->m_wState != IniData::getInstance()->getData("GAME_OBJECT_STAT")){
+	//if (m_vClient[nConnId]->getObject()->m_wState != IniData::getInstance()->getData("GAME_OBJECT_STAT")){
 		m_qWaitNum.pop();
-	}
+	//}
 	return m_vClient[nConnId];
 }
 
@@ -53,11 +62,4 @@ bool ClientInfoManager::initClientInfoManager(boost::asio::ip::tcp::acceptor& ac
 		return true;
 	}
 	return false;
-}
-
-
-void ClientInfoManager::closeClient(const unsigned int nObjId){
-	cout << "Client Close :: " << nObjId << endl;
-	m_vClient[nObjId]->Socket().close();
-	m_qWaitNum.push(nObjId);
 }

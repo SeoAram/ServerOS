@@ -5,6 +5,7 @@ class GameServer
 {
 private:
 	NetworkEngine* m_pNetEngine;
+	GameNetwork* m_pGameNet;
 public:
 	GameServer();
 	~GameServer();

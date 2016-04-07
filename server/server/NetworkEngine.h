@@ -22,6 +22,7 @@ private:
 	ClientInfoManager* m_pClientInfoManager;
 
 	NetworkEngine(boost::asio::io_service& io_service); // 생성자
+
 public:
 	~NetworkEngine();
 	static NetworkEngine* getInstance(boost::asio::io_service& io_service){

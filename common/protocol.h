@@ -13,10 +13,10 @@ enum class EventType : unsigned char{
 
 struct PacketHeader{
 	int packetSize;
+	unsigned int id;
 	PacketType protocol;
 };
 
 struct PacketLogin{
 	PacketHeader head;
-	unsigned int id;
 };

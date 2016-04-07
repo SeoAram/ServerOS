@@ -7,9 +7,7 @@ public:
 	GameNetwork(boost::asio::io_service& io_service);
 
 	~GameNetwork();
-
-	void Init(const int nMaxClientInfoCount);
-
+	
 	void Start();
 
 	void CloseClientInfo(const int nClientInfoID);
@@ -26,9 +24,6 @@ private:
 	bool m_bIsAccepting;
 
 	boost::asio::ip::tcp::acceptor m_acceptor;
-
-	std::vector< ClientInfo* > m_vClientInfoList;
-	std::deque< int > m_ClientInfoQueue;
 
 	ClientInfoManager* m_pClientManager;
 };

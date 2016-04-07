@@ -12,25 +12,6 @@ m_pClientManager(ClientInfoManager::getInstance())
 GameNetwork::~GameNetwork()
 {
 
-	for (size_t i = 0; i < m_vClientInfoList.size(); ++i)
-	{
-		if (m_vClientInfoList[i]->Socket().is_open())
-		{
-			m_vClientInfoList[i]->Socket().close();
-		}
-
-		delete m_vClientInfoList[i];
-	}
-}
-
-void GameNetwork::Init(const int    nMaxClientInfoCount)
-{
-	for (int i = 0; i < nMaxClientInfoCount; ++i)
-	{
-		ClientInfo* pClientInfo = new ClientInfo(i, m_acceptor.get_io_service());
-		m_vClientInfoList.push_back(pClientInfo);
-		m_ClientInfoQueue.push_back(i);
-	}
 }
 
 void GameNetwork::Start()
@@ -44,9 +25,8 @@ void GameNetwork::CloseClientInfo(const int nClientInfoID)
 {
 	std::cout << "클라이언트 접속 종료. 세션 ID: " << nClientInfoID << std::endl;
 
-	m_vClientInfoList[nClientInfoID]->Socket().close();
-
-	m_ClientInfoQueue.push_back(nClientInfoID);
+	m_pClientManager->getClient(nClientInfoID)->Socket().close();
+	m_pClientManager->returnClient(nClientInfoID);
 
 	if (m_bIsAccepting == false)
 	{
@@ -56,66 +36,59 @@ void GameNetwork::CloseClientInfo(const int nClientInfoID)
 
 void GameNetwork::ProcessPacket(const int nClientInfoID, const char*pData)
 {
-	/*PACKET_HEADER* pheader = (PACKET_HEADER*)pData;
+	PacketHeader* pheader = (PacketHeader*)pData;
 
-	switch (pheader->nID)
+	switch (pheader->protocol)
 	{
-	case REQ_IN:
+	case PacketType::LOGIN_PACKET:
 	{
-	PKT_REQ_IN* pPacket = (PKT_REQ_IN*)pData;
-	m_vClientInfoList[nClientInfoID]->SetName(pPacket->szName);
+		PacketLogin* pPacket = (PacketLogin*)pData;
 
-	std::cout << "클라이언트 로그인 성공 Name: " << m_vClientInfoList[nClientInfoID]->GetName() << std::endl;
+		std::cout << "클라이언트 로그인 성공 Id: " << m_pClientManager->getClient(nClientInfoID)->getObject()->getObjId() << std::endl;
+/*
+		PKT_RES_IN SendPkt;
+		SendPkt.Init();
+		SendPkt.bIsSuccess = true;
 
-	PKT_RES_IN SendPkt;
-	SendPkt.Init();
-	SendPkt.bIsSuccess = true;
-
-	m_vClientInfoList[nClientInfoID]->PostSend(false, SendPkt.nSize, (char*)&SendPkt);
+		//최초 접속 시 패킷 전송
+		m_pClientManager->getClient(nClientInfoID)->PostSend(false, SendPkt.nSize, (char*)&SendPkt);*/
 	}
-	break;
-	case REQ_CHAT:
+		break;
+	case PacketType::MOVE_PACKET:
 	{
-	PKT_REQ_CHAT* pPacket = (PKT_REQ_CHAT*)pData;
+		/*PKT_REQ_CHAT* pPacket = (PKT_REQ_CHAT*)pData;
 
-	PKT_NOTICE_CHAT SendPkt;
-	SendPkt.Init();
-	strncpy_s(SendPkt.szName, MAX_NAME_LEN, m_vClientInfoList[nClientInfoID]->GetName(), MAX_NAME_LEN - 1);
-	strncpy_s(SendPkt.szMessage, MAX_MESSAGE_LEN, pPacket->szMessage, MAX_MESSAGE_LEN - 1);
+		PKT_NOTICE_CHAT SendPkt;
+		SendPkt.Init();
+		strncpy_s(SendPkt.szName, MAX_NAME_LEN, m_pClientManager->getClient(nClientInfoID)->GetName(), MAX_NAME_LEN - 1);
+		strncpy_s(SendPkt.szMessage, MAX_MESSAGE_LEN, pPacket->szMessage, MAX_MESSAGE_LEN - 1);
 
-	size_t nTotalClientInfoCount = m_vClientInfoList.size();
+		size_t nTotalClientInfoCount = m_vClientInfoList.size();
 
-	for (size_t i = 0; i < nTotalClientInfoCount; ++i)
-	{
-	if (m_vClientInfoList[i]->Socket().is_open())
-	{
-	m_vClientInfoList[i]->PostSend(false, SendPkt.nSize, (char*)&SendPkt);
+		for (size_t i = 0; i < nTotalClientInfoCount; ++i)
+		{
+			if (m_vClientInfoList[i]->Socket().is_open())
+			{
+				m_vClientInfoList[i]->PostSend(false, SendPkt.nSize, (char*)&SendPkt);
+			}
+		}*/
 	}
+		break;
 	}
-	}
-	break;
-	}
-	*/
+
 	return;
 }
 
 bool GameNetwork::PostAccept()
 {
-	if (m_ClientInfoQueue.empty())
-	{
-		m_bIsAccepting = false;
-		return false;
-	}
+	ClientInfo* pClient = m_pClientManager->connectClient();
 
 	m_bIsAccepting = true;
-	int nClientInfoID = m_ClientInfoQueue.front();
 
-	m_ClientInfoQueue.pop_front();
-
-	m_acceptor.async_accept(m_vClientInfoList[nClientInfoID]->Socket(),
+	m_acceptor.async_accept(pClient->Socket(),
 		boost::bind(&GameNetwork::handle_accept,
 		this,
-		m_vClientInfoList[nClientInfoID],
+		pClient,
 		boost::asio::placeholders::error)
 		);
 

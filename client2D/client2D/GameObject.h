@@ -1,6 +1,6 @@
 #pragma once
 #include "stdafx.h"
-class CGameObject
+class GameObject
 {
 private:
 	int m_iAxis;
@@ -17,7 +17,7 @@ public:
 
 	void move();
 
-	CGameObject();
-	~CGameObject();
+	GameObject();
+	~GameObject();
 };
 

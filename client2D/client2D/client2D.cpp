@@ -11,11 +11,65 @@ HINSTANCE hInst;								// 현재 인스턴스입니다.
 TCHAR szTitle[MAX_LOADSTRING];					// 제목 표시줄 텍스트입니다.
 TCHAR szWindowClass[MAX_LOADSTRING];			// 기본 창 클래스 이름입니다.
 
+WSADATA wsa;
+SOCKET sock;		//socket
+SOCKADDR_IN serveraddr;	//socekt ip
+
 // 이 코드 모듈에 들어 있는 함수의 정방향 선언입니다.
 ATOM				MyRegisterClass(HINSTANCE hInstance);
 BOOL				InitInstance(HINSTANCE, int);
 LRESULT CALLBACK	WndProc(HWND, UINT, WPARAM, LPARAM);
 INT_PTR CALLBACK	About(HWND, UINT, WPARAM, LPARAM);
+
+
+
+// 소켓 함수 오류 출력 후 종료
+void err_quit(char *msg)
+{
+	LPVOID lpMsgBuf;
+	FormatMessage(
+		FORMAT_MESSAGE_ALLOCATE_BUFFER | FORMAT_MESSAGE_FROM_SYSTEM,
+		NULL, WSAGetLastError(),
+		MAKELANGID(LANG_NEUTRAL, SUBLANG_DEFAULT),
+		(LPTSTR)&lpMsgBuf, 0, NULL);
+	MessageBox(NULL, (LPCTSTR)lpMsgBuf, (LPCTSTR)msg, MB_ICONERROR);
+	LocalFree(lpMsgBuf);
+	exit(1);
+}
+
+// 소켓 함수 오류 출력
+void err_display(char *msg)
+{
+	LPVOID lpMsgBuf;
+	FormatMessage(
+		FORMAT_MESSAGE_ALLOCATE_BUFFER | FORMAT_MESSAGE_FROM_SYSTEM,
+		NULL, WSAGetLastError(),
+		MAKELANGID(LANG_NEUTRAL, SUBLANG_DEFAULT),
+		(LPTSTR)&lpMsgBuf, 0, NULL);
+	printf("[%s] %s", msg, (char *)lpMsgBuf);
+	LocalFree(lpMsgBuf);
+}
+
+// 사용자 정의 데이터 수신 함수
+int recvn(SOCKET s, char *buf, int len, int flags)
+{
+	int received;
+	char *ptr = buf;
+	int left = len;
+
+	while (left > 0){
+		received = recv(s, ptr, left, flags);
+		if (received == SOCKET_ERROR)
+			return SOCKET_ERROR;
+		else if (received == 0)
+			break;
+		left -= received;
+		ptr += received;
+	}
+
+	return (len - left);
+}
+
 
 int APIENTRY _tWinMain(_In_ HINSTANCE hInstance,
                      _In_opt_ HINSTANCE hPrevInstance,
@@ -113,6 +167,34 @@ BOOL InitInstance(HINSTANCE hInstance, int nCmdShow)
    return TRUE;
 }
 
+
+//recv thread
+void serverConnectThread(){
+	GameObject* obj1;
+	char tmp[256];
+	int retval = 0;
+
+	while (1){
+		//retval = recv(sock, (char*)&headPacket, sizeof(PacketHeader), 0);
+		retval = recv(sock, tmp, sizeof(PacketHeader), 0);
+		if (retval == SOCKET_ERROR){
+			err_display("recv()");
+			break;
+		}
+		else if (retval == 0){
+			continue;
+		}
+		else{
+			PacketHeader* pHeader = (PacketHeader*)&tmp;
+			if (pHeader->protocol == PacketType::LOGIN_PACKET){
+				retval = recv(sock, (tmp + sizeof(PacketHeader)), ((PacketHeader*)tmp)->packetSize - sizeof(PacketHeader), 0);
+			}
+			continue;
+		}
+	}
+}
+
+
 //
 //  함수: WndProc(HWND, UINT, WPARAM, LPARAM)
 //
@@ -129,7 +211,7 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 	PAINTSTRUCT ps;
 	HDC hdc;
 	
-	static CGameObject* pGamePlayer;
+	static GameObject* pGamePlayer;
 
 	switch (message)
 	{
@@ -178,13 +260,81 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 		//pGamePlayer->m_pvDir->operator<<(cout) << endl;
 		break;
 	case WM_DESTROY:
+
+		// closesocket()
+		closesocket(sock);
+
+		// 윈속 종료
+		WSACleanup();
 		PostQuitMessage(0);
 		break;
 	case WM_CREATE:
-		pGamePlayer = new CGameObject();
+		pGamePlayer = new GameObject();
+
+		{
+
+			// 윈속 초기화
+			wsa;
+			if (WSAStartup(MAKEWORD(2, 2), &wsa) != 0)
+				return 1;
+
+			// socket()
+			sock = socket(AF_INET, SOCK_STREAM, 0);
+			if (sock == INVALID_SOCKET) err_quit("socket()");
+
+			// connect() 준비
+			SOCKADDR_IN serveraddr;
+			ZeroMemory(&serveraddr, sizeof(serveraddr));
+			serveraddr.sin_family = AF_INET;
+
+			char cIPAddr[CHAR_MAX];
+			u_short usPort;
+			cout << "IP Address(xxx.xxx.xxx.xxx) : "; cin >> cIPAddr;
+			cout << "Port Number : "; cin >> usPort;
+
+			getchar();
+			serveraddr.sin_addr.s_addr = inet_addr(cIPAddr);
+			serveraddr.sin_port = htons(usPort);
+
+			//connect
+			int retval = connect(sock, (SOCKADDR *)&serveraddr, sizeof(serveraddr));
+			if (retval == SOCKET_ERROR) err_quit("connect()");
+
+			// 데이터 통신에 사용할 변수
+			PacketLogin pData;
+			pData.head.id = 0;
+			pData.head.packetSize = sizeof(PacketLogin);
+			pData.head.protocol = PacketType::LOGIN_PACKET;
+
+			retval = send(sock, (char*)&pData, sizeof(pData), 0);
+			if (retval == SOCKET_ERROR){
+				err_display("send()");
+				break;
+			}
+
+			retval = recv(sock, (char*)&pData, sizeof(pData), 0);
+			if (retval == SOCKET_ERROR){
+				err_display("recv()");
+				break;
+			}
+			else if (retval == 0){
+				break;
+			}
+			else{
+				cout << "Connect Success" << endl;
+				//pGamePlayer->
+			}
+		}
+
 		SetTimer(hWnd, 0, 60 / 1000, NULL);
 		break;
 	default:
+
+		// closesocket()
+		closesocket(sock);
+
+		// 윈속 종료
+		WSACleanup();
 		return DefWindowProc(hWnd, message, wParam, lParam);
 	}
 	return 0;

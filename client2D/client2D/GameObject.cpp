@@ -2,7 +2,7 @@
 #include "GameObject.h"
 
 
-CGameObject::CGameObject() :m_iAxis(90), m_wSpeed(IniData::getInstance()->getData("OBJECT_SPEED"))
+GameObject::GameObject() :m_iAxis(90), m_wSpeed(IniData::getInstance()->getData("OBJECT_SPEED"))
 {
 	float z = IniData::getInstance()->getData("MAP_HEIGHT");
 	float x = IniData::getInstance()->getData("MAP_WIDTH");
@@ -12,11 +12,11 @@ CGameObject::CGameObject() :m_iAxis(90), m_wSpeed(IniData::getInstance()->getDat
 	m_pvDir->vectorNormalization();
 }
 
-CGameObject::~CGameObject()
+GameObject::~GameObject()
 {
 }
 
-void CGameObject::turnLeft()
+void GameObject::turnLeft()
 {
 	if (m_iAxis == 0){
 		m_iAxis = 180;
@@ -35,7 +35,7 @@ void CGameObject::turnLeft()
 	m_iAxis %= 360;
 
 }
-void CGameObject::turnRight()
+void GameObject::turnRight()
 {
 	if (m_iAxis == 180){
 		m_iAxis = 0;
@@ -53,7 +53,7 @@ void CGameObject::turnRight()
 
 	m_iAxis %= 360;
 }
-void CGameObject::turnDown()
+void GameObject::turnDown()
 {
 	if (m_iAxis == 270){
 		m_iAxis = 90;
@@ -72,7 +72,7 @@ void CGameObject::turnDown()
 	m_iAxis %= 360;
 
 }
-void CGameObject::turnUp()
+void GameObject::turnUp()
 {
 	if (m_iAxis == 90){
 		m_iAxis = 270;
@@ -94,7 +94,7 @@ void CGameObject::turnUp()
 
 }
 
-void CGameObject::move()
+void GameObject::move()
 {
 	m_pvDir->x = cos(m_iAxis * RADIAN) * 1;
 	m_pvDir->z = sin(m_iAxis * RADIAN) * 1;
