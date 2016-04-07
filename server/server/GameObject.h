@@ -14,6 +14,7 @@ public:
 	unsigned short m_wBlockX, m_wBlockZ;	//맵에서 현재 위치
 	unsigned short m_wState;	//객체의 상태
 
+	void resetObject();
 	unsigned int getObjId(){ return m_iObjId; }
 	void moveObject();
 };

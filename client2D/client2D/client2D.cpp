@@ -240,7 +240,7 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 	case WM_PAINT:
 		hdc = BeginPaint(hWnd, &ps);
 		// TODO: 여기에 그리기 코드를 추가합니다.
-		Rectangle(hdc, pGamePlayer->m_pvPos->x - 2048 - 2, pGamePlayer->m_pvPos->z - 2048 - 2, pGamePlayer->m_pvPos->x - 2048 + 2, pGamePlayer->m_pvPos->z - 2048 + 2);
+		Rectangle(hdc, pGamePlayer->m_pvPos->x - 2, pGamePlayer->m_pvPos->z - 2, pGamePlayer->m_pvPos->x + 2, pGamePlayer->m_pvPos->z + 2);
 		EndPaint(hWnd, &ps);
 		break;
 	case WM_KEYDOWN:
@@ -302,17 +302,19 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 
 			// 데이터 통신에 사용할 변수
 			PacketLogin pData;
-			pData.head.id = 0;
-			pData.head.packetSize = sizeof(PacketLogin);
-			pData.head.protocol = PacketType::LOGIN_PACKET;
+			pData.Init();
+			cout << "connect Success" << endl;
 
 			retval = send(sock, (char*)&pData, sizeof(pData), 0);
+
+			cout << "first send" << endl;
 			if (retval == SOCKET_ERROR){
 				err_display("send()");
 				break;
 			}
 
-			retval = recv(sock, (char*)&pData, sizeof(pData), 0);
+			PacketInit pInit;
+			retval = recv(sock, (char*)&pInit, sizeof(pInit), 0);
 			if (retval == SOCKET_ERROR){
 				err_display("recv()");
 				break;
@@ -322,19 +324,13 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 			}
 			else{
 				cout << "Connect Success" << endl;
-				//pGamePlayer->
+				pGamePlayer->initData(pInit);
 			}
 		}
 
 		SetTimer(hWnd, 0, 60 / 1000, NULL);
 		break;
 	default:
-
-		// closesocket()
-		closesocket(sock);
-
-		// 윈속 종료
-		WSACleanup();
 		return DefWindowProc(hWnd, message, wParam, lParam);
 	}
 	return 0;

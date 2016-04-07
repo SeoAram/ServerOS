@@ -19,7 +19,7 @@ public:
 	void PostSend(const bool bImmediately, const int nSize, char* pData);
 	GameObject* getObject(){ return m_pObject; }
 
-	void Init(){ m_nPacketBufferMark = 0; };
+	void Init();
 
 private:
 	void handle_write(const boost::system::error_code& /*error*/, size_t /*bytes_transferred*/);

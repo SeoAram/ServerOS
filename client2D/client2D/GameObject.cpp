@@ -107,3 +107,11 @@ void GameObject::move()
 	m_pvDir->operator<<(cout) << endl;*/
 
 }
+
+void GameObject::initData(PacketInit& pData){
+	m_uObjId = pData.id;
+	m_pvPos->setXYZ(pData.pos_x, pData.pos_y, pData.pos_z);
+	m_pvDir->setXYZ(pData.dir_x, pData.dir_y, pData.dir_z);
+	m_pvDir->vectorNormalization();
+	m_iAxis = 90;
+}

@@ -24,6 +24,19 @@ GameObject::~GameObject()
 {
 }
 
+void GameObject::resetObject(){
+
+	m_wSpeed = IniData::getInstance()->getData("OBJECT_SPEED");
+	m_wState = IniData::getInstance()->getData("GAME_OBJECT_STAT");
+	m_pPosition->x = m_pPosition->y = m_pPosition->z = 0;
+	m_pDirect->x = m_pDirect->z = 1;
+	m_pDirect->y = 0;
+	m_pDirect->vectorNormalization();
+
+	m_wBlockX = (int)m_pPosition->x / BLOCK_COUNT;
+	m_wBlockZ = (int)m_pPosition->z / BLOCK_COUNT;
+}
+
 void GameObject::moveObject(){
 	//Map 범위에 맞는지 확인 후 방향 벡터에 따라 이동
 

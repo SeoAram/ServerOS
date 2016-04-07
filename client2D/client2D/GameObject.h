@@ -4,6 +4,7 @@ class GameObject
 {
 private:
 	int m_iAxis;
+	unsigned int m_uObjId;
 public:
 	PointVector3D* m_pvPos;
 	PointVector3D* m_pvDir;
@@ -16,6 +17,8 @@ public:
 	void turnDown();
 
 	void move();
+
+	void initData(PacketInit& pData);
 
 	GameObject();
 	~GameObject();

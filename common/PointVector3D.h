@@ -54,6 +54,12 @@ public:
 		y = y * tmp;
 		z = z * tmp;
 	}
+	
+	void setXYZ(float x, float y, float z){
+		this->x = x;
+		this->y = y;
+		this->z = z;
+	}
 
 	float InvSqrt(float x){
 		float xhalf = 0.5f * x;

@@ -3,8 +3,7 @@
 
 
 GameNetwork::GameNetwork(boost::asio::io_service& io_service)
-: m_acceptor(io_service, boost::asio::ip::tcp::endpoint(boost::asio::ip::tcp::v4(), PORT_NUMBER)),
-m_pClientManager(ClientInfoManager::getInstance())
+: m_acceptor(io_service, boost::asio::ip::tcp::endpoint(boost::asio::ip::tcp::v4(), PORT_NUMBER))
 {
 	m_bIsAccepting = false;
 }
@@ -23,10 +22,11 @@ void GameNetwork::Start()
 
 void GameNetwork::CloseClientInfo(const int nClientInfoID)
 {
+	static ClientInfoManager* pManager = ClientInfoManager::getInstance();
 	std::cout << "클라이언트 접속 종료. 세션 ID: " << nClientInfoID << std::endl;
 
-	m_pClientManager->getClient(nClientInfoID)->Socket().close();
-	m_pClientManager->returnClient(nClientInfoID);
+	pManager->getClient(nClientInfoID)->Socket().close();
+	pManager->returnClient(nClientInfoID);
 
 	if (m_bIsAccepting == false)
 	{
@@ -36,6 +36,7 @@ void GameNetwork::CloseClientInfo(const int nClientInfoID)
 
 void GameNetwork::ProcessPacket(const int nClientInfoID, const char*pData)
 {
+	static ClientInfoManager* pManager = ClientInfoManager::getInstance();
 	PacketHeader* pheader = (PacketHeader*)pData;
 
 	switch (pheader->protocol)
@@ -43,15 +44,23 @@ void GameNetwork::ProcessPacket(const int nClientInfoID, const char*pData)
 	case PacketType::LOGIN_PACKET:
 	{
 		PacketLogin* pPacket = (PacketLogin*)pData;
+		ClientInfo* pClient = pManager->getClient(nClientInfoID);
+		std::cout << "클라이언트 로그인 성공 Id: " << pClient->getObject()->getObjId() << std::endl;
 
-		std::cout << "클라이언트 로그인 성공 Id: " << m_pClientManager->getClient(nClientInfoID)->getObject()->getObjId() << std::endl;
-/*
-		PKT_RES_IN SendPkt;
-		SendPkt.Init();
-		SendPkt.bIsSuccess = true;
+		PacketInit initPack;
+		initPack.Init();
+		initPack.id = nClientInfoID;
+
+		initPack.pos_x = pClient->getObject()->m_pPosition->x;
+		initPack.pos_y = pClient->getObject()->m_pPosition->y;
+		initPack.pos_z = pClient->getObject()->m_pPosition->z;
+
+		initPack.dir_x = pClient->getObject()->m_pDirect->x;
+		initPack.dir_y = pClient->getObject()->m_pDirect->y;
+		initPack.dir_z = pClient->getObject()->m_pDirect->z;
 
 		//최초 접속 시 패킷 전송
-		m_pClientManager->getClient(nClientInfoID)->PostSend(false, SendPkt.nSize, (char*)&SendPkt);*/
+		pClient->PostSend(false, initPack.packetSize, (char*)&initPack);
 	}
 		break;
 	case PacketType::MOVE_PACKET:
@@ -81,10 +90,12 @@ void GameNetwork::ProcessPacket(const int nClientInfoID, const char*pData)
 
 bool GameNetwork::PostAccept()
 {
-	ClientInfo* pClient = m_pClientManager->connectClient();
+	static ClientInfoManager* pManager = ClientInfoManager::getInstance();
+	ClientInfo* pClient = pManager->connectClient();
 
 	m_bIsAccepting = true;
 
+	cout << "클라이언트 접속 대기 " << endl;
 	m_acceptor.async_accept(pClient->Socket(),
 		boost::bind(&GameNetwork::handle_accept,
 		this,

@@ -67,11 +67,18 @@ void ClientInfo::PostSend(const bool bImmediately, const int nSize, char* pData)
 		);
 }
 
+void ClientInfo::Init()
+{
+	m_nPacketBufferMark = 0; 
+	m_pObject->resetObject();
+}
+
 void ClientInfo::handle_write(const boost::system::error_code& /*error*/, size_t /*bytes_transferred*/)
 {
 	delete[] m_SendDataQueue.front();
 	m_SendDataQueue.pop_front();
-
+	
+	cout << "send success ObjId : " << m_pObject->getObjId() << endl;
 	if (m_SendDataQueue.empty() == false)
 	{
 		char* pData = m_SendDataQueue.front();
@@ -114,9 +121,7 @@ void ClientInfo::handle_receive(const boost::system::error_code& error, size_t b
 
 			if (pHeader->packetSize <= nPacketData)
 			{
-				//packet process·Î º¸³»¾ßµÊ
-				PacketProcess* pProcess = PacketProcess::getInstance();
-				//m_pServer->ProcessPacket(m_nSessionID, &m_PacketBuffer[nReadData]);
+				m_pGameNet->ProcessPacket(m_pObject->getObjId(), &m_PacketBuffer[nReadData]);
 
 				nPacketData -= pHeader->packetSize;
 				nReadData += pHeader->packetSize;
