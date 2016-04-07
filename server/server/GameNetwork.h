@@ -29,5 +29,7 @@ private:
 
 	std::vector< ClientInfo* > m_vClientInfoList;
 	std::deque< int > m_ClientInfoQueue;
+
+	ClientInfoManager* m_pClientManager;
 };
 

@@ -40,6 +40,22 @@ bool ClientInfoManager::initClientInfoManager(boost::asio::io_service& io_servic
 	return false;
 }
 
+bool ClientInfoManager::initClientInfoManager(boost::asio::ip::tcp::acceptor& acceptor){
+	if (!m_bInit){
+		for (int i = 0; i < MAX_CONNECT_CLIENT; ++i)
+		{
+			ClientInfo* pClientInfo = new ClientInfo(i, acceptor.get_io_service());
+			m_vClient.push_back(pClientInfo);
+			m_qWaitNum.push(i);
+		}
+		cout << "Create Object :: " << m_vClient.size() << " :: " << m_qWaitNum.front() << endl;
+		m_bInit = true;
+		return true;
+	}
+	return false;
+}
+
+
 void ClientInfoManager::closeClient(const unsigned int nObjId){
 	cout << "Client Close :: " << nObjId << endl;
 	m_vClient[nObjId]->Socket().close();

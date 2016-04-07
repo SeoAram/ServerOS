@@ -3,13 +3,15 @@
 
 
 GameNetwork::GameNetwork(boost::asio::io_service& io_service)
-: m_acceptor(io_service, boost::asio::ip::tcp::endpoint(boost::asio::ip::tcp::v4(), PORT_NUMBER))
+: m_acceptor(io_service, boost::asio::ip::tcp::endpoint(boost::asio::ip::tcp::v4(), PORT_NUMBER)),
+m_pClientManager(ClientInfoManager::getInstance())
 {
 	m_bIsAccepting = false;
 }
 
 GameNetwork::~GameNetwork()
 {
+
 	for (size_t i = 0; i < m_vClientInfoList.size(); ++i)
 	{
 		if (m_vClientInfoList[i]->Socket().is_open())
@@ -21,7 +23,7 @@ GameNetwork::~GameNetwork()
 	}
 }
 
-void GameNetwork::Init(const int nMaxClientInfoCount)
+void GameNetwork::Init(const int    nMaxClientInfoCount)
 {
 	for (int i = 0; i < nMaxClientInfoCount; ++i)
 	{
