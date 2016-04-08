@@ -35,10 +35,8 @@ void ClientInfo::PostReceive()
 		boost::bind(&ClientInfo::handle_receive, this,
 		boost::asio::placeholders::error,
 		boost::asio::placeholders::bytes_transferred)
-
 		);
 }
-
 
 void ClientInfo::PostSend(const bool bImmediately, const int nSize, char* pData){
 	char* pSendData = nullptr;

@@ -76,7 +76,7 @@ public:
 		return os;
 	}
 
-	PointVector3D& operator*(Matrix& m){
+	PointVector3D operator*(Matrix& m){
 		PointVector3D tmp;
 		tmp.x = this->x * m.cube[0][0] + this->y * m.cube[1][0] + this->z * m.cube[2][0];
 		tmp.y = this->x * m.cube[0][1] + this->y * m.cube[1][1] + this->z * m.cube[2][1];

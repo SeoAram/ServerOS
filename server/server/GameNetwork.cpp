@@ -3,7 +3,8 @@
 
 
 GameNetwork::GameNetwork(boost::asio::io_service& io_service)
-: m_acceptor(io_service, boost::asio::ip::tcp::endpoint(boost::asio::ip::tcp::v4(), PORT_NUMBER))
+: m_acceptor(io_service, boost::asio::ip::tcp::endpoint(boost::asio::ip::tcp::v4(), PORT_NUMBER)),
+m_pClientManager(ClientInfoManager::getInstance())
 {
 	m_bIsAccepting = false;
 }
@@ -22,11 +23,10 @@ void GameNetwork::Start()
 
 void GameNetwork::CloseClientInfo(const int nClientInfoID)
 {
-	static ClientInfoManager* pManager = ClientInfoManager::getInstance();
 	std::cout << "클라이언트 접속 종료. 세션 ID: " << nClientInfoID << std::endl;
 
-	pManager->getClient(nClientInfoID)->Socket().close();
-	pManager->returnClient(nClientInfoID);
+	m_pClientManager->getClient(nClientInfoID)->Socket().close();
+	m_pClientManager->returnClient(nClientInfoID);
 
 	if (m_bIsAccepting == false)
 	{
@@ -36,15 +36,15 @@ void GameNetwork::CloseClientInfo(const int nClientInfoID)
 
 void GameNetwork::ProcessPacket(const int nClientInfoID, const char*pData)
 {
-	static ClientInfoManager* pManager = ClientInfoManager::getInstance();
 	PacketHeader* pheader = (PacketHeader*)pData;
 
+	//워커 스레드 생성해서 그쪽으로 보내자
 	switch (pheader->protocol)
 	{
 	case PacketType::LOGIN_PACKET:
 	{
 		PacketLogin* pPacket = (PacketLogin*)pData;
-		ClientInfo* pClient = pManager->getClient(nClientInfoID);
+		ClientInfo* pClient = m_pClientManager->getClient(nClientInfoID);
 		std::cout << "클라이언트 로그인 성공 Id: " << pClient->getObject()->getObjId() << std::endl;
 
 		PacketInit initPack;
@@ -90,8 +90,7 @@ void GameNetwork::ProcessPacket(const int nClientInfoID, const char*pData)
 
 bool GameNetwork::PostAccept()
 {
-	static ClientInfoManager* pManager = ClientInfoManager::getInstance();
-	ClientInfo* pClient = pManager->connectClient();
+	ClientInfo* pClient = m_pClientManager->connectClient();
 
 	m_bIsAccepting = true;
 

@@ -29,10 +29,7 @@ ClientInfo* ClientInfoManager::connectClient(){
 	
 	unsigned int nConnId = m_qWaitNum.front();
 
-	//cout << nConnId << endl;
-	//if (m_vClient[nConnId]->getObject()->m_wState != IniData::getInstance()->getData("GAME_OBJECT_STAT")){
-		m_qWaitNum.pop();
-	//}
+	m_qWaitNum.pop();
 	return m_vClient[nConnId];
 }
 
