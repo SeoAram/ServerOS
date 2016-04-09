@@ -1,6 +1,7 @@
 #pragma once
 #include "stdafx.h"
 
+class GameObject;
 class GameNetwork;
 
 class ClientInfo

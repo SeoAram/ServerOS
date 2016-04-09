@@ -5,6 +5,8 @@
 
 const char SERVER_IP[] = "127.0.0.1";
 
+//boost로 받도록 수정
+
 // 소켓 함수 오류 출력 후 종료
 void err_quit(char *msg)
 {
@@ -171,7 +173,8 @@ private:
 
 
 int main()
-{/*
+{
+	/*
 	boost::asio::io_service io_service;
 
 	boost::asio::ip::tcp::endpoint endpoint(boost::asio::ip::address::from_string(SERVER_IP), PORT_NUMBER);
@@ -195,8 +198,12 @@ int main()
 		return 1;
 
 	// socket()
-	SOCKET sock = socket(AF_INET, SOCK_STREAM, 0);
-	if (sock == INVALID_SOCKET) err_quit("socket()");
+	SOCKET sock[CONNECT_SOCKET];
+	// = socket(AF_INET, SOCK_STREAM, 0);
+	for (int i = 0; i < CONNECT_SOCKET; ++i){
+		sock[i] = socket(AF_INET, SOCK_STREAM, 0);
+		if (sock[i] == INVALID_SOCKET) err_quit("socket()");
+	}
 
 	char cIPAddr[CHAR_MAX];
 	u_short usPort;
@@ -214,52 +221,46 @@ int main()
 	serveraddr.sin_addr.s_addr = inet_addr(cIPAddr);
 	serveraddr.sin_port = htons(usPort);
 
-	retval = connect(sock, (SOCKADDR *)&serveraddr, sizeof(serveraddr));
-	if (retval == SOCKET_ERROR) err_quit("connect()");
 
-	// 데이터 통신에 사용할 변수
-	char buf[BUFSIZE];
-	int len;
+	for (int i = 0; i < CONNECT_SOCKET; ++i){
 
-	// 서버와 데이터 통신
-	while (1){
-		// 데이터 입력
-		printf("\n[보낼 데이터] ");
-		if (fgets(buf, BUFSIZE, stdin) == NULL)
-			break;
+		retval = connect(sock[i], (SOCKADDR *)&serveraddr, sizeof(serveraddr));
+		if (retval == SOCKET_ERROR) err_quit("connect()");
+		cout << i << " Client Connect" << endl;
 
-		// '\n' 문자 제거
-		len = strlen(buf);
-		if (buf[len - 1] == '\n')
-			buf[len - 1] = '\0';
-		if (strlen(buf) == 0)
-			continue;
+		// 데이터 통신에 사용할 변수
+		PacketLogin pData;
+		pData.Init();
+		cout << "connect Success" << endl;
 
-		// 데이터 보내기
-		retval = send(sock, buf, strlen(buf), 0);
+		retval = send(sock[i], (char*)&pData, sizeof(pData), 0);
+
+		cout << "first send" << endl;
 		if (retval == SOCKET_ERROR){
 			err_display("send()");
 			break;
 		}
-		printf("[TCP 클라이언트] %d바이트를 보냈습니다.\n", retval);
 
-		// 데이터 받기
-		retval = recvn(sock, buf, retval, 0);
+		PacketInit pInit;
+		retval = recv(sock[i], (char*)&pInit, sizeof(pInit), 0);
 		if (retval == SOCKET_ERROR){
 			err_display("recv()");
 			break;
 		}
-		else if (retval == 0)
+		else if (retval == 0){
 			break;
-
-		// 받은 데이터 출력
-		buf[retval] = '\0';
-		printf("[TCP 클라이언트] %d바이트를 받았습니다.\n", retval);
-		printf("[받은 데이터] %s\n", buf);
+		}
+		else{
+			cout << "Connect Success" << endl;
+		}
 	}
 
+	while (true);
+
+	
 	// closesocket()
-	closesocket(sock);
+	for (int i = 0; i < CONNECT_SOCKET;++i)
+		closesocket(sock[i]);
 
 	// 윈속 종료
 	WSACleanup();

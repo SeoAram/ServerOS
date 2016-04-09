@@ -7,6 +7,10 @@ GameNetwork::GameNetwork(boost::asio::io_service& io_service)
 m_pClientManager(ClientInfoManager::getInstance())
 {
 	m_bIsAccepting = false;
+	/*for (int i = 0; i < WORKED_THREAD; ++i){
+		m_tGroup.create_thread(boost::bind(&boost::asio::io_service::run, &io_service));
+		cout << "Workerthread Create" << endl;
+	}*/
 }
 
 GameNetwork::~GameNetwork()

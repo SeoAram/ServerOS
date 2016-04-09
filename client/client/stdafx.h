@@ -19,8 +19,15 @@
 
 
 // TODO: 프로그램에 필요한 추가 헤더는 여기에서 참조합니다.
+
+#include "../../Common/protocol.h"
+#include "../../Common/iniRead.h"
+#include "../../Common/PointVector3D.h"
+
+
 #define SERVERIP   "127.0.0.1"
 #define SERVERPORT 13400
 #define BUFSIZE    128
 
 using namespace std;
+#define CONNECT_SOCKET 300
