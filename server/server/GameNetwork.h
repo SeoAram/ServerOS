@@ -28,6 +28,7 @@ private:
 	bool m_bIsAccepting;
 
 	boost::mutex m_mutex;
+	boost::mutex::scoped_lock* m_pLock;
 	boost::asio::ip::tcp::acceptor m_acceptor;
 	ClientInfoManager* m_pClientManager;
 
