@@ -14,6 +14,8 @@
 #include <winsock2.h>
 
 #include <iostream>
+#include <queue>
+#include <boost/thread.hpp>
 #include <boost/bind.hpp>
 #include <boost/asio.hpp>
 

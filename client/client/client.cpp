@@ -6,6 +6,7 @@
 const char SERVER_IP[] = "127.0.0.1";
 
 //boost로 받도록 수정
+//여러개 클라이언트 접속하여 처리할것
 
 // 소켓 함수 오류 출력 후 종료
 void err_quit(char *msg)
