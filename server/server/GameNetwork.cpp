@@ -66,26 +66,25 @@ void GameNetwork::ProcessPacket(const int nClientInfoID, const char*pData)
 
 		//최초 접속 시 패킷 전송
 		pClient->PostSend(false, initPack.packetSize, (char*)&initPack);
+		for (int i = 0; i < MAX_CONNECT_CLIENT; ++i){
+			ClientInfo* pTmp = m_pClientManager->getClient(i);
+			if (pTmp->Socket().is_open() && nClientInfoID != i){
+				pTmp->PostSend(false, initPack.packetSize, (char*)&initPack);
+			}
+		}
 	}
 		break;
 	case PacketType::MOVE_PACKET:
 	{
-		/*PKT_REQ_CHAT* pPacket = (PKT_REQ_CHAT*)pData;
+		PacketMove* pPacket = (PacketMove*)pData;
+		ClientInfo* pClient = m_pClientManager->getClient(nClientInfoID);
 
-		PKT_NOTICE_CHAT SendPkt;
-		SendPkt.Init();
-		strncpy_s(SendPkt.szName, MAX_NAME_LEN, m_pClientManager->getClient(nClientInfoID)->GetName(), MAX_NAME_LEN - 1);
-		strncpy_s(SendPkt.szMessage, MAX_MESSAGE_LEN, pPacket->szMessage, MAX_MESSAGE_LEN - 1);
-
-		size_t nTotalClientInfoCount = m_vClientInfoList.size();
-
-		for (size_t i = 0; i < nTotalClientInfoCount; ++i)
-		{
-			if (m_vClientInfoList[i]->Socket().is_open())
-			{
-				m_vClientInfoList[i]->PostSend(false, SendPkt.nSize, (char*)&SendPkt);
+		for (int i = 0; i < MAX_CONNECT_CLIENT; ++i){
+			ClientInfo* pTmp = m_pClientManager->getClient(i);
+			if (pTmp->Socket().is_open() && nClientInfoID != i){
+				pTmp->PostSend(false, pPacket->packetSize, (char*)pPacket);
 			}
-		}*/
+		}
 	}
 		break;
 	}

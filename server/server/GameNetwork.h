@@ -32,6 +32,7 @@ private:
 	boost::asio::ip::tcp::acceptor m_acceptor;
 	ClientInfoManager* m_pClientManager;
 
-	boost::thread_group m_tGroup;				//thread pool
+	boost::thread* m_pTheadPool;
+
 };
 

@@ -26,10 +26,15 @@
 #include "../../Common/iniRead.h"
 #include "../../Common/PointVector3D.h"
 
+#include "../../commonClient/GameObject.h"
+#include "../../commonClient/ClientInfo.h"
+#include "../../commonClient/ClientInfoManager.h"
+#include "../../commonClient/GameNetwork.h"
+
 
 #define SERVERIP   "127.0.0.1"
 #define SERVERPORT 13400
 #define BUFSIZE    128
 
 using namespace std;
-#define CONNECT_SOCKET 300
+#define CONNECT_SOCKET 100

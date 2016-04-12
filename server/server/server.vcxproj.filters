@@ -42,9 +42,6 @@
     <ClInclude Include="MemoryPool.h">
       <Filter>소스 파일\Engine</Filter>
     </ClInclude>
-    <ClInclude Include="NetworkEngine.h">
-      <Filter>소스 파일\Engine</Filter>
-    </ClInclude>
     <ClInclude Include="PacketProcess.h">
       <Filter>소스 파일\Engine</Filter>
     </ClInclude>
@@ -109,9 +106,6 @@
     </ClCompile>
     <ClCompile Include="GameMapManager.cpp">
       <Filter>소스 파일\Manager</Filter>
-    </ClCompile>
-    <ClCompile Include="NetworkEngine.cpp">
-      <Filter>소스 파일\Engine</Filter>
     </ClCompile>
     <ClCompile Include="GameEventProcess.cpp">
       <Filter>소스 파일\Engine</Filter>

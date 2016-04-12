@@ -83,6 +83,10 @@
     <Text Include="ReadMe.txt" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="..\..\commonClient\ClientInfo.h" />
+    <ClInclude Include="..\..\commonClient\ClientInfoManager.h" />
+    <ClInclude Include="..\..\commonClient\GameNetwork.h" />
+    <ClInclude Include="..\..\commonClient\GameObject.h" />
     <ClInclude Include="..\..\common\iniRead.h" />
     <ClInclude Include="..\..\common\PointVector3D.h" />
     <ClInclude Include="..\..\common\protocol.h" />

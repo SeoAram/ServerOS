@@ -1,8 +1,6 @@
 #pragma once
 #include "stdafx.h"
 
-class TCP_Server;
-
 class ClientInfoManager
 {
 private:

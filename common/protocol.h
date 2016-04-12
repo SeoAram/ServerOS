@@ -6,6 +6,7 @@ enum class PacketType : unsigned char{
 	LOGIN_PACKET = 1,
 	INIT_PACKET,
 	MOVE_PACKET,
+	STOP_PACKET,
 	LOGOUT_PACKET
 };
 
@@ -36,4 +37,16 @@ struct PacketInit : public PacketHeader{
 	}
 	float pos_x, pos_y, pos_z;
 	float dir_x, dir_y, dir_z;
+};
+
+struct PacketMove : public PacketHeader{
+	void Init()
+	{
+		protocol = PacketType::MOVE_PACKET;
+		packetSize = sizeof(PacketMove);
+		id = 0;
+	}
+	float pos_x, pos_y, pos_z;
+	float dir_x, dir_y, dir_z;
+	unsigned int wAxis;
 };

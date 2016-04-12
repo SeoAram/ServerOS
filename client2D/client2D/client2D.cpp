@@ -274,7 +274,6 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 		{
 
 			// 윈속 초기화
-			wsa;
 			if (WSAStartup(MAKEWORD(2, 2), &wsa) != 0)
 				return 1;
 

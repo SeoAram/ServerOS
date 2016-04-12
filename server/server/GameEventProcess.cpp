@@ -1,7 +1,6 @@
 #include "stdafx.h"
 #include "GameEventProcess.h"
 
-
 GameEventProcess::GameEventProcess(boost::asio::io_service& io_service) :
 m_io_service(io_service)
 {
@@ -9,15 +8,12 @@ m_io_service(io_service)
 	cout << "create Event Thread" << endl;
 }
 
-
 GameEventProcess::~GameEventProcess()
 {
 }
 
 void GameEventProcess::addGameEvent(const unsigned int objID, const unsigned int time, const EventType& type){
-	//EnterCriticalSection(&m_csLock);
 	m_EventQueue.push(GameEvent{ objID, time, type });
-	//LeaveCriticalSection(&m_csLock);
 }
 
 void GameEventProcess::funcRegisterd(){
@@ -40,12 +36,7 @@ void GameEventProcess::eventToWorkerthread(const GameEvent& myEvent){
 }
 
 void GameEventProcess::eventThread(){
-	NetworkEngine* pNetEngine = NetworkEngine::getInstance(m_io_service);
-	while (true){
-		//EventThread를 만들어서 그곳으로 빼내라
-		Sleep(1);
-		pNetEngine->post(boost::bind(&NetworkEngine::workerThread, NetworkEngine::getInstance(m_io_service)));
-	}
+	
 }
 
 void GameEventProcess::monsterMove(unsigned int objID){

@@ -103,7 +103,6 @@ private:
 		if (!error)
 		{
 			std::cout << "서버 접속 성공" << std::endl;
-			std::cout << "이름을 입력하세요!!" << std::endl;
 
 			PostReceive();
 		}
@@ -201,17 +200,13 @@ private:
 
 		switch (pheader->protocol)
 		{
-		case PacketType::LOGIN_PACKET :
-		{
-					   /*PKT_RES_IN* pPacket = (PKT_RES_IN*)pData;
-
-					   LoginOK();
-
-					   std::cout << "클라이언트 로그인 성공 ?: " << pPacket->bIsSuccess << std::endl;*/
-		}
-			break;
 		case PacketType::INIT_PACKET:
 		{
+			PacketInit* pPacket = (PacketInit*)pData;
+		}
+		case PacketType::MOVE_PACKET:
+		{
+			PacketMove* pPacket = (PacketMove*)pData;
 		}
 			break;
 		}

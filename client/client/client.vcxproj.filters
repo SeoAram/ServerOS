@@ -16,6 +16,9 @@
     <Filter Include="소스 파일\Common">
       <UniqueIdentifier>{99019fc7-122d-4c67-a7d2-7bde555a317e}</UniqueIdentifier>
     </Filter>
+    <Filter Include="소스 파일\CommonClient">
+      <UniqueIdentifier>{13e41eee-920d-4c5a-93bf-c0fef6512936}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <Text Include="ReadMe.txt" />
@@ -38,6 +41,18 @@
     </ClInclude>
     <ClInclude Include="ClientInfo.h">
       <Filter>헤더 파일</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\commonClient\GameObject.h">
+      <Filter>소스 파일\CommonClient</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\commonClient\GameNetwork.h">
+      <Filter>소스 파일\CommonClient</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\commonClient\ClientInfo.h">
+      <Filter>소스 파일\CommonClient</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\commonClient\ClientInfoManager.h">
+      <Filter>소스 파일\CommonClient</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

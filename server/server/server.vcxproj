@@ -93,7 +93,6 @@
     <ClInclude Include="GameObject.h" />
     <ClInclude Include="GameServer.h" />
     <ClInclude Include="MemoryPool.h" />
-    <ClInclude Include="NetworkEngine.h" />
     <ClInclude Include="PacketProcess.h" />
     <ClInclude Include="stdafx.h" />
     <ClInclude Include="targetver.h" />
@@ -108,7 +107,6 @@
     <ClCompile Include="GameObject.cpp" />
     <ClCompile Include="GameServer.cpp" />
     <ClCompile Include="MemoryPool.cpp" />
-    <ClCompile Include="NetworkEngine.cpp" />
     <ClCompile Include="PacketProcess.cpp" />
     <ClCompile Include="server.cpp" />
     <ClCompile Include="stdafx.cpp">

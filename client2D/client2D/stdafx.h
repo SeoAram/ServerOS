@@ -28,16 +28,13 @@
 
 using namespace std;
 
-#define RADIAN 3.14159265358979323846 / 180.0
-#define TURN 5
-
 // TODO: 프로그램에 필요한 추가 헤더는 여기에서 참조합니다.
 #include "../../common/iniRead.h"
 #include "../../common/protocol.h"
 #include "../../common/PointVector3D.h"
 
 
-#include "GameObject.h"
+#include "../../commonClient/GameObject.h"
 
 #ifdef _DEBUG
 #pragma comment(linker, "/entry:wWinMainCRTStartup /subsystem:console")
