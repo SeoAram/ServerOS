@@ -1,4 +1,5 @@
 #pragma once
+#include "stdafx.h"
 
 #define	PACKET_BUF_SIZE  15 // ¿”Ω√∞¥√º
 class SendOver{
@@ -16,30 +17,23 @@ public:
 	}
 };
 
-struct NODE{
-	SendOver m_stBuf;
-	NODE* m_pNext;
-};
-
 class MemoryPool
 {
 private:
 	MemoryPool();
-	~MemoryPool();
 
-	NODE* head;
-	NODE* tail;
+	std::queue<SendOver*> m_pMemory;
+	boost::mutex m_mutexPush;
+	boost::mutex m_mutexPop;
 
-	CRITICAL_SECTION m_csPopLock;
-	CRITICAL_SECTION m_csPushLock;
 public:
+	~MemoryPool();
 	static MemoryPool* getInstance(){
 		static MemoryPool instance;
 		return &instance;
 	}
 
 	void createMemoryPool();
-	NODE* getMemory();
-	void returnMemory(NODE* memory);
+	char* popMemory(unsigned int size);
 };
 
