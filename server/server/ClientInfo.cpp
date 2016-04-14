@@ -44,7 +44,6 @@ void ClientInfo::PostSend(const bool bImmediately, const int nSize, char* pData)
 	if (bImmediately == false)
 	{
 		//여기서는 new말고 memorypool에서 가져오자
-		
 		pSendData = new char[nSize];
 		memcpy(pSendData, pData, nSize);
 

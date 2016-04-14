@@ -60,7 +60,7 @@ public:
 		if (bImmediately == false)
 		{
 			pSendData = new char[nSize];
-			memcpy(pSendData, pData, nSize);
+			memcpy(pSendData, pData, nSize); 
 
 			m_SendDataQueue.push_back(pSendData);
 		}
@@ -83,12 +83,8 @@ public:
 
 	GameObject* getObject(){ return m_pObject; }
 
-	void Init()
-	{
-		m_nPacketBufferMark = 0;
-	}
-
 	void connectClient(boost::asio::ip::tcp::endpoint& endpoint){
+		m_nPacketBufferMark = 0;
 		m_Socket.async_connect(endpoint, boost::bind(&ClientInfo::handle_connect, this, boost::asio::placeholders::error));
 	}
 
@@ -103,6 +99,7 @@ private:
 			PacketLogin pData;
 			pData.Init();
 			PostSend(false, pData.packetSize, (char*)&pData);
+			PostReceive();
 		}
 	}
 	void ProcessPacket(const int nClientInfoID, const char*pData)
@@ -196,8 +193,10 @@ private:
 
 				if (pHeader->packetSize <= nPacketData)
 				{
-					ProcessPacket(pHeader->id, &m_PacketBuffer[nReadData]);
 
+					std::cout << "Recved ObjId = " << pHeader->id << endl;
+					
+					ProcessPacket(pHeader->id, &m_PacketBuffer[nReadData]);
 					nPacketData -= pHeader->packetSize;
 					nReadData += pHeader->packetSize;
 				}
@@ -221,7 +220,6 @@ private:
 	}
 	boost::asio::ip::tcp::socket m_Socket;
 
-	std::string m_WriteMessage;		// sendpacket같은데, 변경 필요함
 	GameObject* m_pObject;	//object클래스(객체 이동 관리)
 	
 	std::array<char, MAX_RECEIVE_BUFFER_LEN> m_ReceiveBuffer; // 받는패킷 버퍼
