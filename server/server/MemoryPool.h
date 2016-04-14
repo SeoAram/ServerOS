@@ -4,7 +4,7 @@
 #define	PACKET_BUF_SIZE  15 // ¿”Ω√∞¥√º
 class SendOver{
 public:
-	WSAOVERLAPPED	m_Overlapped;
+	/*WSAOVERLAPPED	m_Overlapped;
 	WSABUF			m_WsaBuf;
 	char			m_arPacketBuf[PACKET_BUF_SIZE];
 	UINT			m_nOperation;
@@ -14,7 +14,18 @@ public:
 		m_WsaBuf.len = PACKET_BUF_SIZE;
 		m_nOperation = NULL;
 		ZeroMemory(&m_Overlapped, sizeof(WSAOVERLAPPED));
-	}
+	}*/
+};
+
+struct Data{
+	unsigned int objId;
+	MsgType msgType;
+	char buf[128];
+};
+
+struct Node{
+	Data data;
+	Node* next;
 };
 
 class MemoryPool
@@ -22,10 +33,14 @@ class MemoryPool
 private:
 	MemoryPool();
 
-	std::queue<SendOver*> m_pMemory;
+	std::queue<Data*> m_pMemory;
 	boost::mutex m_mutexPush;
 	boost::mutex m_mutexPop;
 
+	Node* head;
+	Node* tail;
+
+	const unsigned int MAX_MEMORY_SIZE = 30000;
 public:
 	~MemoryPool();
 	static MemoryPool* getInstance(){
@@ -34,6 +49,10 @@ public:
 	}
 
 	void createMemoryPool();
-	char* popMemory(unsigned int size);
+	Data* popMemory();
+	void pushMemory(Data* memory);
+
+	Node* getMemory();
+	void returnMemory(Node* memory);
 };
 

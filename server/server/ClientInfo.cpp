@@ -43,6 +43,8 @@ void ClientInfo::PostSend(const bool bImmediately, const int nSize, char* pData)
 
 	if (bImmediately == false)
 	{
+		//여기서는 new말고 memorypool에서 가져오자
+		
 		pSendData = new char[nSize];
 		memcpy(pSendData, pData, nSize);
 
@@ -73,6 +75,7 @@ void ClientInfo::Init()
 
 void ClientInfo::handle_write(const boost::system::error_code& /*error*/, size_t /*bytes_transferred*/)
 {
+	//여기서는 값을 반환하자(memorypool에)
 	delete[] m_SendDataQueue.front();
 	m_SendDataQueue.pop_front();
 	

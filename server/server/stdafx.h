@@ -30,6 +30,13 @@ using namespace std;
 #define WORKED_THREAD 1
 #define BLOCK_COUNT 32
 
+
+enum class MsgType : unsigned char{
+	RECVmsg = 1,
+	SENDmsg,
+	EVENTmsg
+};
+
 const unsigned short MAX_CONNECT_CLIENT = 3000;
 const unsigned short PORT_NUMBER = 31400;
 
@@ -37,6 +44,8 @@ const unsigned short PORT_NUMBER = 31400;
 #include "../../Common/protocol.h"
 #include "../../Common/iniRead.h"
 #include "../../Common/PointVector3D.h"
+
+#include "MemoryPool.h"
 
 #include "GameObject.h"
 #include "ClientInfo.h"

@@ -17,9 +17,12 @@ void GameServer::initServer(boost::asio::io_service& io_service){
 	IniData* pIniData = IniData::getInstance();
 	GameMap* pGMap = GameMap::getInstance();
 	ClientInfoManager* pClientManager = ClientInfoManager::getInstance();
+	MemoryPool* pMemory = MemoryPool::getInstance();
+	
 	m_pGameNet = GameNetwork::getInstance(io_service);
 
 	pClientManager->initClientInfoManager(io_service);
+	pMemory->createMemoryPool();
 }
 
 void GameServer::startServer(boost::asio::io_service& io_service){
