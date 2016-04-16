@@ -68,7 +68,7 @@ void GameNetwork::ProcessPacket(const int nClientInfoID, const char*pData)
 		pClient->PostSend(false, initPack.packetSize, (char*)&initPack);
 		for (int i = 0; i < MAX_CONNECT_CLIENT; ++i){
 			ClientInfo* pTmp = m_pClientManager->getClient(i);
-			if (pTmp->Socket().is_open() ){
+			if (pTmp->Socket().is_open() && i != nClientInfoID ){
 				pTmp->PostSend(false, initPack.packetSize, (char*)&initPack);
 			}
 		}

@@ -10,14 +10,15 @@
 
 #include "ClientInfo.h"
 
+
+#define MAX_CONNECT 100
+
 class ClientInfoManager
 {
 private:
 	vector<ClientInfo*> m_vClient;
-	queue<unsigned int> m_qWaitNum;
-	bool m_bInit;
 
-	ClientInfoManager() :m_bInit(false)
+	ClientInfoManager()
 	{
 	}
 public:
@@ -43,20 +44,13 @@ public:
 		
 	}
 
-	//클라이언트 연결하는 부분인데 이건 그냥 여유있는 클라이언트 찾아서 반환해주는 것으로 변경해야 함.
-	ClientInfo* connectClient(){
-		if (m_qWaitNum.size() == 0)
-			return nullptr;
-
-		unsigned int nConnId = m_qWaitNum.front();
-
-		m_qWaitNum.pop();
-		return m_vClient[nConnId];
-	}
-
 	ClientInfo* getClient(const unsigned int nObjId){
 		return m_vClient[nObjId];
 	}
-	void returnClient(const unsigned int nObjId){ m_qWaitNum.push(nObjId); }
+
+	void connect(boost::asio::io_service& io_service, boost::asio::ip::tcp::endpoint& endpoint){
+		for (int i = 0; i < MAX_CONNECT; ++i)
+			m_vClient.push_back(new ClientInfo(i, io_service, endpoint));
+	}
 };
 

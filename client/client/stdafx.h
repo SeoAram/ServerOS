@@ -18,6 +18,8 @@
 #include <boost/thread.hpp>
 #include <boost/bind.hpp>
 #include <boost/asio.hpp>
+#include <boost/asio/steady_timer.hpp>
+#include <boost/chrono.hpp>
 
 
 // TODO: 프로그램에 필요한 추가 헤더는 여기에서 참조합니다.
@@ -37,4 +39,3 @@
 #define BUFSIZE    128
 
 using namespace std;
-#define CONNECT_SOCKET 100

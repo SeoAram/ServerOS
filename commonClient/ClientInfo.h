@@ -31,6 +31,13 @@ public:
 		m_pObject = new GameObject(i);
 		connectClient(endpoint);
 	}
+
+	ClientInfo(boost::asio::io_service& io_service, boost::asio::ip::tcp::endpoint& endpoint)
+		: m_Socket(io_service)
+	{
+		m_pObject = new GameObject(0);
+		connectClient(endpoint);
+	}
 	~ClientInfo()
 	{
 		while (m_SendDataQueue.empty() == false)
@@ -129,16 +136,15 @@ private:
 										movePack.dir_z = getObject()->m_pvDir->z;
 
 										movePack.wAxis = m_pObject->getAxis();
-										if (pPacket->id == m_pObject->getObjId())
-											PostSend(false, movePack.packetSize, (char*)&movePack);
+										/*if (pPacket->id == m_pObject->getObjId())
+											PostSend(false, movePack.packetSize, (char*)&movePack);*/
 		}
 			break;
 		case PacketType::MOVE_PACKET:
 		{
-										PacketMove* pPacket = (PacketMove*)pData;
+										/*PacketMove* pPacket = (PacketMove*)pData;
 										if (pPacket->id == m_pObject->getObjId())
-											PostSend(false, pPacket->packetSize, (char*)pPacket);
-										std::cout << "recv~~~ :: " << m_pObject->getObjId() << std::endl;
+											PostSend(false, pPacket->packetSize, (char*)pPacket);*/
 		}
 			break;
 		}
@@ -193,9 +199,6 @@ private:
 
 				if (pHeader->packetSize <= nPacketData)
 				{
-
-					std::cout << "Recved ObjId = " << pHeader->id << endl;
-					
 					ProcessPacket(pHeader->id, &m_PacketBuffer[nReadData]);
 					nPacketData -= pHeader->packetSize;
 					nReadData += pHeader->packetSize;

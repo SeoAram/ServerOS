@@ -78,7 +78,6 @@ void ClientInfo::handle_write(const boost::system::error_code& /*error*/, size_t
 	delete[] m_SendDataQueue.front();
 	m_SendDataQueue.pop_front();
 	
-	cout << "send success ObjId : " << m_pObject->getObjId() << endl;
 	if (m_SendDataQueue.empty() == false)
 	{
 		char* pData = m_SendDataQueue.front();
