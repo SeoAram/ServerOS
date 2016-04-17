@@ -7,8 +7,6 @@
 //boost로 받도록 수정
 //여러개 클라이언트 접속하여 처리할것
 
-boost::asio::io_service g_io_service;
-
 void onTimer(const boost::system::error_code& error, boost::asio::steady_timer* pTimer);
 
 void setTimer(boost::asio::steady_timer* pTimer){
@@ -66,8 +64,6 @@ int main()
 	boost::asio::steady_timer timer(io_service);
 	boost::asio::ip::tcp::endpoint endpoint(boost::asio::ip::address::from_string(cIPAddr), usPort);
 	
-	//g_io_service = io_service;
-
 	pClientManager->connect(io_service, endpoint);
 	boost::thread thread(boost::bind(&boost::asio::io_service::run, &io_service));
 

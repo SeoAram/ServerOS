@@ -50,7 +50,8 @@ public:
 
 	void connect(boost::asio::io_service& io_service, boost::asio::ip::tcp::endpoint& endpoint){
 		for (int i = 0; i < MAX_CONNECT; ++i)
-			m_vClient.push_back(new ClientInfo(i, io_service, endpoint));
+			m_vClient.push_back(new ClientInfo(-1, io_service, endpoint));
 	}
+
 };
 

@@ -48,6 +48,18 @@
     <ClInclude Include="..\..\commonClient\GameObject.h">
       <Filter>소스 파일\CommonClient</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\commonClient\ClientInfo.h">
+      <Filter>소스 파일\CommonClient</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\commonClient\ClientInfoManager.h">
+      <Filter>소스 파일\CommonClient</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\commonClient\GameNetwork.h">
+      <Filter>소스 파일\CommonClient</Filter>
+    </ClInclude>
+    <ClInclude Include="ClientInfo2D.h">
+      <Filter>헤더 파일</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="stdafx.cpp">

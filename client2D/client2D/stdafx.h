@@ -26,6 +26,13 @@
 #include <iostream>
 #include <algorithm>
 
+#include <boost/thread.hpp>
+#include <boost/bind.hpp>
+#include <boost/asio.hpp>
+#include <boost/asio/steady_timer.hpp>
+#include <boost/chrono.hpp>
+
+
 using namespace std;
 
 // TODO: 프로그램에 필요한 추가 헤더는 여기에서 참조합니다.
@@ -35,6 +42,11 @@ using namespace std;
 
 
 #include "../../commonClient/GameObject.h"
+#include "../../commonClient/ClientInfo.h"
+#include "../../commonClient/ClientInfoManager.h"
+#include "../../commonClient/GameNetwork.h"
+
+#include "ClientInfo2D.h"
 
 #ifdef _DEBUG
 #pragma comment(linker, "/entry:wWinMainCRTStartup /subsystem:console")

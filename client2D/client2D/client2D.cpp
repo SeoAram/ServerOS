@@ -210,8 +210,11 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 	int wmId, wmEvent;
 	PAINTSTRUCT ps;
 	HDC hdc;
-	
-	static GameObject* pGamePlayer;
+	static GameObjectManager* pObjectManager;
+	static ClientInfo2D* pGamePlayer;
+	GameObject* playerObj;
+
+	static boost::asio::io_service io_service;
 
 	switch (message)
 	{
@@ -233,101 +236,54 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 		break;
 	case WM_TIMER:
 		if (0 == wParam){
-			pGamePlayer->move();
+			pGamePlayer->getObject()->move();
 			InvalidateRgn(hWnd, NULL, FALSE);
 		}
 		break;
 	case WM_PAINT:
 		hdc = BeginPaint(hWnd, &ps);
 		// TODO: 여기에 그리기 코드를 추가합니다.
-		Rectangle(hdc, pGamePlayer->m_pvPos->x - 2, pGamePlayer->m_pvPos->z - 2, pGamePlayer->m_pvPos->x + 2, pGamePlayer->m_pvPos->z + 2);
+		playerObj = pGamePlayer->getObject();
+		Rectangle(hdc, playerObj->m_pvPos->x - 2, playerObj->m_pvPos->z - 2, playerObj->m_pvPos->x + 2, playerObj->m_pvPos->z + 2);
 		EndPaint(hWnd, &ps);
 		break;
 	case WM_KEYDOWN:
 		if (VK_UP == wParam){
-			pGamePlayer->turnUp();
+			pGamePlayer->getObject()->turnUp();
 		}
 		if (VK_DOWN == wParam){
-			pGamePlayer->turnDown();
+			pGamePlayer->getObject()->turnDown();
 		}
 		if (VK_LEFT == wParam){
-			pGamePlayer->turnLeft();
+			pGamePlayer->getObject()->turnLeft();
 		}
 		if (VK_RIGHT == wParam){
-			pGamePlayer->turnRight();
+			pGamePlayer->getObject()->turnRight();
 		}
 		
 		//pGamePlayer->m_pvDir->operator<<(cout) << endl;
 		break;
 	case WM_DESTROY:
-
-		// closesocket()
-		closesocket(sock);
-
-		// 윈속 종료
-		WSACleanup();
+		pGamePlayer->Socket().close();
 		PostQuitMessage(0);
 		break;
 	case WM_CREATE:
-		pGamePlayer = new GameObject();
 
-		{
+	{
+					  pObjectManager = GameObjectManager::getInstance();
+					  char cIPAddr[CHAR_MAX];
+					  u_short usPort;
 
-			// 윈속 초기화
-			if (WSAStartup(MAKEWORD(2, 2), &wsa) != 0)
-				return 1;
 
-			// socket()
-			sock = socket(AF_INET, SOCK_STREAM, 0);
-			if (sock == INVALID_SOCKET) err_quit("socket()");
+					  cout << "IPAddress (xxx.xxx.xxx.xxx) : "; cin >> cIPAddr;
+					  cout << "Port Number : "; cin >> usPort;
+					  getchar();
 
-			// connect() 준비
-			SOCKADDR_IN serveraddr;
-			ZeroMemory(&serveraddr, sizeof(serveraddr));
-			serveraddr.sin_family = AF_INET;
-
-			char cIPAddr[CHAR_MAX];
-			u_short usPort;
-			cout << "IP Address(xxx.xxx.xxx.xxx) : "; cin >> cIPAddr;
-			cout << "Port Number : "; cin >> usPort;
-
-			getchar();
-			serveraddr.sin_addr.s_addr = inet_addr(cIPAddr);
-			serveraddr.sin_port = htons(usPort);
-
-			//connect
-			int retval = connect(sock, (SOCKADDR *)&serveraddr, sizeof(serveraddr));
-			if (retval == SOCKET_ERROR) err_quit("connect()");
-
-			// 데이터 통신에 사용할 변수
-			PacketLogin pData;
-			pData.Init();
-			cout << "connect Success" << endl;
-
-			retval = send(sock, (char*)&pData, sizeof(pData), 0);
-
-			cout << "first send" << endl;
-			if (retval == SOCKET_ERROR){
-				err_display("send()");
-				break;
-			}
-
-			PacketInit pInit;
-			retval = recv(sock, (char*)&pInit, sizeof(pInit), 0);
-			if (retval == SOCKET_ERROR){
-				err_display("recv()");
-				break;
-			}
-			else if (retval == 0){
-				break;
-			}
-			else{
-				cout << "Connect Success" << endl;
-				pGamePlayer->initData(pInit);
-			}
-		}
-
-		SetTimer(hWnd, 0, 60 / 1000, NULL);
+					  boost::asio::ip::tcp::endpoint endpoint(boost::asio::ip::address::from_string(cIPAddr), usPort);
+					  pGamePlayer = new ClientInfo2D(io_service, endpoint);
+					  boost::thread thread(boost::bind(&boost::asio::io_service::run, &io_service));
+					  SetTimer(hWnd, 0, 60 / 1000, NULL);
+	}
 		break;
 	default:
 		return DefWindowProc(hWnd, message, wParam, lParam);

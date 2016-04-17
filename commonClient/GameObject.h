@@ -1,4 +1,7 @@
 #pragma once
+
+#include <vector>
+
 #include "../common/iniRead.h"
 #include "../common/protocol.h"
 #include "../common/PointVector3D.h"
@@ -114,7 +117,7 @@ public:
 		m_iAxis = 90;
 	}
 
-	GameObject() :m_uObjId(0), m_iAxis(90), m_wSpeed(IniData::getInstance()->getData("OBJECT_SPEED"))
+	GameObject() :m_uObjId(-1), m_iAxis(90), m_wSpeed(IniData::getInstance()->getData("OBJECT_SPEED"))
 	{
 		float z = IniData::getInstance()->getData("MAP_HEIGHT");
 		float x = IniData::getInstance()->getData("MAP_WIDTH");
@@ -137,3 +140,50 @@ public:
 	~GameObject(){}
 };
 
+
+class GameObjectManager{
+private:
+	std::vector<GameObject*> m_vObject;
+	GameObjectManager(){};
+public:
+	static GameObjectManager* getInstance(){
+		static GameObjectManager instance;
+		return &instance;
+	}
+
+	void setObject(const unsigned int objId, PacketInit& pData){
+		//lock필요
+		int size = m_vObject.size();
+		bool checkObj = false;
+		for (int i = 0; i < size; ++i){
+			if (m_vObject[i]->getObjId() == objId)
+				checkObj = true;
+		}
+
+		if (!checkObj){
+			m_vObject.push_back(new GameObject(objId));
+			m_vObject[size]->initData(pData);
+		}
+	}
+
+	GameObject* getObject(const unsigned int objId){
+		// lock필요
+		int size = m_vObject.size();
+		for (int i = 0; i < size; ++i){
+			if (m_vObject[i]->getObjId() == objId)
+				return m_vObject[i];
+		}
+		return nullptr;
+	}
+
+	void deleteObject(const unsigned int objId){
+		//lock 필요
+		int i = -1;
+		auto iter = find_if(m_vObject.begin(), m_vObject.end(), [objId, &i](GameObject* obj){++i; return obj->getObjId() == objId; });
+		if (iter != m_vObject.end()){
+			GameObject* obj = m_vObject[i];
+			m_vObject.erase(iter);
+			delete obj;
+		}
+	}
+};
