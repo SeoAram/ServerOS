@@ -7,43 +7,35 @@
 //boost로 받도록 수정
 //여러개 클라이언트 접속하여 처리할것
 
-void onTimer(const boost::system::error_code& error, boost::asio::steady_timer* pTimer);
+void setTimer(){
+	auto time = boost::chrono::system_clock::now();
+	while (1){
+		Sleep(1);
+		if (time + boost::chrono::seconds(1) < boost::chrono::system_clock::now()){
+			time = boost::chrono::system_clock::now();
+			std::cout << "===========setTimer==============" << std::endl;
+			ClientInfoManager* pClientManager = ClientInfoManager::getInstance();
+			for (int i = 0; i < MAX_CONNECT; ++i){
 
-void setTimer(boost::asio::steady_timer* pTimer){
-	boost::chrono::milliseconds ms(1000);
-	pTimer->expires_from_now(boost::asio::steady_timer::duration());
-	pTimer->async_wait(boost::bind(onTimer, boost::asio::placeholders::error, pTimer));
+				ClientInfo* pClient = pClientManager->getClient(i);
 
-	Sleep(1000);
-	std::cout << "===========setTimer==============" << std::endl;
-}
+				pClient->getObject()->move();
 
-void onTimer(const boost::system::error_code& error, boost::asio::steady_timer* pTimer){
-	
-	if (!error){
-		ClientInfoManager* pClientManager = ClientInfoManager::getInstance();
-		for (int i = 0; i < MAX_CONNECT; ++i){
-			ClientInfo* pClient = pClientManager->getClient(i);
-			PacketMove pData;
-			pData.Init();
-			pData.dir_x = pClient->getObject()->m_pvDir->x;
-			pData.dir_y = pClient->getObject()->m_pvDir->y;
-			pData.dir_z = pClient->getObject()->m_pvDir->z;
-			pData.pos_x = pClient->getObject()->m_pvPos->x;
-			pData.pos_y = pClient->getObject()->m_pvPos->y;
-			pData.pos_z = pClient->getObject()->m_pvPos->z;
+				PacketMove pData;
+				pData.Init();
+				pData.dir_x = pClient->getObject()->m_pvDir->x;
+				pData.dir_y = pClient->getObject()->m_pvDir->y;
+				pData.dir_z = pClient->getObject()->m_pvDir->z;
+				pData.pos_x = pClient->getObject()->m_pvPos->x;
+				pData.pos_y = pClient->getObject()->m_pvPos->y;
+				pData.pos_z = pClient->getObject()->m_pvPos->z;
 
-			pData.wAxis = pClient->getObject()->getAxis();
-			pClient->PostSend(false, pData.packetSize, (char*)&pData);
+				pData.wAxis = pClient->getObject()->getAxis();
+				pClient->PostSend(false, pData.packetSize, (char*)&pData);
+			}
 		}
+
 	}
-	else{
-		std::cout << "Error No : " << error.value() << " Error Message : " << error.message() << std::endl;
-	}
-
-	setTimer(pTimer);
-
-
 }
 
 int main()
@@ -69,7 +61,7 @@ int main()
 
 	//이벤트 등록제로 갈까 아니면 그냥 랜덤으로 할까
 	
-	setTimer(&timer);
+	setTimer();
 
 	thread.join();
 	

@@ -214,6 +214,8 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 	static ClientInfo2D* pGamePlayer;
 	GameObject* playerObj;
 
+	static boost::thread* pRecvThread;
+
 	static boost::asio::io_service io_service;
 
 	switch (message)
@@ -245,6 +247,12 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 		// TODO: 여기에 그리기 코드를 추가합니다.
 		playerObj = pGamePlayer->getObject();
 		Rectangle(hdc, playerObj->m_pvPos->x - 2, playerObj->m_pvPos->z - 2, playerObj->m_pvPos->x + 2, playerObj->m_pvPos->z + 2);
+		{
+			std::vector<GameObject*> tmp = *pObjectManager->getObjectList();
+			for (int i = 0; i < tmp.size(); ++i){
+				Rectangle(hdc, tmp[i]->m_pvPos->x - 2, tmp[i]->m_pvPos->z - 2, tmp[i]->m_pvPos->x + 2, tmp[i]->m_pvPos->z + 2);
+			}
+		}
 		EndPaint(hWnd, &ps);
 		break;
 	case WM_KEYDOWN:
@@ -264,6 +272,7 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 		//pGamePlayer->m_pvDir->operator<<(cout) << endl;
 		break;
 	case WM_DESTROY:
+		pRecvThread->join();
 		pGamePlayer->Socket().close();
 		PostQuitMessage(0);
 		break;
@@ -281,7 +290,8 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 
 					  boost::asio::ip::tcp::endpoint endpoint(boost::asio::ip::address::from_string(cIPAddr), usPort);
 					  pGamePlayer = new ClientInfo2D(io_service, endpoint);
-					  boost::thread thread(boost::bind(&boost::asio::io_service::run, &io_service));
+					  pRecvThread = new boost::thread(boost::bind(&boost::asio::io_service::run, &io_service));
+
 					  SetTimer(hWnd, 0, 60 / 1000, NULL);
 	}
 		break;

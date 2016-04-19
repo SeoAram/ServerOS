@@ -24,7 +24,7 @@ struct PacketLogin : public PacketHeader{
 	{
 		protocol = PacketType::LOGIN_PACKET;
 		packetSize = sizeof(PacketLogin);
-		id = 0;
+		id = -1;
 	}
 };
 
@@ -33,7 +33,7 @@ struct PacketInit : public PacketHeader{
 	{
 		protocol = PacketType::INIT_PACKET;
 		packetSize = sizeof(PacketInit);
-		id = 0;
+		id = -1;
 	}
 	float pos_x, pos_y, pos_z;
 	float dir_x, dir_y, dir_z;
@@ -44,7 +44,7 @@ struct PacketMove : public PacketHeader{
 	{
 		protocol = PacketType::MOVE_PACKET;
 		packetSize = sizeof(PacketMove);
-		id = 0;
+		id = -1;
 	}
 	float pos_x, pos_y, pos_z;
 	float dir_x, dir_y, dir_z;

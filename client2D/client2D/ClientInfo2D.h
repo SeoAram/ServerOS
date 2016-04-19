@@ -6,7 +6,7 @@ public:
 	ClientInfo2D(boost::asio::io_service& io_service)
 		: m_Socket(io_service)
 	{
-		m_pObject = new GameObject(0);
+		m_pObject = new GameObject(-1);
 	}
 	ClientInfo2D(unsigned int i, boost::asio::io_service& io_service)
 		: m_Socket(io_service)
@@ -24,7 +24,7 @@ public:
 	ClientInfo2D(boost::asio::io_service& io_service, boost::asio::ip::tcp::endpoint& endpoint)
 		: m_Socket(io_service)
 	{
-		m_pObject = new GameObject(0);
+		m_pObject = new GameObject(-1);
 		connectClient(endpoint);
 	}
 	~ClientInfo2D()
@@ -110,6 +110,7 @@ private:
 										
 										if (m_pObject->getObjId() == -1){
 
+											std::cout << "Recv Client :: " << pPacket->id << std::endl;
 											m_pObject->setObjId(pPacket->id);
 											m_pObject->initData(*pPacket);
 
