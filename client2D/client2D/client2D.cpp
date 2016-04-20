@@ -247,6 +247,7 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 		// TODO: 여기에 그리기 코드를 추가합니다.
 		playerObj = pGamePlayer->getObject();
 		Rectangle(hdc, playerObj->m_pvPos->x - 2, playerObj->m_pvPos->z - 2, playerObj->m_pvPos->x + 2, playerObj->m_pvPos->z + 2);
+		//std::cout << playerObj->m_pvPos << std::endl;
 		{
 			std::vector<GameObject*> tmp = *pObjectManager->getObjectList();
 			for (int i = 0; i < tmp.size(); ++i){
@@ -269,7 +270,7 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 			pGamePlayer->getObject()->turnRight();
 		}
 		
-		//pGamePlayer->m_pvDir->operator<<(cout) << endl;
+		pGamePlayer->getObject()->m_pvDir->operator<<(cout) << endl;
 		break;
 	case WM_DESTROY:
 		pRecvThread->join();

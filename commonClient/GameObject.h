@@ -14,6 +14,7 @@ private:
 	int m_iAxis;
 	unsigned int m_uObjId;
 public:
+	unsigned char m_cObjState;
 	PointVector3D* m_pvPos;
 	PointVector3D* m_pvDir;
 
@@ -106,7 +107,7 @@ public:
 		m_pvDir->x = cosf(m_iAxis * RADIAN) * 1;
 		m_pvDir->z = sinf(m_iAxis * RADIAN) * 1;
 		m_pvDir->vectorNormalization();
-		*m_pvPos = (*m_pvPos + &(*m_pvDir * (m_wSpeed)));
+		*m_pvPos = (*m_pvPos + &(*m_pvDir * (m_wSpeed*(1.0/60))));
 	}
 
 	void initData(PacketInit& pData){
@@ -117,7 +118,7 @@ public:
 		m_iAxis = 90;
 	}
 
-	GameObject() :m_uObjId(-1), m_iAxis(90), m_wSpeed(IniData::getInstance()->getData("OBJECT_SPEED"))
+	GameObject() :m_uObjId(-1), m_iAxis(90), m_wSpeed(IniData::getInstance()->getData("OBJECT_SPEED")), m_cObjState(IniData::getInstance()->getData("GAME_OBJECT_STAT"))
 	{
 		float z = IniData::getInstance()->getData("MAP_HEIGHT");
 		float x = IniData::getInstance()->getData("MAP_WIDTH");

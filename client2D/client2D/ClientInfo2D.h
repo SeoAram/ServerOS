@@ -94,6 +94,7 @@ private:
 
 			PacketLogin pData;
 			pData.Init();
+			m_pObject->m_cObjState = IniData::getInstance()->getData("GAME_OBJECT_ALIVE");
 			PostSend(false, pData.packetSize, (char*)&pData);
 			PostReceive();
 		}
