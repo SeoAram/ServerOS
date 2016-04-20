@@ -36,6 +36,29 @@ public:
 		}
 	}
 
+	void sendPacket(PacketType pType){
+		switch (pType){
+		case PacketType::INIT_PACKET:
+			break;
+		case PacketType::MOVE_PACKET:
+		{
+										PacketMove pData;
+										pData.Init();
+										pData.id = m_pObject->getObjId();
+										pData.pos_x = m_pObject->m_pvPos->x;
+										pData.pos_y = m_pObject->m_pvPos->y;
+										pData.pos_z = m_pObject->m_pvPos->z;
+										pData.dir_x = m_pObject->m_pvDir->x;
+										pData.dir_y = m_pObject->m_pvDir->y;
+										pData.dir_z = m_pObject->m_pvDir->z;
+										pData.wAxis = m_pObject->getAxis();
+
+										PostSend(false, pData.packetSize, (char*)&pData);
+		}
+			break;
+		}
+	}
+
 	boost::asio::ip::tcp::socket& Socket(){
 		return m_Socket;
 	}
