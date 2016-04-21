@@ -107,7 +107,7 @@ public:
 		m_pvDir->x = cosf(m_iAxis * RADIAN) * 1;
 		m_pvDir->z = sinf(m_iAxis * RADIAN) * 1;
 		m_pvDir->vectorNormalization();
-		*m_pvPos = (*m_pvPos + &(*m_pvDir * (m_wSpeed*(1.0/60))));
+		*m_pvPos = (*m_pvPos + &(*m_pvDir * (m_wSpeed*(1.0 / IniData::getInstance()->getData("FRAME_RATE")))));
 	}
 
 	void initData(PacketInit& pData){

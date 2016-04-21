@@ -42,7 +42,8 @@ void GameObject::moveObject(){
 
 	if (m_wState == IniData::getInstance()->getData("GAME_OBJECT_MOVE")){
 		GameMap* pGameMap = GameMap::getInstance();
-		//*m_pPosition = *m_pPosition + (*m_pDirect * m_wSpeed);
+
+		*m_pPosition = (*m_pPosition + &(*m_pDirect * (m_wSpeed*(1.0 / IniData::getInstance()->getData("FRAME_RATE")))));
 
 		int bx = ((int)m_pPosition->x + IniData::getInstance()->getData("GAME_MAP_WIDTH")) / pGameMap->getBlockW();
 		int bz = ((int)m_pPosition->z + IniData::getInstance()->getData("GAME_MAP_HEIGHT")) / pGameMap->getBlockH();
@@ -51,7 +52,6 @@ void GameObject::moveObject(){
 		movePack.Init();
 		movePack.id = m_iObjId;
 
-
 		//pGameMap->sendObjId(m_wBlockX, m_wBlockZ, m_iObjId,)
 
 		if (m_wBlockX != bx || m_wBlockZ != bz){
@@ -59,8 +59,9 @@ void GameObject::moveObject(){
 			//기존 블록에서 objID제거 -> 다른 블록에 objID입력
 			//주변 8개 블록에서도 제거해주어야 함
 			//새로 이동한 주변 8개 블록에 등장 알려야함
-			if (pGameMap->deleteObjId(m_wBlockX, m_wBlockZ, m_iObjId)) // 성공했을 때만
+			if (pGameMap->deleteObjId(m_wBlockX, m_wBlockZ, m_iObjId)){ // 성공했을 때만
 				pGameMap->insertObjId(bx, bz, m_iObjId);
+			}
 		}
 	}
 }

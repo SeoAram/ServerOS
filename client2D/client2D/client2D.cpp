@@ -296,7 +296,7 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 					  pGamePlayer = new ClientInfo2D(io_service, endpoint);
 					  pRecvThread = new boost::thread(boost::bind(&boost::asio::io_service::run, &io_service));
 
-					  SetTimer(hWnd, 0, 60 / 1000, NULL);
+					  SetTimer(hWnd, 0, IniData::getInstance()->getData("FRAME_RATE") / 1000, NULL);
 	}
 		break;
 	default:
