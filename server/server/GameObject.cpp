@@ -16,8 +16,8 @@ m_wState(IniData::getInstance()->getData("GAME_OBJECT_STAT"))
 	m_pDirect = new PointVector3D(1, 0, 1);
 	m_pDirect->vectorNormalization();
 
-	m_wBlockX = (int)m_pPosition->x / BLOCK_COUNT;
-	m_wBlockZ = (int)m_pPosition->z / BLOCK_COUNT;
+	m_wBlockX = (int)m_pPosition->x / GameMap::getInstance()->getBlockW();
+	m_wBlockZ = (int)m_pPosition->z / GameMap::getInstance()->getBlockH();
 }
 
 GameObject::~GameObject()
@@ -33,8 +33,8 @@ void GameObject::resetObject(){
 	m_pDirect->y = 0;
 	m_pDirect->vectorNormalization();
 
-	m_wBlockX = (int)m_pPosition->x / BLOCK_COUNT;
-	m_wBlockZ = (int)m_pPosition->z / BLOCK_COUNT;
+	m_wBlockX = (int)m_pPosition->x / GameMap::getInstance()->getBlockW();
+	m_wBlockZ = (int)m_pPosition->z / GameMap::getInstance()->getBlockH();
 }
 
 void GameObject::moveObject(){
@@ -44,15 +44,22 @@ void GameObject::moveObject(){
 		GameMap* pGameMap = GameMap::getInstance();
 		//*m_pPosition = *m_pPosition + (*m_pDirect * m_wSpeed);
 
-		int bx = ((int)m_pPosition->x + IniData::getInstance()->getData("GAME_MAP_WIDTH")) / BLOCK_COUNT;
-		int bz = ((int)m_pPosition->z + IniData::getInstance()->getData("GAME_MAP_HEIGHT")) / BLOCK_COUNT;
+		int bx = ((int)m_pPosition->x + IniData::getInstance()->getData("GAME_MAP_WIDTH")) / pGameMap->getBlockW();
+		int bz = ((int)m_pPosition->z + IniData::getInstance()->getData("GAME_MAP_HEIGHT")) / pGameMap->getBlockH();
+
+		PacketMove movePack;
+		movePack.Init();
+		movePack.id = m_iObjId;
+
+
+		//pGameMap->sendObjId(m_wBlockX, m_wBlockZ, m_iObjId,)
 
 		if (m_wBlockX != bx || m_wBlockZ != bz){
 
 			//기존 블록에서 objID제거 -> 다른 블록에 objID입력
 			//주변 8개 블록에서도 제거해주어야 함
 			//새로 이동한 주변 8개 블록에 등장 알려야함
-			if (pGameMap->deleteObjId(bx, bz, m_iObjId)) // 성공했을 때만
+			if (pGameMap->deleteObjId(m_wBlockX, m_wBlockZ, m_iObjId)) // 성공했을 때만
 				pGameMap->insertObjId(bx, bz, m_iObjId);
 		}
 	}

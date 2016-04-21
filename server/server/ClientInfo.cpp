@@ -70,6 +70,7 @@ void ClientInfo::Init()
 {
 	m_nPacketBufferMark = 0; 
 	m_pObject->resetObject();
+	GameMap::getInstance()->insertObjId(m_pObject->m_wBlockX, m_pObject->m_wBlockZ, m_pObject->getObjId());
 }
 
 void ClientInfo::handle_write(const boost::system::error_code& /*error*/, size_t /*bytes_transferred*/)

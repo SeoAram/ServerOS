@@ -16,7 +16,7 @@ MemoryPool::~MemoryPool()
 
 void MemoryPool::createMemoryPool(){
 	Node* node;
-	for (int i = 0; i < MAX_MEMORY_SIZE; ++i){
+	for (unsigned int i = 0; i < MAX_MEMORY_SIZE; ++i){
 		m_pMemory.push(new Data);
 		node = new Node;
 		tail->next = node;

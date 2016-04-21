@@ -28,6 +28,14 @@ struct PacketLogin : public PacketHeader{
 	}
 };
 
+struct PacketLogout : public PacketHeader{
+	void Init(){
+		protocol = PacketType::LOGOUT_PACKET;
+		packetSize = sizeof(PacketLogout);
+		id = -1;
+	}
+};
+
 struct PacketInit : public PacketHeader{
 	void Init()
 	{

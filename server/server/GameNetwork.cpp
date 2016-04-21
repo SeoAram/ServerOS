@@ -30,7 +30,15 @@ void GameNetwork::CloseClientInfo(const int nClientInfoID)
 {
 	std::cout << "클라이언트 접속 종료. 세션 ID: " << nClientInfoID << std::endl;
 
-	m_pClientManager->getClient(nClientInfoID)->Socket().close();
+	ClientInfo* pClient = m_pClientManager->getClient(nClientInfoID);
+
+	PacketLogout pData;
+	pData.Init();
+	pData.id = nClientInfoID;
+	GameMap::getInstance()->deleteObjId(pClient->getObject()->m_wBlockX, pClient->getObject()->m_wBlockZ, nClientInfoID);
+	GameMap::getInstance()->sendObjId(pClient->getObject()->m_wBlockX, pClient->getObject()->m_wBlockZ, nClientInfoID, (char*)&pData);
+
+	pClient->Socket().close();
 	m_pClientManager->returnClient(nClientInfoID);
 
 	if (m_bIsAccepting == false)
@@ -66,12 +74,9 @@ void GameNetwork::ProcessPacket(const int nClientInfoID, const char*pData)
 
 		//최초 접속 시 패킷 전송
 		pClient->PostSend(false, initPack.packetSize, (char*)&initPack);
-		for (int i = 0; i < MAX_CONNECT_CLIENT; ++i){
-			ClientInfo* pTmp = m_pClientManager->getClient(i);
-			if (pTmp->Socket().is_open() && i != nClientInfoID ){
-				pTmp->PostSend(false, initPack.packetSize, (char*)&initPack);
-			}
-		}
+		
+		GameMap::getInstance()->insertObjId(pClient->getObject()->m_wBlockX, pClient->getObject()->m_wBlockZ, nClientInfoID);
+		GameMap::getInstance()->sendObjId(pClient->getObject()->m_wBlockX, pClient->getObject()->m_wBlockZ, nClientInfoID, (char*)&initPack);
 	}
 		break;
 	case PacketType::MOVE_PACKET:
