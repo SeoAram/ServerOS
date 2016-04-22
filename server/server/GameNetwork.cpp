@@ -76,7 +76,7 @@ void GameNetwork::ProcessPacket(const int nClientInfoID, const char*pData)
 		pClient->PostSend(false, initPack.packetSize, (char*)&initPack);
 		
 		GameMap::getInstance()->insertObjId(pClient->getObject()->m_wBlockX, pClient->getObject()->m_wBlockZ, nClientInfoID);
-		GameMap::getInstance()->sendObjId(pClient->getObject()->m_wBlockX, pClient->getObject()->m_wBlockZ, nClientInfoID, (char*)&initPack);
+		//GameMap::getInstance()->sendObjId(pClient->getObject()->m_wBlockX, pClient->getObject()->m_wBlockZ, nClientInfoID, (char*)&initPack);
 	}
 		break;
 	case PacketType::MOVE_PACKET:

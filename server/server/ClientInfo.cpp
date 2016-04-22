@@ -22,7 +22,8 @@ ClientInfo::ClientInfo(unsigned int i, boost::asio::io_service& io_service, Game
 ClientInfo::~ClientInfo(){
 	while (m_SendDataQueue.empty() == false)
 	{
-		delete[] m_SendDataQueue.front();
+		MemoryPool::getInstance()->pushMemory(m_SendDataQueue.front());
+		//delete[] m_SendDataQueue.front();
 		m_SendDataQueue.pop_front();
 	}
 }
@@ -39,19 +40,20 @@ void ClientInfo::PostReceive()
 }
 
 void ClientInfo::PostSend(const bool bImmediately, const int nSize, char* pData){
-	char* pSendData = nullptr;
+	Data* pSendData = nullptr;
+	while ((pSendData = MemoryPool::getInstance()->popMemory()) == nullptr);
 
 	if (bImmediately == false)
 	{
 		//여기서는 new말고 memorypool에서 가져오자
-		pSendData = new char[nSize];
-		memcpy(pSendData, pData, nSize);
+		
+		memcpy(pSendData->buf, pData, nSize);
 
 		m_SendDataQueue.push_back(pSendData);
 	}
 	else
 	{
-		pSendData = pData;
+		pSendData->buf = pData;
 	}
 
 	if (bImmediately == false && m_SendDataQueue.size() > 1)
@@ -59,7 +61,7 @@ void ClientInfo::PostSend(const bool bImmediately, const int nSize, char* pData)
 		return;
 	}
 
-	boost::asio::async_write(m_Socket, boost::asio::buffer(pSendData, nSize),
+	boost::asio::async_write(m_Socket, boost::asio::buffer(pSendData->buf, nSize),
 		boost::bind(&ClientInfo::handle_write, this,
 		boost::asio::placeholders::error,
 		boost::asio::placeholders::bytes_transferred)
@@ -70,18 +72,18 @@ void ClientInfo::Init()
 {
 	m_nPacketBufferMark = 0; 
 	m_pObject->resetObject();
-	GameMap::getInstance()->insertObjId(m_pObject->m_wBlockX, m_pObject->m_wBlockZ, m_pObject->getObjId());
 }
 
 void ClientInfo::handle_write(const boost::system::error_code& /*error*/, size_t /*bytes_transferred*/)
 {
 	//여기서는 값을 반환하자(memorypool에)
-	delete[] m_SendDataQueue.front();
+	MemoryPool::getInstance()->pushMemory(m_SendDataQueue.front());
+	//delete[] m_SendDataQueue.front();
 	m_SendDataQueue.pop_front();
 	
 	if (m_SendDataQueue.empty() == false)
 	{
-		char* pData = m_SendDataQueue.front();
+		char* pData = m_SendDataQueue.front()->buf;
 
 		PacketHeader* pHeader = (PacketHeader*)pData;
 

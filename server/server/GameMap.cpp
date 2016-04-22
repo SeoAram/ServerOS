@@ -20,6 +20,7 @@ GameMap::~GameMap()
 
 void GameMap::insertObjId(short x, short z, unsigned int objId){
 	m_vObjIdBlock[z][x].push_back(objId);
+	std::cout << "Insert " << objId << std::endl;
 }
 
 bool GameMap::deleteObjId(short x, short z, unsigned int objId){// false가 반환되는 경우 삭제 실패
@@ -28,6 +29,7 @@ bool GameMap::deleteObjId(short x, short z, unsigned int objId){// false가 반환�
 	if (iter != m_vObjIdBlock[z][x].end()){
 		m_vObjIdBlock[z][x].erase(iter);
 		result = true;
+		std::cout << "Delete " << objId << std::endl;
 	}
 
 	return result;

@@ -20,7 +20,8 @@ public:
 struct Data{
 	unsigned int objId;
 	MsgType msgType;
-	char buf[128];
+	char* buf;
+	Data(){ buf = new char[128]; }
 };
 
 struct Node{
