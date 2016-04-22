@@ -80,7 +80,7 @@ void ClientInfo::handle_write(const boost::system::error_code& /*error*/, size_t
 	MemoryPool::getInstance()->pushMemory(m_SendDataQueue.front());
 	//delete[] m_SendDataQueue.front();
 	m_SendDataQueue.pop_front();
-	
+
 	if (m_SendDataQueue.empty() == false)
 	{
 		char* pData = m_SendDataQueue.front()->buf;

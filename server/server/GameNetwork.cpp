@@ -35,8 +35,9 @@ void GameNetwork::CloseClientInfo(const int nClientInfoID)
 	PacketLogout pData;
 	pData.Init();
 	pData.id = nClientInfoID;
-	GameMap::getInstance()->deleteObjId(pClient->getObject()->m_wBlockX, pClient->getObject()->m_wBlockZ, nClientInfoID);
-	GameMap::getInstance()->sendObjId(pClient->getObject()->m_wBlockX, pClient->getObject()->m_wBlockZ, nClientInfoID, (char*)&pData);
+	//if (GameMap::getInstance()->deleteObjId(pClient->getObject()->m_wBlockX, pClient->getObject()->m_wBlockZ, nClientInfoID)){
+		//GameMap::getInstance()->sendObjId(pClient->getObject()->m_wBlockX, pClient->getObject()->m_wBlockZ, nClientInfoID, (char*)&pData);
+	//}
 
 	pClient->Socket().close();
 	m_pClientManager->returnClient(nClientInfoID);
@@ -75,7 +76,7 @@ void GameNetwork::ProcessPacket(const int nClientInfoID, const char*pData)
 		//최초 접속 시 패킷 전송
 		pClient->PostSend(false, initPack.packetSize, (char*)&initPack);
 		
-		GameMap::getInstance()->insertObjId(pClient->getObject()->m_wBlockX, pClient->getObject()->m_wBlockZ, nClientInfoID);
+		//GameMap::getInstance()->insertObjId(pClient->getObject()->m_wBlockX, pClient->getObject()->m_wBlockZ, nClientInfoID);
 		//GameMap::getInstance()->sendObjId(pClient->getObject()->m_wBlockX, pClient->getObject()->m_wBlockZ, nClientInfoID, (char*)&initPack);
 	}
 		break;
