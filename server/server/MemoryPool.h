@@ -1,21 +1,7 @@
 #pragma once
 #include "stdafx.h"
 
-#define	PACKET_BUF_SIZE  128 // ¿”Ω√∞¥√º
-class SendOver{
-public:
-	/*WSAOVERLAPPED	m_Overlapped;
-	WSABUF			m_WsaBuf;
-	char			m_arPacketBuf[PACKET_BUF_SIZE];
-	UINT			m_nOperation;
-
-	SendOver(){
-		m_WsaBuf.buf = m_arPacketBuf;
-		m_WsaBuf.len = PACKET_BUF_SIZE;
-		m_nOperation = NULL;
-		ZeroMemory(&m_Overlapped, sizeof(WSAOVERLAPPED));
-	}*/
-};
+#define	PACKET_BUF_SIZE  64 // ¿”Ω√∞¥√º
 
 struct Data{
 	unsigned int objId;
