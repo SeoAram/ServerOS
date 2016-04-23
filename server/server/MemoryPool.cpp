@@ -23,6 +23,7 @@ void MemoryPool::createMemoryPool(){
 		tail = node;
 	}
 	tail->next = nullptr;
+	std::cout << "Create Success MemoryPool" << std::endl;
 }
 
 Data* MemoryPool::popMemory(){

@@ -12,6 +12,12 @@ GameMap::GameMap(){
 			block[i][j].y = i - 1;
 		}
 	}
+	
+	for (int i = 0; i < BLOCK_COUNT; ++i){
+		for (int j = 0; j < BLOCK_COUNT; ++j){
+			m_vObjIdBlock[i][j].reserve(100);
+		}
+	}
 }
 
 GameMap::~GameMap()
@@ -19,8 +25,8 @@ GameMap::~GameMap()
 }
 
 void GameMap::insertObjId(short x, short z, unsigned int objId){
-	m_vObjIdBlock[z][x].push_back(objId);
-	std::cout << "Insert " << objId << std::endl;
+	//m_vObjIdBlock[z][x].push_back(objId);
+	std::cout << "(" << x << ", " << z << ") :: Insert " << objId << std::endl;
 }
 
 bool GameMap::deleteObjId(short x, short z, unsigned int objId){// false가 반환되는 경우 삭제 실패

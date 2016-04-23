@@ -1,7 +1,7 @@
 #pragma once
 #include "stdafx.h"
 
-#define	PACKET_BUF_SIZE  15 // ¿”Ω√∞¥√º
+#define	PACKET_BUF_SIZE  128 // ¿”Ω√∞¥√º
 class SendOver{
 public:
 	/*WSAOVERLAPPED	m_Overlapped;
@@ -21,7 +21,7 @@ struct Data{
 	unsigned int objId;
 	MsgType msgType;
 	char* buf;
-	Data(){ buf = new char[128]; }
+	Data(){ buf = new char[PACKET_BUF_SIZE]; }
 };
 
 struct Node{
