@@ -46,7 +46,7 @@ void ClientInfo::PostSend(const bool bImmediately, const int nSize, char* pData)
 	if (bImmediately == false)
 	{
 		//여기서는 new말고 memorypool에서 가져오자
-		
+
 		memcpy(pSendData->buf, pData, nSize);
 
 		m_SendDataQueue.push_back(pSendData);
@@ -70,7 +70,7 @@ void ClientInfo::PostSend(const bool bImmediately, const int nSize, char* pData)
 
 void ClientInfo::Init()
 {
-	m_nPacketBufferMark = 0; 
+	m_nPacketBufferMark = 0;
 	m_pObject->resetObject();
 }
 

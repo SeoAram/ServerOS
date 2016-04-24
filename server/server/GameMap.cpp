@@ -12,12 +12,6 @@ GameMap::GameMap(){
 			block[i][j].y = i - 1;
 		}
 	}
-	
-	for (int i = 0; i < BLOCK_COUNT; ++i){
-		for (int j = 0; j < BLOCK_COUNT; ++j){
-			m_vObjIdBlock[i][j].reserve(100);
-		}
-	}
 }
 
 GameMap::~GameMap()
@@ -25,8 +19,8 @@ GameMap::~GameMap()
 }
 
 void GameMap::insertObjId(short x, short z, unsigned int objId){
-	//m_vObjIdBlock[z][x].push_back(objId);
-	std::cout << "(" << x << ", " << z << ") :: Insert " << objId << std::endl;
+	m_vObjIdBlock[z][x].push_back(objId);
+	std::cout << "Insert " << objId << std::endl;
 }
 
 bool GameMap::deleteObjId(short x, short z, unsigned int objId){// false가 반환되는 경우 삭제 실패
@@ -68,7 +62,7 @@ void GameMap::sendObjId(short x, short z, unsigned int objId, char* pData, short
 			for (int j = 0; j < SIGHT_BLOCK; ++j){
 				tmpX = x + block[i][j].x;
 				tmpY = z + block[i][j].y;
-				if ((block[i][j].x == _x || block[i][j].y == _z) && 
+				if ((block[i][j].x == _x || block[i][j].y == _z) &&
 					(0 <= (tmpX) && (tmpX) < BLOCK_COUNT) && (0 <= (tmpY) && (tmpY) < BLOCK_COUNT)){
 					for (int k = 0; k < m_vObjIdBlock[tmpY][tmpX].size(); ++k){
 						m_pClientManager->getClient(m_vObjIdBlock[tmpY][tmpX][k])->PostSend(true, ((PacketHeader*)pData)->packetSize, pData);
