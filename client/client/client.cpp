@@ -24,7 +24,7 @@ void setTimer(){
 				pClient->getObject()->move();
 			}
 
-			if (60 <= count){
+			if (300 <= count){
 				count = 0;
 				std::cout << pClientManager->getClient(0)->getObject()->m_pvPos->z << std::endl;
 				for (int i = 0; i < MAX_CONNECT; ++i){
@@ -73,6 +73,10 @@ int main()
 
 	//이벤트 등록제로 갈까 아니면 그냥 랜덤으로 할까
 	
+	char c = 0;
+
+	while ((c = getchar()) == 0);
+
 	setTimer();
 
 	thread.join();

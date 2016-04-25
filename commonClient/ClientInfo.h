@@ -119,32 +119,35 @@ private:
 		{
 										PacketInit* pPacket = (PacketInit*)pData;
 
-										m_pObject->setObjId(pPacket->id);
-										m_pObject->m_pvPos->setXYZ(pPacket->pos_x, pPacket->pos_y, pPacket->pos_z);
-										m_pObject->m_pvDir->setXYZ(pPacket->dir_x, pPacket->dir_y, pPacket->dir_z);
+										if (pPacket->id == m_pObject->getObjId()){
 
-										PacketMove movePack;
-										movePack.Init();
-										movePack.id = nClientInfoID;
+											m_pObject->setObjId(pPacket->id);
+											m_pObject->m_pvPos->setXYZ(pPacket->pos_x, pPacket->pos_y, pPacket->pos_z);
+											m_pObject->m_pvDir->setXYZ(pPacket->dir_x, pPacket->dir_y, pPacket->dir_z);
 
-										movePack.pos_x = getObject()->m_pvPos->x;
-										movePack.pos_y = getObject()->m_pvPos->y;
-										movePack.pos_z = getObject()->m_pvPos->z;
+											PacketMove movePack;
+											movePack.Init();
+											movePack.id = nClientInfoID;
 
-										movePack.dir_x = getObject()->m_pvDir->x;
-										movePack.dir_y = getObject()->m_pvDir->y;
-										movePack.dir_z = getObject()->m_pvDir->z;
+											movePack.pos_x = getObject()->m_pvPos->x;
+											movePack.pos_y = getObject()->m_pvPos->y;
+											movePack.pos_z = getObject()->m_pvPos->z;
 
-										movePack.wAxis = m_pObject->getAxis();
+											movePack.dir_x = getObject()->m_pvDir->x;
+											movePack.dir_y = getObject()->m_pvDir->y;
+											movePack.dir_z = getObject()->m_pvDir->z;
+
+											movePack.wAxis = m_pObject->getAxis();
+										}
 										/*if (pPacket->id == m_pObject->getObjId())
 											PostSend(false, movePack.packetSize, (char*)&movePack);*/
 		}
 			break;
 		case PacketType::MOVE_PACKET:
 		{
-										/*PacketMove* pPacket = (PacketMove*)pData;
+										PacketMove* pPacket = (PacketMove*)pData;
 										if (pPacket->id == m_pObject->getObjId())
-											PostSend(false, pPacket->packetSize, (char*)pPacket);*/
+											PostSend(false, pPacket->packetSize, (char*)pPacket);
 		}
 			break;
 		}
