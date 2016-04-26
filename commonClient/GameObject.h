@@ -128,7 +128,7 @@ public:
 		m_pvDir->vectorNormalization();
 	}
 
-	GameObject(unsigned int id) :m_uObjId(id), m_iAxis(90), m_wSpeed(IniData::getInstance()->getData("OBJECT_SPEED"))
+	GameObject(unsigned int id) :m_uObjId(id), m_iAxis(90), m_wSpeed(IniData::getInstance()->getData("OBJECT_SPEED")), m_cObjState(IniData::getInstance()->getData("GAME_OBJECT_STAT"))
 	{
 		float z = IniData::getInstance()->getData("MAP_HEIGHT");
 		float x = IniData::getInstance()->getData("MAP_WIDTH");

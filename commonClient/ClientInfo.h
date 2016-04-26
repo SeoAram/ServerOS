@@ -103,9 +103,6 @@ private:
 		else{
 			std::cout << "Connect Success! " << std::endl;
 
-			PacketLogin pData;
-			pData.Init();
-			PostSend(false, pData.packetSize, (char*)&pData);
 			PostReceive();
 		}
 	}
@@ -119,8 +116,7 @@ private:
 		case PacketType::INIT_PACKET:
 		{
 										PacketInit* pPacket = (PacketInit*)pData;
-
-										if (pPacket->id == m_pObject->getObjId()){
+										if (m_pObject->m_cObjState == IniData::getInstance()->getData("GAME_OBJECT_STAT")){
 
 											m_pObject->setObjId(pPacket->id);
 											m_pObject->m_pvPos->setXYZ(pPacket->pos_x, pPacket->pos_y, pPacket->pos_z);
@@ -128,7 +124,7 @@ private:
 
 											PacketMove movePack;
 											movePack.Init();
-											movePack.id = nClientInfoID;
+											movePack.id = pPacket->id;
 
 											movePack.pos_x = getObject()->m_pvPos->x;
 											movePack.pos_y = getObject()->m_pvPos->y;
@@ -139,9 +135,15 @@ private:
 											movePack.dir_z = getObject()->m_pvDir->z;
 
 											movePack.wAxis = m_pObject->getAxis();
+
+											m_pObject->m_cObjState = IniData::getInstance()->getData("GAME_OBJECT_ALIVE");
+
+											PacketLogin lPack;
+											lPack.Init();
+											lPack.id = pPacket->id;
+											PostSend(false, lPack.packetSize, (char*)&lPack);
 										}
-										/*if (pPacket->id == m_pObject->getObjId())
-											PostSend(false, movePack.packetSize, (char*)&movePack);*/
+
 		}
 			break;
 		case PacketType::MOVE_PACKET:

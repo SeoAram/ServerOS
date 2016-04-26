@@ -8,10 +8,6 @@ m_pClientManager(ClientInfoManager::getInstance())
 {
 	m_bIsAccepting = false;
 	m_pLock = new boost::mutex::scoped_lock(m_mutex);
-	/*for (int i = 0; i < WORKED_THREAD; ++i){
-	m_tGroup.create_thread(boost::bind(&boost::asio::io_service::run, &io_service));
-	cout << "Workerthread Create" << endl;
-	}*/
 }
 
 GameNetwork::~GameNetwork()
@@ -26,7 +22,7 @@ void GameNetwork::Start()
 	PostAccept();
 }
 
-void GameNetwork::CloseClientInfo(const int nClientInfoID)
+void GameNetwork::CloseClientInfo(const unsigned int nClientInfoID)
 {
 	std::cout << "클라이언트 접속 종료. 세션 ID: " << nClientInfoID << std::endl;
 
@@ -47,7 +43,7 @@ void GameNetwork::CloseClientInfo(const int nClientInfoID)
 	}
 }
 
-void GameNetwork::ProcessPacket(const int nClientInfoID, const char*pData)
+void GameNetwork::ProcessPacket(const unsigned int nClientInfoID, const char*pData)
 {
 	PacketHeader* pheader = (PacketHeader*)pData;
 
@@ -127,6 +123,23 @@ void GameNetwork::handle_accept(ClientInfo* pClientInfo, const boost::system::er
 		std::cout << "클라이언트 접속 성공. ClientInfoID: " << pClientInfo->getObject()->getObjId() << std::endl;
 		pClientInfo->setSocketOpt(boost::asio::ip::tcp::no_delay(true));
 		pClientInfo->Init();
+
+		PacketInit initPack;
+		initPack.Init();
+
+		initPack.id = pClientInfo->getObject()->getObjId();
+
+		initPack.pos_x = pClientInfo->getObject()->m_pPosition->x;
+		initPack.pos_y = pClientInfo->getObject()->m_pPosition->y;
+		initPack.pos_z = pClientInfo->getObject()->m_pPosition->z;
+
+		initPack.dir_x = pClientInfo->getObject()->m_pDirect->x;
+		initPack.dir_y = pClientInfo->getObject()->m_pDirect->y;
+		initPack.dir_z = pClientInfo->getObject()->m_pDirect->z;
+
+		//최초 접속 시 패킷 전송
+		pClientInfo->PostSend(false, initPack.packetSize, (char*)&initPack);
+		
 		pClientInfo->PostReceive();
 
 		PostAccept();

@@ -7,9 +7,9 @@ class GameNetwork
 public:
 	void Start();
 
-	void CloseClientInfo(const int nClientInfoID);
+	void CloseClientInfo(const unsigned int nClientInfoID);
 
-	void ProcessPacket(const int nClientInfoID, const char*pData);
+	void ProcessPacket(const unsigned int nClientInfoID, const char*pData);
 
 	static GameNetwork* getInstance(boost::asio::io_service& io_service){
 		static GameNetwork instance(io_service);
