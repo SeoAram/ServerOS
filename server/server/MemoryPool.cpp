@@ -18,15 +18,16 @@ void MemoryPool::createMemoryPool(){
 	Node* node;
 	for (unsigned int i = 0; i < MAX_MEMORY_SIZE; ++i){
 		m_pMemory.push(new Data);
-		node = new Node;
+		/*node = new Node;
 		tail->next = node;
-		tail = node;
+		tail = node;*/
 	}
-	tail->next = nullptr;
+	//tail->next = nullptr;
 	std::cout << "Create Success MemoryPool" << std::endl;
 }
 
 Data* MemoryPool::popMemory(){
+	std::cout << "pop Memory Size : " << m_pMemory.size() << "\n";
 	if (m_pMemory.size() == 0)
 	{
 		return nullptr;
@@ -40,6 +41,7 @@ Data* MemoryPool::popMemory(){
 void MemoryPool::pushMemory(Data* memory){
 	//push lock필요
 	//잠금 m_mutexPush;
+	std::cout << "push Memory Size : " << m_pMemory.size() << "\n";
 	m_pMemory.push(memory);
 	//해제 m_mutexPush;
 }

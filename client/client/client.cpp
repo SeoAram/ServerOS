@@ -24,10 +24,10 @@ void setTimer(){
 				pClient->getObject()->move();
 			}
 
-			if (300 <= count){
+			if (60 <= count){
 				count = 0;
 				std::cout << pClientManager->getClient(0)->getObject()->m_pvPos->z << std::endl;
-				for (int i = 0; i < MAX_CONNECT; ++i){
+				for (int i = 0; i < MAX_CONNECT; ++i, Sleep(100)){
 					
 					ClientInfo* pClient = pClientManager->getClient(i);
 	

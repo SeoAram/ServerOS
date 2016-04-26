@@ -109,8 +109,9 @@ private:
 			PostReceive();
 		}
 	}
-	void ProcessPacket(const int nClientInfoID, const char*pData)
+	void ProcessPacket(const unsigned int nClientInfoID, const char*pData)
 	{
+		std::cout << m_pObject->getObjId() << " Recv " << nClientInfoID << endl;
 		PacketHeader* pheader = (PacketHeader*)pData;
 
 		switch (pheader->protocol)

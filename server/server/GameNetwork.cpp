@@ -36,7 +36,7 @@ void GameNetwork::CloseClientInfo(const int nClientInfoID)
 	pData.Init();
 	pData.id = nClientInfoID;
 	GameMap::getInstance()->deleteObjId(pClient->getObject()->m_wBlockX, pClient->getObject()->m_wBlockZ, nClientInfoID);
-	GameMap::getInstance()->sendObjId(pClient->getObject()->m_wBlockX, pClient->getObject()->m_wBlockZ, nClientInfoID, (char*)&pData);
+	//GameMap::getInstance()->sendObjId(pClient->getObject()->m_wBlockX, pClient->getObject()->m_wBlockZ, nClientInfoID, (char*)&pData);
 
 	pClient->Socket().close();
 	m_pClientManager->returnClient(nClientInfoID);
@@ -51,6 +51,7 @@ void GameNetwork::ProcessPacket(const int nClientInfoID, const char*pData)
 {
 	PacketHeader* pheader = (PacketHeader*)pData;
 
+	std::cout << nClientInfoID << ":: 냥냥\t";
 	//워커 스레드 생성해서 그쪽으로 보내자
 	switch (pheader->protocol)
 	{
@@ -124,7 +125,7 @@ void GameNetwork::handle_accept(ClientInfo* pClientInfo, const boost::system::er
 	if (!error)
 	{
 		std::cout << "클라이언트 접속 성공. ClientInfoID: " << pClientInfo->getObject()->getObjId() << std::endl;
-
+		pClientInfo->setSocketOpt(boost::asio::ip::tcp::no_delay(true));
 		pClientInfo->Init();
 		pClientInfo->PostReceive();
 

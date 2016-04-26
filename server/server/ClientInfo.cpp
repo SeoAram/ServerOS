@@ -28,6 +28,10 @@ ClientInfo::~ClientInfo(){
 	}
 }
 
+void ClientInfo::setSocketOpt(boost::asio::ip::tcp::no_delay& option){
+	m_Socket.set_option(option);
+}
+
 void ClientInfo::PostReceive()
 {
 	m_Socket.async_read_some
@@ -41,19 +45,22 @@ void ClientInfo::PostReceive()
 
 void ClientInfo::PostSend(const bool bImmediately, const int nSize, char* pData){
 	Data* pSendData = nullptr;
-	while ((pSendData = MemoryPool::getInstance()->popMemory()) == nullptr);
+
 
 	if (bImmediately == false)
 	{
 		//여기서는 new말고 memorypool에서 가져오자
 
-		memcpy(pSendData->buf, pData, nSize);
+		while ((pSendData = MemoryPool::getInstance()->popMemory()) == nullptr) Sleep(100);
+		pSendData->buf = pData;
+		//memcpy(pSendData->buf, pData, nSize);
 
 		m_SendDataQueue.push_back(pSendData);
 	}
 	else
 	{
-		pSendData->buf = pData;
+		pSendData = (Data*)pData;
+		//pSendData->buf = pData;
 	}
 
 	if (bImmediately == false && m_SendDataQueue.size() > 1)
@@ -79,6 +86,7 @@ void ClientInfo::handle_write(const boost::system::error_code& /*error*/, size_t
 	//여기서는 값을 반환하자(memorypool에)
 	MemoryPool::getInstance()->pushMemory(m_SendDataQueue.front());
 	//delete[] m_SendDataQueue.front();
+	std::cout << "send Success~" << m_pObject->getObjId() << std::endl;
 	m_SendDataQueue.pop_front();
 
 	if (m_SendDataQueue.empty() == false)
@@ -87,7 +95,7 @@ void ClientInfo::handle_write(const boost::system::error_code& /*error*/, size_t
 
 		PacketHeader* pHeader = (PacketHeader*)pData;
 
-		PostSend(true, pHeader->packetSize, pData);
+		PostSend(true, pHeader->packetSize, (char*)m_SendDataQueue.front());
 	}
 }
 
@@ -95,7 +103,7 @@ void ClientInfo::handle_receive(const boost::system::error_code& error, size_t b
 {
 	if (error)
 	{
-		if (error == boost::asio::error::eof)
+		if (error == boost::asio::error::eof || 0 == bytes_transferred)
 		{
 			std::cout << "클라이언트와 연결이 끊어졌습니다" << std::endl;
 		}

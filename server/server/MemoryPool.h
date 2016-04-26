@@ -27,7 +27,7 @@ private:
 	Node* head;
 	Node* tail;
 
-	const unsigned int MAX_MEMORY_SIZE = 30000;
+	const unsigned int MAX_MEMORY_SIZE = 300000;
 public:
 	~MemoryPool();
 	static MemoryPool* getInstance(){

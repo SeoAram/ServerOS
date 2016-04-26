@@ -21,8 +21,10 @@ public:
 	GameObject* getObject(){ return m_pObject; }
 
 	void Init();
+	void setSocketOpt(boost::asio::ip::tcp::no_delay& option);
 
 private:
+
 	void handle_write(const boost::system::error_code& /*error*/, size_t /*bytes_transferred*/);
 	//접속 패킷을 받아봅시다
 	void handle_receive(const boost::system::error_code& error, size_t bytes_transferred);
