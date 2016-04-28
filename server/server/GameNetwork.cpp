@@ -47,12 +47,13 @@ void GameNetwork::ProcessPacket(const unsigned int nClientInfoID, const char*pDa
 {
 	PacketHeader* pheader = (PacketHeader*)pData;
 
-	std::cout << nClientInfoID << ":: 냥냥\t";
+	//std::cout << nClientInfoID << ":: 냥냥\t";
 	//워커 스레드 생성해서 그쪽으로 보내자
 	switch (pheader->protocol)
 	{
 	case PacketType::LOGIN_PACKET:
 	{
+									 std::cout << "냥냥 :: " << nClientInfoID << "\t";
 									 PacketLogin* pPacket = (PacketLogin*)pData;
 									 ClientInfo* pClient = m_pClientManager->getClient(nClientInfoID);
 									 std::cout << "클라이언트 로그인 성공 Id: " << pClient->getObject()->getObjId() << std::endl;
@@ -70,6 +71,8 @@ void GameNetwork::ProcessPacket(const unsigned int nClientInfoID, const char*pDa
 									 initPack.dir_z = pClient->getObject()->m_pDirect->z;
 
 									 //최초 접속 시 패킷 전송
+									 GameMap::getInstance()->insertObjId(pClient->getObject()->m_wBlockX, pClient->getObject()->m_wBlockZ, nClientInfoID);
+									 
 									 pClient->PostSend(false, initPack.packetSize, (char*)&initPack);
 									 for (int i = 0; i < MAX_CONNECT_CLIENT; ++i){
 										 pClient = m_pClientManager->getClient(i);
@@ -77,7 +80,6 @@ void GameNetwork::ProcessPacket(const unsigned int nClientInfoID, const char*pDa
 											pClient->PostSend(false, initPack.packetSize, (char*)&initPack);
 									 }
 
-									 //GameMap::getInstance()->insertObjId(pClient->getObject()->m_wBlockX, pClient->getObject()->m_wBlockZ, nClientInfoID);
 									 //GameMap::getInstance()->sendObjId(pClient->getObject()->m_wBlockX, pClient->getObject()->m_wBlockZ, nClientInfoID, (char*)&initPack);
 	}
 		break;

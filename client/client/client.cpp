@@ -33,6 +33,7 @@ void setTimer(){
 	
 					PacketMove pData;
 					pData.Init();
+					pData.id = pClient->getObject()->getObjId();
 					pData.dir_x = pClient->getObject()->m_pvDir->x;
 					pData.dir_y = pClient->getObject()->m_pvDir->y;
 					pData.dir_z = pClient->getObject()->m_pvDir->z;
