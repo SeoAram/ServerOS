@@ -39,6 +39,7 @@ public:
 	void sendPacket(PacketType pType){
 		switch (pType){
 		case PacketType::INIT_PACKET:
+
 			break;
 		case PacketType::MOVE_PACKET:
 		{
@@ -115,10 +116,6 @@ private:
 		else{
 			std::cout << "Connect Success! " << std::endl;
 
-			PacketLogin pData;
-			pData.Init();
-			m_pObject->m_cObjState = IniData::getInstance()->getData("GAME_OBJECT_ALIVE");
-			PostSend(false, pData.packetSize, (char*)&pData);
 			PostReceive();
 		}
 	}
@@ -132,12 +129,34 @@ private:
 		{
 										PacketInit* pPacket = (PacketInit*)pData;
 										
-										if (m_pObject->getObjId() == -1){
+										if (m_pObject->getObjId() == -1 && m_pObject->m_cObjState == IniData::getInstance()->getData("GAME_OBJECT_STAT")){
 
-											std::cout << "Recv Client :: " << pPacket->id << std::endl;
 											m_pObject->setObjId(pPacket->id);
-											m_pObject->initData(*pPacket);
+											m_pObject->m_pvPos->setXYZ(pPacket->pos_x, pPacket->pos_y, pPacket->pos_z);
+											m_pObject->m_pvDir->setXYZ(pPacket->dir_x, pPacket->dir_y, pPacket->dir_z);
 
+											PacketMove movePack;
+											movePack.Init();
+											movePack.id = pPacket->id;
+
+											movePack.pos_x = getObject()->m_pvPos->x;
+											movePack.pos_y = getObject()->m_pvPos->y;
+											movePack.pos_z = getObject()->m_pvPos->z;
+
+											movePack.dir_x = getObject()->m_pvDir->x;
+											movePack.dir_y = getObject()->m_pvDir->y;
+											movePack.dir_z = getObject()->m_pvDir->z;
+
+											movePack.wAxis = m_pObject->getAxis();
+
+											m_pObject->m_cObjState = IniData::getInstance()->getData("GAME_OBJECT_ALIVE");
+											std::cout << "Recv Client :: " << pPacket->id << " ";
+											getObject()->m_pvPos->operator<<(std::cout);
+
+											PacketLogin lPack;
+											lPack.Init();
+											lPack.id = pPacket->id;
+											PostSend(false, lPack.packetSize, (char*)&lPack);
 										}
 										else{
 											std::cout << "Recv New Client :: " << pPacket->id << std::endl;

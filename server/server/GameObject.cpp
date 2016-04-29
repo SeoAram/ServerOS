@@ -26,9 +26,13 @@ GameObject::~GameObject()
 
 void GameObject::resetObject(){
 
+	std::srand(std::time(0));
+
 	m_wSpeed = IniData::getInstance()->getData("OBJECT_SPEED");
 	m_wState = IniData::getInstance()->getData("GAME_OBJECT_STAT");
-	m_pPosition->x = m_pPosition->y = m_pPosition->z = 0;
+	m_pPosition->x = std::rand() % IniData::getInstance()->getData("MAP_WIDTH");
+	m_pPosition->y = 0;
+	m_pPosition->z = std::rand() % IniData::getInstance()->getData("MAP_HEIGHT");
 	m_pDirect->x = m_pDirect->z = 1;
 	m_pDirect->y = 0;
 	m_pDirect->vectorNormalization();

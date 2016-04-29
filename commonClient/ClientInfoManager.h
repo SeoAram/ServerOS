@@ -11,7 +11,7 @@
 #include "ClientInfo.h"
 
 
-#define MAX_CONNECT 100
+#define MAX_CONNECT 10
 
 class ClientInfoManager
 {

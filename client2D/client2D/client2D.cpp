@@ -154,7 +154,8 @@ BOOL InitInstance(HINSTANCE hInstance, int nCmdShow)
    hInst = hInstance; // 인스턴스 핸들을 전역 변수에 저장합니다.
 
    hWnd = CreateWindow(szWindowClass, szTitle, WS_OVERLAPPEDWINDOW,
-      CW_USEDEFAULT, 0, CW_USEDEFAULT, 0, NULL, NULL, hInstance, NULL);
+	   CW_USEDEFAULT, 0, IniData::getInstance()->getData("MAP_WIDTH") / 5, IniData::getInstance()->getData("MAP_HEIGHT") / 5, 
+	   NULL, NULL, hInstance, NULL);
 
    if (!hWnd)
    {
@@ -249,11 +250,15 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 		hdc = BeginPaint(hWnd, &ps);
 		// TODO: 여기에 그리기 코드를 추가합니다.
 		playerObj = pGamePlayer->getObject();
-		Rectangle(hdc, playerObj->m_pvPos->x - 2, playerObj->m_pvPos->z - 2, playerObj->m_pvPos->x + 2, playerObj->m_pvPos->z + 2);
 		{
+			float x = playerObj->m_pvPos->x / 5;
+			float z = playerObj->m_pvPos->z / 5;
+			Rectangle(hdc, x - 2, z - 2, x + 2, z + 2);
 			std::vector<GameObject*> tmp = *pObjectManager->getObjectList();
 			for (int i = 0; i < tmp.size(); ++i){
-				Rectangle(hdc, tmp[i]->m_pvPos->x - 2, tmp[i]->m_pvPos->z - 2, tmp[i]->m_pvPos->x + 2, tmp[i]->m_pvPos->z + 2);
+				x = tmp[i]->m_pvPos->x / 5;
+				z = tmp[i]->m_pvPos->z / 5;
+				Rectangle(hdc, x - 2, z - 2, x + 2, z + 2);
 			}
 		}
 		EndPaint(hWnd, &ps);
@@ -281,7 +286,7 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 		PostQuitMessage(0);
 		break;
 	case WM_CREATE:
-
+		IniData::getInstance();
 	{
 					  pObjectManager = GameObjectManager::getInstance();
 					  char cIPAddr[CHAR_MAX];

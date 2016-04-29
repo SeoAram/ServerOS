@@ -10,6 +10,8 @@
 #include <stdio.h>
 #include <tchar.h>
 #include <climits>
+#include <cstdlib>
+#include <ctime>
 
 #include <iostream>
 #include <algorithm>
