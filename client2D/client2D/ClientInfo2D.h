@@ -134,21 +134,7 @@ private:
 											m_pObject->setObjId(pPacket->id);
 											m_pObject->m_pvPos->setXYZ(pPacket->pos_x, pPacket->pos_y, pPacket->pos_z);
 											m_pObject->m_pvDir->setXYZ(pPacket->dir_x, pPacket->dir_y, pPacket->dir_z);
-
-											PacketMove movePack;
-											movePack.Init();
-											movePack.id = pPacket->id;
-
-											movePack.pos_x = getObject()->m_pvPos->x;
-											movePack.pos_y = getObject()->m_pvPos->y;
-											movePack.pos_z = getObject()->m_pvPos->z;
-
-											movePack.dir_x = getObject()->m_pvDir->x;
-											movePack.dir_y = getObject()->m_pvDir->y;
-											movePack.dir_z = getObject()->m_pvDir->z;
-
-											movePack.wAxis = m_pObject->getAxis();
-
+											
 											m_pObject->m_cObjState = IniData::getInstance()->getData("GAME_OBJECT_ALIVE");
 											std::cout << "Recv Client :: " << pPacket->id << " ";
 											getObject()->m_pvPos->operator<<(std::cout);
@@ -157,11 +143,12 @@ private:
 											lPack.Init();
 											lPack.id = pPacket->id;
 											PostSend(false, lPack.packetSize, (char*)&lPack);
+											break;
 										}
-										else{
-											std::cout << "Recv New Client :: " << pPacket->id << std::endl;
-											GameObjectManager::getInstance()->setObject(pPacket->id, *pPacket);
-										}
+										
+										std::cout << "Recv New Client :: " << pPacket->id << std::endl;
+										GameObjectManager::getInstance()->setObject(pPacket->id, *pPacket);
+										
 										
 		}
 			break;

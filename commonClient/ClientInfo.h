@@ -108,7 +108,7 @@ private:
 	}
 	void ProcessPacket(const unsigned int nClientInfoID, const char*pData)
 	{
-		std::cout << m_pObject->getObjId() << " Recv " << nClientInfoID << endl;
+		//std::cout << m_pObject->getObjId() << " Recv " << nClientInfoID << endl;
 		PacketHeader* pheader = (PacketHeader*)pData;
 
 		switch (pheader->protocol)
@@ -116,7 +116,7 @@ private:
 		case PacketType::INIT_PACKET:
 		{
 										PacketInit* pPacket = (PacketInit*)pData;
-										if (m_pObject->m_cObjState == IniData::getInstance()->getData("GAME_OBJECT_STAT")){
+										if (-1 == m_pObject->getObjId() && m_pObject->m_cObjState == IniData::getInstance()->getData("GAME_OBJECT_STAT")){
 
 											m_pObject->setObjId(pPacket->id);
 											m_pObject->m_pvPos->setXYZ(pPacket->pos_x, pPacket->pos_y, pPacket->pos_z);

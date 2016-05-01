@@ -241,7 +241,7 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 		if (0 == wParam){
 			if (IniData::getInstance()->getData("GAME_OBJECT_STAT") != pGamePlayer->getObject()->m_cObjState){
 				pGamePlayer->getObject()->move();
-				pGamePlayer->sendPacket(PacketType::MOVE_PACKET);
+				//pGamePlayer->sendPacket(PacketType::MOVE_PACKET);
 			}
 			InvalidateRgn(hWnd, NULL, FALSE);
 		}
@@ -302,6 +302,7 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 					  pRecvThread = new boost::thread(boost::bind(&boost::asio::io_service::run, &io_service));
 
 					  SetTimer(hWnd, 0, IniData::getInstance()->getData("FRAME_RATE") / 1000, NULL);
+					  //pRecvThread->join();
 	}
 		break;
 	default:

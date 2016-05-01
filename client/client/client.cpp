@@ -26,11 +26,12 @@ void setTimer(){
 
 			if (60 <= count){
 				count = 0;
-				std::cout << pClientManager->getClient(0)->getObject()->m_pvPos->z << std::endl;
 				for (int i = 0; i < MAX_CONNECT; ++i, Sleep(100)){
 					
 					ClientInfo* pClient = pClientManager->getClient(i);
 	
+					std::cout << "id : " << pClient->getObject()->getObjId() << " ";
+					pClient->getObject()->m_pvPos->operator<<(std::cout) << "\n";
 					PacketMove pData;
 					pData.Init();
 					pData.id = pClient->getObject()->getObjId();
