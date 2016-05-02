@@ -47,20 +47,19 @@ void GameNetwork::ProcessPacket(const unsigned int nClientInfoID, const char*pDa
 {
 	PacketHeader* pheader = (PacketHeader*)pData;
 
-	//std::cout << nClientInfoID << ":: 냥냥\t";
 	//워커 스레드 생성해서 그쪽으로 보내자
 	switch (pheader->protocol)
 	{
 	case PacketType::LOGIN_PACKET:
 	{
-									 std::cout << "냥냥 :: " << nClientInfoID << "\t";
+									 m_mutex.lock();
 									 PacketLogin* pPacket = (PacketLogin*)pData;
 									 ClientInfo* pClient = m_pClientManager->getClient(nClientInfoID);
-									 std::cout << "클라이언트 로그인 성공 Id: " << pClient->getObject()->getObjId() << std::endl;
+									 std::cout << "ProcessPacket() - 클라이언트 로그인 성공 Id: " << pClient->getObject()->getObjId() << " :: " << nClientInfoID << std::endl;
 
 									 PacketInit initPack;
 									 initPack.Init();
-									 initPack.id = nClientInfoID;
+									 initPack.id = pPacket->id;
 
 									 initPack.pos_x = pClient->getObject()->m_pPosition->x;
 									 initPack.pos_y = pClient->getObject()->m_pPosition->y;
@@ -73,12 +72,15 @@ void GameNetwork::ProcessPacket(const unsigned int nClientInfoID, const char*pDa
 									 //최초 접속 시 패킷 전송
 									 GameMap::getInstance()->insertObjId(pClient->getObject()->m_wBlockX, pClient->getObject()->m_wBlockZ, nClientInfoID);
 									 
-									 pClient->PostSend(false, initPack.packetSize, (char*)&initPack);
-									 for (int i = 0; i < MAX_CONNECT_CLIENT; ++i){
+									 
+
+									 for (unsigned int i = 0; i < MAX_CONNECT_CLIENT; ++i){
 										 pClient = m_pClientManager->getClient(i);
-										 if(pClient->Socket().is_open() && nClientInfoID != i)
-											pClient->PostSend(false, initPack.packetSize, (char*)&initPack);
+										 if (pClient->Socket().is_open()/* && initPack.id != i*/){
+											 pClient->PostSend(false, initPack.packetSize, (char*)&initPack);
+										 }
 									 }
+									 m_mutex.unlock();
 
 									 //GameMap::getInstance()->sendObjId(pClient->getObject()->m_wBlockX, pClient->getObject()->m_wBlockZ, nClientInfoID, (char*)&initPack);
 	}
@@ -88,7 +90,7 @@ void GameNetwork::ProcessPacket(const unsigned int nClientInfoID, const char*pDa
 									PacketMove* pPacket = (PacketMove*)pData;
 									ClientInfo* pClient = m_pClientManager->getClient(nClientInfoID);
 
-									for (int i = 0; i < MAX_CONNECT_CLIENT; ++i){
+									for (unsigned int i = 0; i < MAX_CONNECT_CLIENT; ++i){
 										pClient = m_pClientManager->getClient(i);
 										if (pClient->Socket().is_open() && nClientInfoID != i){
 											pClient->PostSend(false, pPacket->packetSize, (char*)pPacket);

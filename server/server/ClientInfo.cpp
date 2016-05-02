@@ -53,13 +53,14 @@ void ClientInfo::PostSend(const bool bImmediately, const int nSize, char* pData)
 
 		while ((pSendData = MemoryPool::getInstance()->popMemory()) == nullptr) Sleep(100);
 		pSendData->buf = pData;
-		//memcpy(pSendData->buf, pData, nSize);
+		memcpy(pSendData->buf, pData, nSize);
 
 		m_SendDataQueue.push_back(pSendData);
 	}
 	else
 	{
 		pSendData = (Data*)pData;
+		//memcpy(pSendData->buf, pData, nSize);
 		//pSendData->buf = pData;
 	}
 
@@ -67,6 +68,8 @@ void ClientInfo::PostSend(const bool bImmediately, const int nSize, char* pData)
 	{
 		return;
 	}
+
+	std::cout << "ClientInfo PostSend() - " << m_pObject->getObjId() << " :: " << ((PacketHeader*)pData)->id << " :: " << nSize << std::endl;
 
 	boost::asio::async_write(m_Socket, boost::asio::buffer(pSendData->buf, nSize),
 		boost::bind(&ClientInfo::handle_write, this,
@@ -91,9 +94,7 @@ void ClientInfo::handle_write(const boost::system::error_code& /*error*/, size_t
 
 	if (m_SendDataQueue.empty() == false)
 	{
-		char* pData = m_SendDataQueue.front()->buf;
-
-		PacketHeader* pHeader = (PacketHeader*)pData;
+		PacketHeader* pHeader = (PacketHeader*)m_SendDataQueue.front()->buf;
 
 		PostSend(true, pHeader->packetSize, (char*)m_SendDataQueue.front());
 	}

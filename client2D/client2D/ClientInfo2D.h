@@ -129,7 +129,7 @@ private:
 		{
 										PacketInit* pPacket = (PacketInit*)pData;
 										
-										if (m_pObject->getObjId() == -1 && m_pObject->m_cObjState == IniData::getInstance()->getData("GAME_OBJECT_STAT")){
+										if (m_pObject->m_cObjState == IniData::getInstance()->getData("GAME_OBJECT_STAT")){
 
 											m_pObject->setObjId(pPacket->id);
 											m_pObject->m_pvPos->setXYZ(pPacket->pos_x, pPacket->pos_y, pPacket->pos_z);

@@ -157,8 +157,9 @@ public:
 		int size = m_vObject.size();
 		bool checkObj = false;
 		for (int i = 0; i < size; ++i){
-			if (m_vObject[i]->getObjId() == objId)
+			if (m_vObject[i]->getObjId() == objId){
 				checkObj = true;
+			}
 		}
 
 		if (!checkObj){

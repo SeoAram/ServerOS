@@ -27,7 +27,7 @@ void MemoryPool::createMemoryPool(){
 }
 
 Data* MemoryPool::popMemory(){
-	std::cout << "pop Memory Size : " << m_pMemory.size() << "\n";
+	//std::cout << "pop Memory Size : " << m_pMemory.size() << "\n";
 	if (m_pMemory.size() == 0)
 	{
 		return nullptr;
@@ -41,7 +41,7 @@ Data* MemoryPool::popMemory(){
 void MemoryPool::pushMemory(Data* memory){
 	//push lock필요
 	//잠금 m_mutexPush;
-	std::cout << "push Memory Size : " << m_pMemory.size() << "\n";
+	//std::cout << "push Memory Size : " << m_pMemory.size() << "\n";
 	m_pMemory.push(memory);
 	//해제 m_mutexPush;
 }
