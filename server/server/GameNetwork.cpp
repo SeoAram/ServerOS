@@ -7,6 +7,7 @@ GameNetwork::GameNetwork(boost::asio::io_service& io_service)
 m_pClientManager(ClientInfoManager::getInstance())
 {
 	m_bIsAccepting = false;
+	m_pMutex = new boost::mutex();
 	m_pLock = new boost::mutex::scoped_lock(m_mutex);
 }
 
@@ -52,7 +53,9 @@ void GameNetwork::ProcessPacket(const unsigned int nClientInfoID, const char*pDa
 	{
 	case PacketType::LOGIN_PACKET:
 	{
-									 m_mutex.lock();
+									 std::cout << "내가 쓰고싶다 :: " << nClientInfoID << std::endl;
+									 m_pMutex->lock();
+									 std::cout << "내가 쓴다 :: " << nClientInfoID << std::endl;
 									 PacketLogin* pPacket = (PacketLogin*)pData;
 									 ClientInfo* pClient = m_pClientManager->getClient(nClientInfoID);
 									 std::cout << "ProcessPacket() - 클라이언트 로그인 성공 Id: " << pClient->getObject()->getObjId() << " :: " << nClientInfoID << std::endl;
@@ -74,15 +77,15 @@ void GameNetwork::ProcessPacket(const unsigned int nClientInfoID, const char*pDa
 									 
 									 
 
-									 for (unsigned int i = 0; i < MAX_CONNECT_CLIENT; ++i){
-										 pClient = m_pClientManager->getClient(i);
-										 if (pClient->Socket().is_open()/* && initPack.id != i*/){
-											 pClient->PostSend(false, initPack.packetSize, (char*)&initPack);
-										 }
-									 }
-									 m_mutex.unlock();
-
-									 //GameMap::getInstance()->sendObjId(pClient->getObject()->m_wBlockX, pClient->getObject()->m_wBlockZ, nClientInfoID, (char*)&initPack);
+									 //for (unsigned int i = 0; i < MAX_CONNECT_CLIENT; ++i){
+										// pClient = m_pClientManager->getClient(i);
+										// if (pClient->Socket().is_open()/* && initPack.id != i*/){
+										//	 pClient->PostSend(false, initPack.packetSize, (char*)&initPack);
+										// }
+									 //}
+									 GameMap::getInstance()->sendObjId(pClient->getObject()->m_wBlockX, false, pClient->getObject()->m_wBlockZ, nClientInfoID, (char*)&initPack);
+									 std::cout << "내가 반납했다 :: " << nClientInfoID << std::endl;
+									 m_pMutex->unlock();
 	}
 		break;
 	case PacketType::MOVE_PACKET:

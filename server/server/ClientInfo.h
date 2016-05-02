@@ -39,6 +39,6 @@ private:
 	int m_nPacketBufferMark;	//수신 패킷의 위치
 	char m_PacketBuffer[MAX_RECEIVE_BUFFER_LEN * 2];	//...??
 
-	std::deque< Data* > m_SendDataQueue;
+	std::queue< Data* > m_SendDataQueue;
 };
 

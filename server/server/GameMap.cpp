@@ -36,7 +36,7 @@ bool GameMap::deleteObjId(short x, short z, unsigned int objId){// false°¡ ¹ÝÈ¯µ
 
 }
 
-void GameMap::sendObjId(short x, short z, unsigned int objId, char* pData, short _x, short _z){
+void GameMap::sendObjId(short x, short z, const bool memoryCheck, unsigned int objId, char* pData, short _x, short _z){
 	int size = m_vObjIdBlock[z][x].size();
 
 	short tmpX, tmpY;
@@ -50,7 +50,7 @@ void GameMap::sendObjId(short x, short z, unsigned int objId, char* pData, short
 				if ((0 <= (tmpX) && (tmpX) < BLOCK_COUNT) && (0 <= (tmpY) && (tmpY) < BLOCK_COUNT)){
 					for (int k = 0; k < m_vObjIdBlock[tmpY][tmpX].size(); ++k){
 						if (objId != m_vObjIdBlock[tmpY][tmpX][k]){
-							m_pClientManager->getClient(m_vObjIdBlock[tmpY][tmpX][k])->PostSend(true, ((PacketHeader*)pData)->packetSize, pData);
+							m_pClientManager->getClient(m_vObjIdBlock[tmpY][tmpX][k])->PostSend(memoryCheck, ((PacketHeader*)pData)->packetSize, pData);
 						}
 					}
 				}
@@ -65,7 +65,7 @@ void GameMap::sendObjId(short x, short z, unsigned int objId, char* pData, short
 				if ((block[i][j].x == _x || block[i][j].y == _z) &&
 					(0 <= (tmpX) && (tmpX) < BLOCK_COUNT) && (0 <= (tmpY) && (tmpY) < BLOCK_COUNT)){
 					for (int k = 0; k < m_vObjIdBlock[tmpY][tmpX].size(); ++k){
-						m_pClientManager->getClient(m_vObjIdBlock[tmpY][tmpX][k])->PostSend(true, ((PacketHeader*)pData)->packetSize, pData);
+						m_pClientManager->getClient(m_vObjIdBlock[tmpY][tmpX][k])->PostSend(memoryCheck, ((PacketHeader*)pData)->packetSize, pData);
 					}
 				}
 			}

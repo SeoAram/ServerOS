@@ -6,6 +6,8 @@ MemoryPool::MemoryPool()
 {
 	head = new Node;
 	tail = head;
+	m_pMutexPop = new boost::mutex();
+	m_pMutexPush = new boost::mutex();
 }
 
 
@@ -27,22 +29,26 @@ void MemoryPool::createMemoryPool(){
 }
 
 Data* MemoryPool::popMemory(){
-	//std::cout << "pop Memory Size : " << m_pMemory.size() << "\n";
+	lockPop();
 	if (m_pMemory.size() == 0)
 	{
+		unlockPop();
 		return nullptr;
 	}
 	// 잠금 m_mutexPop;
 	Data* memory = m_pMemory.front();
 	m_pMemory.pop();
 	// 해제 m_mutexPop;
+	unlockPop();
 	return memory;
 }
 void MemoryPool::pushMemory(Data* memory){
 	//push lock필요
 	//잠금 m_mutexPush;
 	//std::cout << "push Memory Size : " << m_pMemory.size() << "\n";
+	lockPush();
 	m_pMemory.push(memory);
+	unlockPush();
 	//해제 m_mutexPush;
 }
 

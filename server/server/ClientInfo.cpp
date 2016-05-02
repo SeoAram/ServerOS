@@ -24,7 +24,7 @@ ClientInfo::~ClientInfo(){
 	{
 		MemoryPool::getInstance()->pushMemory(m_SendDataQueue.front());
 		//delete[] m_SendDataQueue.front();
-		m_SendDataQueue.pop_front();
+		m_SendDataQueue.pop();
 	}
 }
 
@@ -46,16 +46,17 @@ void ClientInfo::PostReceive()
 void ClientInfo::PostSend(const bool bImmediately, const int nSize, char* pData){
 	Data* pSendData = nullptr;
 
+	//std::cout << "ClientInfo PostSend() - " << m_pObject->getObjId() << " :: " << ((PacketHeader*)pData)->id << " :: " << nSize << std::endl;
 
 	if (bImmediately == false)
 	{
-		//여기서는 new말고 memorypool에서 가져오자
-
 		while ((pSendData = MemoryPool::getInstance()->popMemory()) == nullptr) Sleep(100);
-		pSendData->buf = pData;
-		memcpy(pSendData->buf, pData, nSize);
+		//pSendData->buf = pData;
+		memcpy((char*)pSendData->buf, pData, nSize);
 
-		m_SendDataQueue.push_back(pSendData);
+		//std::cout << "ClientInfo PostSend(false) - " << m_pObject->getObjId() << " :: " << ((PacketHeader*)pSendData->buf)->id << " :: " << ((PacketHeader*)pSendData->buf)->packetSize << std::endl;
+
+		m_SendDataQueue.push(pSendData);
 	}
 	else
 	{
@@ -69,9 +70,8 @@ void ClientInfo::PostSend(const bool bImmediately, const int nSize, char* pData)
 		return;
 	}
 
-	std::cout << "ClientInfo PostSend() - " << m_pObject->getObjId() << " :: " << ((PacketHeader*)pData)->id << " :: " << nSize << std::endl;
 
-	boost::asio::async_write(m_Socket, boost::asio::buffer(pSendData->buf, nSize),
+	boost::asio::async_write(m_Socket, boost::asio::buffer(pSendData->buf, ((PacketHeader*)pSendData->buf)->packetSize),
 		boost::bind(&ClientInfo::handle_write, this,
 		boost::asio::placeholders::error,
 		boost::asio::placeholders::bytes_transferred)
@@ -86,17 +86,20 @@ void ClientInfo::Init()
 
 void ClientInfo::handle_write(const boost::system::error_code& /*error*/, size_t /*bytes_transferred*/)
 {
-	//여기서는 값을 반환하자(memorypool에)
-	MemoryPool::getInstance()->pushMemory(m_SendDataQueue.front());
-	//delete[] m_SendDataQueue.front();
-	std::cout << "send Success~" << m_pObject->getObjId() << std::endl;
-	m_SendDataQueue.pop_front();
+
+	Data* memory = m_SendDataQueue.front();
+	m_SendDataQueue.pop();
+	MemoryPool::getInstance()->pushMemory(memory);
+	
+	//std::cout << "send Success~" << m_pObject->getObjId() << std::endl;
 
 	if (m_SendDataQueue.empty() == false)
 	{
-		PacketHeader* pHeader = (PacketHeader*)m_SendDataQueue.front()->buf;
+		memory = m_SendDataQueue.front();
+		PacketHeader* pHeader = (PacketHeader*)memory->buf;
+		//std::cout << "handle_write() - " << m_pObject->getObjId() << " :: " << pHeader->id << " :: " << pHeader->packetSize << std::endl;
 
-		PostSend(true, pHeader->packetSize, (char*)m_SendDataQueue.front());
+		PostSend(true, pHeader->packetSize, (char*)memory);
 	}
 }
 
