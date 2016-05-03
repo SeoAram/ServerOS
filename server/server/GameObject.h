@@ -1,5 +1,26 @@
 #pragma once
 #include "stdafx.h"
+
+class Random{
+private:
+	std::default_random_engine m_dre;
+	std::uniform_real_distribution<float>* m_pDx;
+	std::uniform_real_distribution<float>* m_pDy;
+	Random(){ 
+		m_pDx = new std::uniform_real_distribution<float>(0, IniData::getInstance()->getData("MAP_WIDTH"));
+		m_pDy = new std::uniform_real_distribution<float>(0, IniData::getInstance()->getData("MAP_HEIGHT"));
+	}
+public:
+	static Random* getInstance(){
+		static Random instance;
+		return &instance;
+	}
+
+	float getRandomX(){ return (*m_pDx)(m_dre); }
+	float getRandomY(){ return (*m_pDy)(m_dre); }
+};
+
+
 class GameObject
 {
 private:

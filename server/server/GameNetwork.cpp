@@ -75,15 +75,29 @@ void GameNetwork::ProcessPacket(const unsigned int nClientInfoID, const char*pDa
 									 //최초 접속 시 패킷 전송
 									 GameMap::getInstance()->insertObjId(pClient->getObject()->m_wBlockX, pClient->getObject()->m_wBlockZ, nClientInfoID);
 									 
-									 
+									 PacketInit iPack;
+									 iPack.Init();
 
-									 //for (unsigned int i = 0; i < MAX_CONNECT_CLIENT; ++i){
-										// pClient = m_pClientManager->getClient(i);
-										// if (pClient->Socket().is_open()/* && initPack.id != i*/){
-										//	 pClient->PostSend(false, initPack.packetSize, (char*)&initPack);
-										// }
-									 //}
-									 GameMap::getInstance()->sendObjId(pClient->getObject()->m_wBlockX, false, pClient->getObject()->m_wBlockZ, nClientInfoID, (char*)&initPack);
+
+									 ClientInfo* pClient2;
+
+									 for (unsigned int i = 0; i < MAX_CONNECT_CLIENT; ++i){
+										 pClient2 = m_pClientManager->getClient(i);
+										 if (pClient2->Socket().is_open() && initPack.id != i){
+											 pClient2->PostSend(false, initPack.packetSize, (char*)&initPack);
+											 iPack.id = pClient2->getObject()->getObjId();
+
+											 iPack.pos_x = pClient2->getObject()->m_pPosition->x;
+											 iPack.pos_y = pClient2->getObject()->m_pPosition->y;
+											 iPack.pos_z = pClient2->getObject()->m_pPosition->z;
+
+											 iPack.dir_x = pClient2->getObject()->m_pDirect->x;
+											 iPack.dir_y = pClient2->getObject()->m_pDirect->y;
+											 iPack.dir_z = pClient2->getObject()->m_pDirect->z;
+											 pClient->PostSend(false, initPack.packetSize, (char*)&initPack);
+										 }
+									 }
+									 //GameMap::getInstance()->sendObjId(pClient->getObject()->m_wBlockX, false, pClient->getObject()->m_wBlockZ, nClientInfoID, (char*)&initPack);
 									 std::cout << "내가 반납했다 :: " << nClientInfoID << std::endl;
 									 m_pMutex->unlock();
 	}

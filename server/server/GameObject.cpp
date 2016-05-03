@@ -30,12 +30,14 @@ void GameObject::resetObject(){
 
 	m_wSpeed = IniData::getInstance()->getData("OBJECT_SPEED");
 	m_wState = IniData::getInstance()->getData("GAME_OBJECT_STAT");
-	m_pPosition->x = std::rand() % IniData::getInstance()->getData("MAP_WIDTH");
+	m_pPosition->x = Random::getInstance()->getRandomX();//std::rand() % IniData::getInstance()->getData("MAP_WIDTH");
 	m_pPosition->y = 0;
-	m_pPosition->z = std::rand() % IniData::getInstance()->getData("MAP_HEIGHT");
+	m_pPosition->z = Random::getInstance()->getRandomY();//std::rand() % IniData::getInstance()->getData("MAP_HEIGHT");
 	m_pDirect->x = m_pDirect->z = 1;
 	m_pDirect->y = 0;
 	m_pDirect->vectorNormalization();
+
+	std::cout << m_iObjId << " - (" << m_pPosition->x << ", 0, " << m_pPosition->z << ")" << std::endl;
 
 	m_wBlockX = (int)m_pPosition->x / GameMap::getInstance()->getBlockW();
 	m_wBlockZ = (int)m_pPosition->z / GameMap::getInstance()->getBlockH();
