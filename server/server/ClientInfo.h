@@ -16,6 +16,10 @@ public:
 		return m_Socket;
 	}
 
+	void closeSocket(){
+		m_Socket.close();
+	}
+
 	void PostReceive();
 	void PostSend(const bool bImmediately, const int nSize, char* pData);
 	GameObject* getObject(){ return m_pObject; }

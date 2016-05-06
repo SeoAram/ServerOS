@@ -37,6 +37,8 @@ void GameObject::resetObject(){
 	m_pDirect->y = 0;
 	m_pDirect->vectorNormalization();
 
+	m_iAxis = 90;
+
 	std::cout << m_iObjId << " - (" << m_pPosition->x << ", 0, " << m_pPosition->z << ")" << std::endl;
 
 	m_wBlockX = (int)m_pPosition->x / GameMap::getInstance()->getBlockW();

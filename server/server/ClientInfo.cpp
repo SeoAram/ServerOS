@@ -115,6 +115,7 @@ void ClientInfo::handle_receive(const boost::system::error_code& error, size_t b
 		{
 			std::cout << "error No: " << error.value() << " error Message: " << error.message() << std::endl;
 		}
+
 		m_pGameNet->CloseClientInfo(m_pObject->getObjId());
 	}
 	else

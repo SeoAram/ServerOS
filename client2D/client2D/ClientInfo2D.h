@@ -134,6 +134,7 @@ private:
 											m_pObject->setObjId(pPacket->id);
 											m_pObject->m_pvPos->setXYZ(pPacket->pos_x, pPacket->pos_y, pPacket->pos_z);
 											m_pObject->m_pvDir->setXYZ(pPacket->dir_x, pPacket->dir_y, pPacket->dir_z);
+											m_pObject->setAxis(pPacket->iAxis);
 											
 											m_pObject->m_cObjState = IniData::getInstance()->getData("GAME_OBJECT_ALIVE");
 											std::cout << "Recv Client :: " << pPacket->id << " ";
@@ -159,10 +160,29 @@ private:
 
 										}
 										else{
+											GameObject* pObj = GameObjectManager::getInstance()->getObject(pPacket->id);
+											if (pObj != nullptr){
+												pObj->m_pvPos->setXYZ(pPacket->pos_x, pPacket->pos_y, pPacket->pos_z);
+												pObj->m_pvDir->setXYZ(pPacket->dir_x, pPacket->dir_y, pPacket->dir_z);
 
+												pObj->setAxis(pPacket->wAxis);
+
+												std::cout << "id : " << pObj->getObjId() << " ";
+												pObj->m_pvPos->operator<<(std::cout) << " - " << pObj->getAxis() << "\n";
+											}
 										}
 		}
 			break;
+		case PacketType::LOGOUT_PACKET:
+		{
+										  PacketMove* pPacket = (PacketMove*)pData;
+										  if (m_pObject->getObjId() == pPacket->id){
+
+										  }
+										  else{
+											  GameObjectManager::getInstance()->deleteObject(pPacket->id);
+										  }
+		}
 		}
 
 		return;

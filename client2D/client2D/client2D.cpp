@@ -154,7 +154,7 @@ BOOL InitInstance(HINSTANCE hInstance, int nCmdShow)
    hInst = hInstance; // 인스턴스 핸들을 전역 변수에 저장합니다.
 
    hWnd = CreateWindow(szWindowClass, szTitle, WS_OVERLAPPEDWINDOW,
-	   CW_USEDEFAULT, 0, IniData::getInstance()->getData("MAP_WIDTH") / 5, IniData::getInstance()->getData("MAP_HEIGHT") / 5, 
+	   CW_USEDEFAULT, 0, IniData::getInstance()->getData("MAP_WIDTH"), IniData::getInstance()->getData("MAP_HEIGHT"), 
 	   NULL, NULL, hInstance, NULL);
 
    if (!hWnd)
@@ -241,9 +241,19 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 		if (0 == wParam){
 			if (IniData::getInstance()->getData("GAME_OBJECT_STAT") != pGamePlayer->getObject()->m_cObjState){
 				pGamePlayer->getObject()->move();
-				//pGamePlayer->sendPacket(PacketType::MOVE_PACKET);
+			}
+			std::vector<GameObject*> tmp = *pObjectManager->getObjectList();
+			for (int i = 0; i < tmp.size(); ++i){
+				if (IniData::getInstance()->getData("GAME_OBJECT_STAT") != tmp[i]->m_cObjState){
+					tmp[i]->move();
+				}
 			}
 			InvalidateRgn(hWnd, NULL, FALSE);
+		}
+		if (1 == wParam){
+			if (IniData::getInstance()->getData("GAME_OBJECT_STAT") != pGamePlayer->getObject()->m_cObjState){
+				pGamePlayer->sendPacket(PacketType::MOVE_PACKET);
+			}
 		}
 		break;
 	case WM_PAINT:
@@ -251,13 +261,13 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 		// TODO: 여기에 그리기 코드를 추가합니다.
 		playerObj = pGamePlayer->getObject();
 		{
-			float x = playerObj->m_pvPos->x / 5;
-			float z = playerObj->m_pvPos->z / 5;
+			float x = playerObj->m_pvPos->x;
+			float z = playerObj->m_pvPos->z;
 			Rectangle(hdc, x - 2, z - 2, x + 2, z + 2);
 			std::vector<GameObject*> tmp = *pObjectManager->getObjectList();
 			for (int i = 0; i < tmp.size(); ++i){
-				x = tmp[i]->m_pvPos->x / 5;
-				z = tmp[i]->m_pvPos->z / 5;
+				x = tmp[i]->m_pvPos->x;
+				z = tmp[i]->m_pvPos->z;
 				Rectangle(hdc, x - 2, z - 2, x + 2, z + 2);
 			}
 		}
@@ -302,7 +312,7 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 					  pRecvThread = new boost::thread(boost::bind(&boost::asio::io_service::run, &io_service));
 
 					  SetTimer(hWnd, 0, IniData::getInstance()->getData("FRAME_RATE") / 1000, NULL);
-					  //pRecvThread->join();
+					  SetTimer(hWnd, 1, 1000, NULL);
 	}
 		break;
 	default:

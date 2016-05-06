@@ -121,6 +121,7 @@ private:
 											m_pObject->setObjId(pPacket->id);
 											m_pObject->m_pvPos->setXYZ(pPacket->pos_x, pPacket->pos_y, pPacket->pos_z);
 											m_pObject->m_pvDir->setXYZ(pPacket->dir_x, pPacket->dir_y, pPacket->dir_z);
+											m_pObject->setAxis(pPacket->iAxis);
 											
 											m_pObject->m_cObjState = IniData::getInstance()->getData("GAME_OBJECT_ALIVE");
 
@@ -135,9 +136,6 @@ private:
 			break;
 		case PacketType::MOVE_PACKET:
 		{
-										PacketMove* pPacket = (PacketMove*)pData;
-										if (pPacket->id == m_pObject->getObjId())
-											PostSend(false, pPacket->packetSize, (char*)pPacket);
 		}
 			break;
 		}

@@ -32,10 +32,18 @@ void GameNetwork::CloseClientInfo(const unsigned int nClientInfoID)
 	PacketLogout pData;
 	pData.Init();
 	pData.id = nClientInfoID;
+
+	for (unsigned int i = 0; i < MAX_CONNECT_CLIENT; ++i){
+		pClient = m_pClientManager->getClient(i);
+		if (pClient->Socket().is_open() && nClientInfoID != i){
+			pClient->PostSend(false, pData.packetSize, (char*)&pData);
+		}
+	}
+
 	GameMap::getInstance()->deleteObjId(pClient->getObject()->m_wBlockX, pClient->getObject()->m_wBlockZ, nClientInfoID);
 	//GameMap::getInstance()->sendObjId(pClient->getObject()->m_wBlockX, pClient->getObject()->m_wBlockZ, nClientInfoID, (char*)&pData);
-
-	pClient->Socket().close();
+	pClient->closeSocket();
+	//pClient->Socket().close();
 	m_pClientManager->returnClient(nClientInfoID);
 
 	if (m_bIsAccepting == false)
@@ -94,18 +102,35 @@ void GameNetwork::ProcessPacket(const unsigned int nClientInfoID, const char*pDa
 											 iPack.dir_x = pClient2->getObject()->m_pDirect->x;
 											 iPack.dir_y = pClient2->getObject()->m_pDirect->y;
 											 iPack.dir_z = pClient2->getObject()->m_pDirect->z;
-											 pClient->PostSend(false, initPack.packetSize, (char*)&initPack);
+
+											 iPack.iAxis = pClient2->getObject()->m_iAxis;
+											 pClient->PostSend(false, iPack.packetSize, (char*)&iPack);
+
 										 }
 									 }
 									 //GameMap::getInstance()->sendObjId(pClient->getObject()->m_wBlockX, false, pClient->getObject()->m_wBlockZ, nClientInfoID, (char*)&initPack);
-									 std::cout << "내가 반납했다 :: " << nClientInfoID << std::endl;
 									 m_pMutex->unlock();
+									 std::cout << "내가 반납했다 :: " << nClientInfoID << std::endl;
 	}
 		break;
 	case PacketType::MOVE_PACKET:
 	{
 									PacketMove* pPacket = (PacketMove*)pData;
 									ClientInfo* pClient = m_pClientManager->getClient(nClientInfoID);
+
+									pClient->getObject()->m_pPosition->x = pPacket->pos_x;
+									pClient->getObject()->m_pPosition->y = pPacket->pos_y;
+									pClient->getObject()->m_pPosition->z = pPacket->pos_z;
+
+									pClient->getObject()->m_pDirect->x = pPacket->dir_x;
+									pClient->getObject()->m_pDirect->y = pPacket->dir_y;
+									pClient->getObject()->m_pDirect->z = pPacket->dir_z;
+
+									pClient->getObject()->m_iAxis = pPacket->wAxis;
+
+									pClient->getObject()->m_wState = IniData::getInstance()->getData("GAME_OBJECT_ALIVE");
+
+									std::cout << pPacket->id << " - (" << pPacket->pos_x << ", " << pPacket->pos_y << ", " << pPacket->pos_z << ") \n";
 
 									for (unsigned int i = 0; i < MAX_CONNECT_CLIENT; ++i){
 										pClient = m_pClientManager->getClient(i);
@@ -157,6 +182,8 @@ void GameNetwork::handle_accept(ClientInfo* pClientInfo, const boost::system::er
 		initPack.dir_x = pClientInfo->getObject()->m_pDirect->x;
 		initPack.dir_y = pClientInfo->getObject()->m_pDirect->y;
 		initPack.dir_z = pClientInfo->getObject()->m_pDirect->z;
+
+		initPack.iAxis = pClientInfo->getObject()->m_iAxis;
 
 		//최초 접속 시 패킷 전송
 		pClientInfo->PostSend(false, initPack.packetSize, (char*)&initPack);

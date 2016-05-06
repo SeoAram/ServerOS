@@ -21,17 +21,18 @@ void setTimer(){
 
 				ClientInfo* pClient = pClientManager->getClient(i);
 
+
 				pClient->getObject()->move();
 			}
 
 			if (60 <= count){
 				count = 0;
-				for (int i = 0; i < MAX_CONNECT; ++i, Sleep(100)){
+				for (int i = 0; i < MAX_CONNECT; ++i){
 					
 					ClientInfo* pClient = pClientManager->getClient(i);
 	
 					std::cout << "id : " << pClient->getObject()->getObjId() << " ";
-					pClient->getObject()->m_pvPos->operator<<(std::cout) << "\n";
+					pClient->getObject()->m_pvPos->operator<<(std::cout) << " - " << pClient->getObject()->getAxis() << "\n";
 					PacketMove pData;
 					pData.Init();
 					pData.id = pClient->getObject()->getObjId();
@@ -44,6 +45,10 @@ void setTimer(){
 
 					pData.wAxis = pClient->getObject()->getAxis();
 					pClient->PostSend(false, pData.packetSize, (char*)&pData);
+
+					int a = pClient->getObject()->getAxis();
+					a %= 360;
+					pClient->getObject()->setAxis(a + 5);
 				
 				}
 			}
@@ -54,6 +59,7 @@ void setTimer(){
 
 int main()
 {
+	srand(time(0));
 
 	ClientInfoManager* pClientManager = ClientInfoManager::getInstance();
 

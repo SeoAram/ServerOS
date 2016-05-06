@@ -45,6 +45,7 @@ struct PacketInit : public PacketHeader{
 	}
 	float pos_x, pos_y, pos_z;
 	float dir_x, dir_y, dir_z;
+	int iAxis;
 };
 
 struct PacketMove : public PacketHeader{
@@ -56,5 +57,5 @@ struct PacketMove : public PacketHeader{
 	}
 	float pos_x, pos_y, pos_z;
 	float dir_x, dir_y, dir_z;
-	unsigned int wAxis;
+	int wAxis;
 };

@@ -23,6 +23,7 @@ public:
 	unsigned int getObjId(){ return m_uObjId; }
 	int getAxis(){ return m_iAxis; }
 	void setObjId(unsigned int i){ m_uObjId = i; }
+	void setAxis(int a){ m_iAxis = a; }
 
 	void turnLeft()
 	{
@@ -110,12 +111,20 @@ public:
 		*m_pvPos = (*m_pvPos + &(*m_pvDir * (m_wSpeed*(1.0 / IniData::getInstance()->getData("FRAME_RATE")))));
 	}
 
+	void move(float second)
+	{
+		m_pvDir->x = cosf(m_iAxis * RADIAN) * 1;
+		m_pvDir->z = sinf(m_iAxis * RADIAN) * 1;
+		m_pvDir->vectorNormalization();
+		*m_pvPos = (*m_pvPos + &(*m_pvDir * (m_wSpeed * second)));
+	}
+
 	void initData(PacketInit& pData){
 		m_uObjId = pData.id;
 		m_pvPos->setXYZ(pData.pos_x, pData.pos_y, pData.pos_z);
 		m_pvDir->setXYZ(pData.dir_x, pData.dir_y, pData.dir_z);
 		m_pvDir->vectorNormalization();
-		m_iAxis = 90;
+		m_iAxis = pData.iAxis;
 	}
 
 	GameObject() :m_uObjId(-1), m_iAxis(90), m_wSpeed(IniData::getInstance()->getData("OBJECT_SPEED")), m_cObjState(IniData::getInstance()->getData("GAME_OBJECT_STAT"))
@@ -165,6 +174,7 @@ public:
 		if (!checkObj){
 			m_vObject.push_back(new GameObject(objId));
 			m_vObject[size]->initData(pData);
+			m_vObject[size]->m_cObjState = IniData::getInstance()->getData("GAME_OBJECT_ALIVE");
 		}
 	}
 
