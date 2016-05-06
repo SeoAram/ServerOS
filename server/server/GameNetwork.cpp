@@ -33,16 +33,18 @@ void GameNetwork::CloseClientInfo(const unsigned int nClientInfoID)
 	pData.Init();
 	pData.id = nClientInfoID;
 
+	ClientInfo* pClient2;
 	for (unsigned int i = 0; i < MAX_CONNECT_CLIENT; ++i){
-		pClient = m_pClientManager->getClient(i);
-		if (pClient->Socket().is_open() && nClientInfoID != i){
-			pClient->PostSend(false, pData.packetSize, (char*)&pData);
+		pClient2 = m_pClientManager->getClient(i);
+		if (pClient2->Socket().is_open() && nClientInfoID != i){
+			pClient2->PostSend(false, pData.packetSize, (char*)&pData);
 		}
 	}
 
 	GameMap::getInstance()->deleteObjId(pClient->getObject()->m_wBlockX, pClient->getObject()->m_wBlockZ, nClientInfoID);
 	//GameMap::getInstance()->sendObjId(pClient->getObject()->m_wBlockX, pClient->getObject()->m_wBlockZ, nClientInfoID, (char*)&pData);
 	pClient->closeSocket();
+	pClient->getObject()->m_wState = IniData::getInstance()->getData("GAME_OBJECT_LOGOUT");
 	//pClient->Socket().close();
 	m_pClientManager->returnClient(nClientInfoID);
 
@@ -93,18 +95,20 @@ void GameNetwork::ProcessPacket(const unsigned int nClientInfoID, const char*pDa
 										 pClient2 = m_pClientManager->getClient(i);
 										 if (pClient2->Socket().is_open() && initPack.id != i){
 											 pClient2->PostSend(false, initPack.packetSize, (char*)&initPack);
-											 iPack.id = pClient2->getObject()->getObjId();
+											 if (pClient2->getObject()->m_wState != IniData::getInstance()->getData("GAME_OBJECT_LOGOUT")){
+												 iPack.id = pClient2->getObject()->getObjId();
 
-											 iPack.pos_x = pClient2->getObject()->m_pPosition->x;
-											 iPack.pos_y = pClient2->getObject()->m_pPosition->y;
-											 iPack.pos_z = pClient2->getObject()->m_pPosition->z;
+												 iPack.pos_x = pClient2->getObject()->m_pPosition->x;
+												 iPack.pos_y = pClient2->getObject()->m_pPosition->y;
+												 iPack.pos_z = pClient2->getObject()->m_pPosition->z;
 
-											 iPack.dir_x = pClient2->getObject()->m_pDirect->x;
-											 iPack.dir_y = pClient2->getObject()->m_pDirect->y;
-											 iPack.dir_z = pClient2->getObject()->m_pDirect->z;
+												 iPack.dir_x = pClient2->getObject()->m_pDirect->x;
+												 iPack.dir_y = pClient2->getObject()->m_pDirect->y;
+												 iPack.dir_z = pClient2->getObject()->m_pDirect->z;
 
-											 iPack.iAxis = pClient2->getObject()->m_iAxis;
-											 pClient->PostSend(false, iPack.packetSize, (char*)&iPack);
+												 iPack.iAxis = pClient2->getObject()->m_iAxis;
+												 pClient->PostSend(false, iPack.packetSize, (char*)&iPack);
+											 }
 
 										 }
 									 }
@@ -134,7 +138,8 @@ void GameNetwork::ProcessPacket(const unsigned int nClientInfoID, const char*pDa
 
 									for (unsigned int i = 0; i < MAX_CONNECT_CLIENT; ++i){
 										pClient = m_pClientManager->getClient(i);
-										if (pClient->Socket().is_open() && nClientInfoID != i){
+										if (pClient->Socket().is_open() && nClientInfoID != i 
+											&& pClient->getObject()->m_wState != IniData::getInstance()->getData("GAME_OBJECT_LOGOUT")){
 											pClient->PostSend(false, pPacket->packetSize, (char*)pPacket);
 										}
 									}
