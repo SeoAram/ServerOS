@@ -10,6 +10,8 @@
 void setTimer(){
 	auto time = boost::chrono::system_clock::now();
 	static short count = 0;
+	int moveSet[MAX_CONNECT] = { 0 };
+	int moveCheck[MAX_CONNECT] = { 0 };
 	while (1){
 		Sleep(1);
 		if (time + boost::chrono::seconds(1/60) < boost::chrono::system_clock::now()){
@@ -46,9 +48,13 @@ void setTimer(){
 					pData.wAxis = pClient->getObject()->getAxis();
 					pClient->PostSend(false, pData.packetSize, (char*)&pData);
 
-					int a = pClient->getObject()->getAxis();
-					a %= 360;
-					pClient->getObject()->setAxis(a + 5);
+					++moveCheck[i];
+
+					if (moveSet[i] < moveCheck[i]){
+						moveCheck[i] = 0;
+						moveSet[i] = rand() % 60;
+						pClient->getObject()->setAxis(rand() % 360);
+					}
 				
 				}
 			}

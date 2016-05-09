@@ -109,6 +109,18 @@ public:
 		m_pvDir->z = sinf(m_iAxis * RADIAN) * 1;
 		m_pvDir->vectorNormalization();
 		*m_pvPos = (*m_pvPos + &(*m_pvDir * (m_wSpeed*(1.0 / IniData::getInstance()->getData("FRAME_RATE")))));
+		if (m_pvPos->x < 0){
+			m_pvPos->x = 0;
+		}
+		else if (IniData::getInstance()->getData("MAP_WIDTH") <= m_pvPos->x){
+			m_pvPos->x = IniData::getInstance()->getData("MAP_WIDTH");
+		}
+		if (m_pvPos->z < 0){
+			m_pvPos->z = 0;
+		}
+		else if (IniData::getInstance()->getData("MAP_HEIGHT") <= m_pvPos->z){
+			m_pvPos->z = IniData::getInstance()->getData("MAP_HEIGHT");
+		}
 	}
 
 	void move(float second)
@@ -117,6 +129,18 @@ public:
 		m_pvDir->z = sinf(m_iAxis * RADIAN) * 1;
 		m_pvDir->vectorNormalization();
 		*m_pvPos = (*m_pvPos + &(*m_pvDir * (m_wSpeed * second)));
+		if (m_pvPos->x < 0){
+			m_pvPos->x = 0;
+		}
+		else if (IniData::getInstance()->getData("MAP_WIDTH") <= m_pvPos->x){
+			m_pvPos->x = IniData::getInstance()->getData("MAP_WIDTH");
+		}
+		if (m_pvPos->z < 0){
+			m_pvPos->z = 0;
+		}
+		else if (IniData::getInstance()->getData("MAP_HEIGHT") <= m_pvPos->z){
+			m_pvPos->z = IniData::getInstance()->getData("MAP_HEIGHT");
+		}
 	}
 
 	void initData(PacketInit& pData){
