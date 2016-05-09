@@ -45,10 +45,11 @@ Data* MemoryPool::popMemory(){
 void MemoryPool::pushMemory(Data* memory){
 	//push lock필요
 	//잠금 m_mutexPush;
-	//std::cout << "push Memory Size : " << m_pMemory.size() << "\n";
 	lockPush();
 	m_pMemory.push(memory);
 	unlockPush();
+	if (m_pMemory.size() % 300 == 0)
+		std::cout << "push Memory Size : " << m_pMemory.size() << "\n";
 	//해제 m_mutexPush;
 }
 

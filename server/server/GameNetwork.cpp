@@ -134,7 +134,7 @@ void GameNetwork::ProcessPacket(const unsigned int nClientInfoID, const char*pDa
 
 									pClient->getObject()->m_wState = IniData::getInstance()->getData("GAME_OBJECT_ALIVE");
 
-									std::cout << pPacket->id << " - (" << pPacket->pos_x << ", " << pPacket->pos_y << ", " << pPacket->pos_z << ") \n";
+									// std::cout << pPacket->id << " - (" << pPacket->pos_x << ", " << pPacket->pos_y << ", " << pPacket->pos_z << ") \n";
 
 									for (unsigned int i = 0; i < MAX_CONNECT_CLIENT; ++i){
 										pClient = m_pClientManager->getClient(i);
