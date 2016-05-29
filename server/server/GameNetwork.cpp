@@ -9,6 +9,8 @@ m_pClientManager(ClientInfoManager::getInstance())
 	m_bIsAccepting = false;
 	m_pMutex = new boost::mutex();
 	m_pLock = new boost::mutex::scoped_lock(m_mutex);
+	m_pTheadPool = new boost::thread_group();
+	m_pTheadPool->create_thread(boost::bind(&boost::asio::io_service::run, &io_service));
 }
 
 GameNetwork::~GameNetwork()
@@ -50,7 +52,7 @@ void GameNetwork::CloseClientInfo(const unsigned int nClientInfoID)
 
 	if (m_bIsAccepting == false)
 	{
-		PostAccept();
+		//PostAccept();
 	}
 }
 
@@ -152,18 +154,46 @@ void GameNetwork::ProcessPacket(const unsigned int nClientInfoID, const char*pDa
 
 bool GameNetwork::PostAccept()
 {
-	ClientInfo* pClient = m_pClientManager->connectClient();
 
-	m_bIsAccepting = true;
+	while (true){
+		ClientInfo* pClient = m_pClientManager->connectClient();
 
-	cout << "클라이언트 접속 대기 " << endl;
-	m_acceptor.async_accept(pClient->Socket(),
-		boost::bind(&GameNetwork::handle_accept,
-		this,
-		pClient,
-		boost::asio::placeholders::error)
-		);
+		m_bIsAccepting = true;
 
+		cout << "클라이언트 접속 대기 " << endl;
+
+		m_acceptor.accept(pClient->Socket());
+
+		/*m_acceptor.async_accept(pClient->Socket(),
+			boost::bind(&GameNetwork::handle_accept,
+			this,
+			pClient,
+			boost::asio::placeholders::error)
+			);*/
+		std::cout << "클라이언트 접속 성공. ClientInfoID: " << pClient->getObject()->getObjId() << std::endl;
+		pClient->setSocketOpt(boost::asio::ip::tcp::no_delay(true));
+		pClient->Init();
+
+		PacketInit initPack;
+		initPack.Init();
+
+		initPack.id = pClient->getObject()->getObjId();
+
+		initPack.pos_x = pClient->getObject()->m_pPosition->x;
+		initPack.pos_y = pClient->getObject()->m_pPosition->y;
+		initPack.pos_z = pClient->getObject()->m_pPosition->z;
+
+		initPack.dir_x = pClient->getObject()->m_pDirect->x;
+		initPack.dir_y = pClient->getObject()->m_pDirect->y;
+		initPack.dir_z = pClient->getObject()->m_pDirect->z;
+
+		initPack.iAxis = pClient->getObject()->m_iAxis;
+
+		//최초 접속 시 패킷 전송
+		pClient->PostSend(false, initPack.packetSize, (char*)&initPack);
+
+		pClient->PostReceive();
+	}
 	return true;
 }
 
