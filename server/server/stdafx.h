@@ -33,7 +33,7 @@
 using namespace std;
 
 
-#define WORKED_THREAD 1
+#define WORKED_THREAD 3
 #define BLOCK_COUNT 16
 
 

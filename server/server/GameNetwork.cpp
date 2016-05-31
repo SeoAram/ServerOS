@@ -10,7 +10,8 @@ m_pClientManager(ClientInfoManager::getInstance())
 	m_pMutex = new boost::mutex();
 	m_pLock = new boost::mutex::scoped_lock(m_mutex);
 	m_pTheadPool = new boost::thread_group();
-	m_pTheadPool->create_thread(boost::bind(&boost::asio::io_service::run, &io_service));
+	for (int i = 0; i < WORKED_THREAD; ++i)
+		m_pTheadPool->create_thread(boost::bind(&boost::asio::io_service::run, &io_service));
 }
 
 GameNetwork::~GameNetwork()
@@ -170,6 +171,7 @@ bool GameNetwork::PostAccept()
 			pClient,
 			boost::asio::placeholders::error)
 			);*/
+
 		std::cout << "클라이언트 접속 성공. ClientInfoID: " << pClient->getObject()->getObjId() << std::endl;
 		pClient->setSocketOpt(boost::asio::ip::tcp::no_delay(true));
 		pClient->Init();
@@ -190,6 +192,7 @@ bool GameNetwork::PostAccept()
 		initPack.iAxis = pClient->getObject()->m_iAxis;
 
 		//최초 접속 시 패킷 전송
+		
 		pClient->PostSend(false, initPack.packetSize, (char*)&initPack);
 
 		pClient->PostReceive();
