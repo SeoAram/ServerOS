@@ -12,6 +12,9 @@ m_pClientManager(ClientInfoManager::getInstance())
 	m_pTheadPool = new boost::thread_group();
 	for (int i = 0; i < WORKED_THREAD; ++i)
 		m_pTheadPool->create_thread(boost::bind(&boost::asio::io_service::run, &io_service));
+	for (int i = 0; i < WORKED_THREAD; ++i){
+		m_pThreadArr[i] = new boost::thread();
+	}
 }
 
 GameNetwork::~GameNetwork()

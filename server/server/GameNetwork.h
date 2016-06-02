@@ -34,6 +34,7 @@ private:
 	ClientInfoManager* m_pClientManager;
 
 	boost::thread_group* m_pTheadPool;
+	boost::thread* m_pThreadArr[WORKED_THREAD];
 
 };
 
