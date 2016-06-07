@@ -21,6 +21,8 @@ private:
 
 	~GameNetwork();
 
+	void sendRecvThread(int threadId);
+
 	bool PostAccept();
 
 	void handle_accept(ClientInfo* pClientInfo, const boost::system::error_code& error);

@@ -13,13 +13,29 @@ m_pClientManager(ClientInfoManager::getInstance())
 	for (int i = 0; i < WORKED_THREAD; ++i)
 		m_pTheadPool->create_thread(boost::bind(&boost::asio::io_service::run, &io_service));
 	for (int i = 0; i < WORKED_THREAD; ++i){
-		m_pThreadArr[i] = new boost::thread();
+		m_pThreadArr[i] = new boost::thread(&GameNetwork::sendRecvThread, this, i);
 	}
 }
 
 GameNetwork::~GameNetwork()
 {
 
+}
+
+void GameNetwork::sendRecvThread(int threadId){
+	std::cout << "Create Thread Id :: "  << threadId << std::endl;
+	if (m_pClientManager == nullptr)
+		m_pClientManager = ClientInfoManager::getInstance();
+	ClientInfo* pClient = nullptr;
+	boost::this_thread::sleep(boost::posix_time::seconds(3));
+	while (true){
+		for (int i = 0; i < MAX_CONNECT_CLIENT; ++i){
+			pClient = m_pClientManager->getClient(i / WORKED_THREAD + threadId);
+			if (pClient->Socket().is_open()){
+				
+			}
+		}
+	}
 }
 
 void GameNetwork::Start()

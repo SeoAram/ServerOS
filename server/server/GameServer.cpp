@@ -19,13 +19,15 @@ void GameServer::initServer(boost::asio::io_service& io_service){
 	ClientInfoManager* pClientManager = ClientInfoManager::getInstance();
 	MemoryPool* pMemory = MemoryPool::getInstance();
 	
-	m_pGameNet = GameNetwork::getInstance(io_service);
 
 	pClientManager->initClientInfoManager(io_service);
 	pMemory->createMemoryPool();
+
+	m_pGameNet = GameNetwork::getInstance(io_service);
 }
 
 void GameServer::startServer(boost::asio::io_service& io_service){
+	std::cout << "동시 실행 가능한 스레드 :: " << boost::thread::hardware_concurrency() << std::endl;
 	//네트워크 엔진 객체 초기화 / 실행
 }
 

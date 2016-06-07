@@ -43,6 +43,22 @@ void ClientInfo::PostReceive()
 		);
 }
 
+void ClientInfo::setSendQueue(const bool bImmediately, const int nSize, char* pData){
+	Data* pSendData = nullptr;
+
+
+	if (bImmediately == false)
+	{
+		memcpy((char*)pSendData->buf, pData, nSize);
+
+		m_SendDataQueue.push(pSendData);
+	}
+	else
+	{
+	}
+	m_SendDataQueue.push(pSendData);
+}
+
 void ClientInfo::PostSend(const bool bImmediately, const int nSize, char* pData){
 	Data* pSendData = nullptr;
 
@@ -50,7 +66,7 @@ void ClientInfo::PostSend(const bool bImmediately, const int nSize, char* pData)
 
 	if (bImmediately == false)
 	{
-		while ((pSendData = MemoryPool::getInstance()->popMemory()) == nullptr) Sleep(100);
+		while ((pSendData = MemoryPool::getInstance()->popMemory()) == nullptr) boost::this_thread::sleep(boost::posix_time::seconds(1));
 		//pSendData->buf = pData;
 		memcpy((char*)pSendData->buf, pData, nSize);
 

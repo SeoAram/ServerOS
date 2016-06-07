@@ -27,6 +27,8 @@ public:
 	void Init();
 	void setSocketOpt(boost::asio::ip::tcp::no_delay& option);
 
+	void setSendQueue(const bool bImmediately, const int nSize, char* pData);
+
 private:
 
 	void handle_write(const boost::system::error_code& /*error*/, size_t /*bytes_transferred*/);
