@@ -49,14 +49,17 @@ void ClientInfo::setSendQueue(const bool bImmediately, const int nSize, char* pD
 
 	if (bImmediately == false)
 	{
+		while ((pSendData = MemoryPool::getInstance()->popMemory()) == nullptr) boost::this_thread::sleep(boost::posix_time::seconds(1));
 		memcpy((char*)pSendData->buf, pData, nSize);
 
-		m_SendDataQueue.push(pSendData);
 	}
 	else
 	{
+		pSendData = (Data*)pData;
+		
 	}
 	m_SendDataQueue.push(pSendData);
+	//이제 샌드작업 하게 합시다 :3c
 }
 
 void ClientInfo::PostSend(const bool bImmediately, const int nSize, char* pData){
