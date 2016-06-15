@@ -5,6 +5,8 @@
 ClientInfoManager::ClientInfoManager()
 :m_bInit(false)
 {
+	m_pMutexPop = new boost::mutex();
+	m_pMutexPush = new boost::mutex();
 }
 
 
@@ -24,12 +26,33 @@ ClientInfoManager::~ClientInfoManager()
 
 //accept에서 connect처리 해야 함
 ClientInfo* ClientInfoManager::connectClient(){
-	if (m_qWaitNum.size() == 0)
+	lockPop();
+	if (m_qWaitNum.size() == 0){
+		unlockPop();
 		return nullptr;
+	}
 	
 	unsigned int nConnId = m_qWaitNum.front();
 
 	m_qWaitNum.pop();
+	unlockPop();
+	return m_vClient[nConnId];
+}
+
+ClientInfo* ClientInfoManager::connectClient(const unsigned int nObjId, const unsigned int nMax){
+	lockPop();
+	if (m_qWaitNum.size() == 0){
+		unlockPop();
+		return nullptr;
+	}
+	unsigned int nConnId = m_qWaitNum.front();
+	if (nConnId % nMax != nConnId){
+		unlockPop();
+		return nullptr;
+	}
+
+	m_qWaitNum.pop();
+	unlockPop();
 	return m_vClient[nConnId];
 }
 

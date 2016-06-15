@@ -21,11 +21,15 @@ private:
 
 	~GameNetwork();
 
-	void sendRecvThread(int threadId);
+	void connectThread(const unsigned int threadId);
 
 	bool PostAccept();
 
+	bool PostAccept(const unsigned int threadId);
+
 	void handle_accept(ClientInfo* pClientInfo, const boost::system::error_code& error);
+
+	void handle_accept(ClientInfo* pClientInfo, const unsigned int threadId, const boost::system::error_code& error);
 
 	bool m_bIsAccepting;
 
@@ -36,7 +40,11 @@ private:
 	ClientInfoManager* m_pClientManager;
 
 	boost::thread_group* m_pTheadPool;
-	boost::thread* m_pThreadArr[WORKED_THREAD];
 
+	vector<boost::thread*> m_vThread;
+
+	boost::asio::io_service* m_io_service;
+
+	const unsigned int m_uThreadCount;
 };
 

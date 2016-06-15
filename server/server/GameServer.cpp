@@ -40,6 +40,7 @@ void GameServer::loopServer(boost::asio::io_service* io_service){
 	work.reset(new boost::asio::io_service::work(*io_service));
 	io_service->run();
 	//EventThread를 만들어서 그곳으로 빼내라
+	//while (1);
 	std::cout << "네트웍 접속 종료" << std::endl;
 }
 

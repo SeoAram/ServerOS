@@ -60,6 +60,7 @@ void ClientInfo::setSendQueue(const bool bImmediately, const int nSize, char* pD
 	}
 	m_SendDataQueue.push(pSendData);
 	//이제 샌드작업 하게 합시다 :3c
+
 }
 
 void ClientInfo::PostSend(const bool bImmediately, const int nSize, char* pData){
