@@ -35,8 +35,8 @@ private:
 
 	boost::mutex m_mutex;
 	boost::mutex* m_pMutex;
-	boost::mutex::scoped_lock* m_pLock;
 	boost::asio::ip::tcp::acceptor m_acceptor;
+	std::vector<boost::asio::ip::tcp::acceptor*> m_vAcceptor;
 	ClientInfoManager* m_pClientManager;
 
 	boost::thread_group* m_pTheadPool;

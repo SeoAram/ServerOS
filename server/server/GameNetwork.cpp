@@ -1,5 +1,6 @@
 #include "stdafx.h"
 #include "GameNetwork.h"
+#include <minmax.h>
 
 
 GameNetwork::GameNetwork(boost::asio::io_service& io_service)
@@ -9,13 +10,13 @@ m_uThreadCount(boost::thread::hardware_concurrency() -1 )
 {
 	m_bIsAccepting = false;
 	m_pMutex = new boost::mutex();
-	m_pLock = new boost::mutex::scoped_lock(m_mutex);
 	/*m_pTheadPool = new boost::thread_group();
 	for (int i = 0; i < WORKED_THREAD; ++i)
 		m_pTheadPool->create_thread(boost::bind(&boost::asio::io_service::run, &io_service));*/
 	for (int i = 0; i < m_uThreadCount; ++i){
 		m_vThread.push_back(new boost::thread(&GameNetwork::connectThread, this, i));
 		m_io_service = new boost::asio::io_service[m_uThreadCount];
+		m_vAcceptor.push_back(new boost::asio::ip::tcp::acceptor(m_io_service[i], boost::asio::ip::tcp::endpoint(boost::asio::ip::tcp::v4(), PORT_NUMBER)));
 	}
 }
 
@@ -67,11 +68,11 @@ void GameNetwork::connectThread(const unsigned int threadId){
 		pClient->PostReceive();
 
 	}*/
-
+	
 	PostAccept(threadId);
 	m_io_service[threadId].run();
-
-	// 여전히 메모리 릭이 심하다....흑흐흐히ㅏㅏㅣ거ㅏ허뮤ㅠㅠㅠㅠㅠ
+	
+	std::cout << threadId << "번 thread 종료" << endl;
 }
 
 void GameNetwork::Start()
@@ -80,8 +81,6 @@ void GameNetwork::Start()
 
 	for (int i = 0; i < m_uThreadCount; ++i){
 		m_vThread[i]->join();
-
-		
 	}
 
 	cout << "server start" << endl;
@@ -264,11 +263,9 @@ bool GameNetwork::PostAccept(const unsigned int threadId)
 
 	m_bIsAccepting = true;
 
-	//cout << ::GetCurrentThreadId() << " - ";
-
 	cout << threadId << " :: " << pClient->getObject()->getObjId() << " 클라이언트 접속 대기 " << endl;
 
-	m_acceptor.async_accept(pClient->Socket(),
+	m_vAcceptor[threadId]->async_accept(pClient->Socket(),
 		boost::bind(&GameNetwork::handle_accept,
 		this,
 		pClient,
