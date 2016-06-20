@@ -70,8 +70,12 @@ void GameNetwork::connectThread(const unsigned int threadId){
 	}*/
 	
 	PostAccept(threadId);
+
+	boost::shared_ptr<boost::asio::io_service::work> work;
+	work.reset(new boost::asio::io_service::work(m_io_service[threadId]));
 	m_io_service[threadId].run();
-	
+
+	//立加...贸府 档内....
 	std::cout << threadId << "锅 thread 辆丰" << endl;
 }
 
