@@ -14,9 +14,19 @@ m_uThreadCount(boost::thread::hardware_concurrency() -1 )
 	for (int i = 0; i < WORKED_THREAD; ++i)
 		m_pTheadPool->create_thread(boost::bind(&boost::asio::io_service::run, &io_service));*/
 	for (int i = 0; i < m_uThreadCount; ++i){
-		m_vThread.push_back(new boost::thread(&GameNetwork::connectThread, this, i));
+		//m_vThread.push_back(new boost::thread(&GameNetwork::connectThread, this, i));
 		m_io_service = new boost::asio::io_service[m_uThreadCount];
 		m_vAcceptor.push_back(new boost::asio::ip::tcp::acceptor(m_io_service[i], boost::asio::ip::tcp::endpoint(boost::asio::ip::tcp::v4(), PORT_NUMBER)));
+	}
+}
+
+GameNetwork::GameNetwork(std::vector<boost::asio::io_service*>& v_io_service)
+:m_acceptor(*v_io_service[0], boost::asio::ip::tcp::endpoint(boost::asio::ip::tcp::v4(), PORT_NUMBER)),
+m_uThreadCount(v_io_service.size())
+{
+	for (int i = 0; i < m_uThreadCount; ++i){
+		m_vAcceptor.push_back(new boost::asio::ip::tcp::acceptor(*(v_io_service[i]), boost::asio::ip::tcp::endpoint(boost::asio::ip::tcp::v4(), PORT_NUMBER)));
+		m_vThread.push_back(new boost::thread(&GameNetwork::connectThread, this, i, *(v_io_service[i])));
 	}
 }
 
@@ -25,11 +35,11 @@ GameNetwork::~GameNetwork()
 
 }
 
-void GameNetwork::connectThread(const unsigned int threadId){
+/* void GameNetwork::connectThread(const unsigned int threadId){
 	std::cout << "Create Thread Id :: "  << threadId << std::endl;
 	boost::this_thread::sleep(boost::posix_time::seconds(3));
 	
-	/*while (1){
+	while (1){
 		if ((pClient = m_pClientManager->connectClient(threadId, m_uThreadCount)) == nullptr) {
 			boost::this_thread::sleep(boost::posix_time::seconds(1)); 
 			continue;
@@ -67,13 +77,27 @@ void GameNetwork::connectThread(const unsigned int threadId){
 
 		pClient->PostReceive();
 
-	}*/
+	}
 	
 	PostAccept(threadId);
 
 	boost::shared_ptr<boost::asio::io_service::work> work;
 	work.reset(new boost::asio::io_service::work(m_io_service[threadId]));
 	m_io_service[threadId].run();
+
+	//立加...贸府 档内....
+	std::cout << threadId << "锅 thread 辆丰" << endl;
+}*/
+
+void GameNetwork::connectThread(const unsigned int threadId, boost::asio::io_service& io_service){
+	std::cout << "Create Thread Id :: " << threadId << std::endl;
+	boost::this_thread::sleep(boost::posix_time::seconds(3));
+
+	PostAccept(threadId);
+
+	boost::shared_ptr<boost::asio::io_service::work> work;
+	work.reset(new boost::asio::io_service::work(io_service));
+	io_service.run();
 
 	//立加...贸府 档内....
 	std::cout << threadId << "锅 thread 辆丰" << endl;

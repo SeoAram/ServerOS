@@ -16,12 +16,19 @@ public:
 		return &instance;
 	}
 
+	static GameNetwork* getInstance(std::vector<boost::asio::io_service*>& v_io_service){
+		static GameNetwork instance(v_io_service);
+		return &instance;
+	};
+
 private:
 	GameNetwork(boost::asio::io_service& io_service);
+	GameNetwork(std::vector<boost::asio::io_service*>& v_io_service);
 
 	~GameNetwork();
 
-	void connectThread(const unsigned int threadId);
+	//void connectThread(const unsigned int threadId);
+	void connectThread(const unsigned int threadId, boost::asio::io_service& io_service);
 
 	bool PostAccept();
 
