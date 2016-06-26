@@ -4,19 +4,40 @@
 
 
 GameNetwork::GameNetwork(boost::asio::io_service& io_service)
-: m_acceptor(io_service, boost::asio::ip::tcp::endpoint(boost::asio::ip::tcp::v4(), PORT_NUMBER)),
+: //m_acceptor(io_service, boost::asio::ip::tcp::endpoint(boost::asio::ip::tcp::v4(), PORT_NUMBER)),
 m_pClientManager(ClientInfoManager::getInstance()),
 m_uThreadCount(boost::thread::hardware_concurrency() -1 )
 {
 	m_bIsAccepting = false;
 	m_pMutex = new boost::mutex();
-	/*m_pTheadPool = new boost::thread_group();
-	for (int i = 0; i < WORKED_THREAD; ++i)
-		m_pTheadPool->create_thread(boost::bind(&boost::asio::io_service::run, &io_service));*/
+
+
+	ServiceManager* pManager = ServiceManager::getInstance();
+	const unsigned int maxService = pManager->getMaxService();
+
 	for (int i = 0; i < m_uThreadCount; ++i){
 		m_vThread.push_back(new boost::thread(&GameNetwork::connectThread, this, i));
-		m_io_service = new boost::asio::io_service[m_uThreadCount];
-		m_vAcceptor.push_back(new boost::asio::ip::tcp::acceptor(m_io_service[i], boost::asio::ip::tcp::endpoint(boost::asio::ip::tcp::v4(), PORT_NUMBER)));
+		//m_io_service = new boost::asio::io_service[m_uThreadCount];
+		m_vAcceptor.push_back(new boost::asio::ip::tcp::acceptor(*(pManager->getIo_Service(i%maxService)),
+			boost::asio::ip::tcp::endpoint(boost::asio::ip::tcp::v4(), 
+			PORT_NUMBER + i)));
+	}
+}
+
+GameNetwork::GameNetwork(): 
+m_pClientManager(ClientInfoManager::getInstance()),
+m_uThreadCount(boost::thread::hardware_concurrency() - 1)
+{
+	m_bIsAccepting = false;
+	m_pMutex = new boost::mutex();
+
+	ServiceManager* pManager = ServiceManager::getInstance();
+
+	for (int i = 0; i < m_uThreadCount; ++i){
+		m_vThread.push_back(new boost::thread(&GameNetwork::connectThread, this, i));
+		m_vAcceptor.push_back(new boost::asio::ip::tcp::acceptor(*(pManager->getIo_Service(i)),
+			boost::asio::ip::tcp::endpoint(boost::asio::ip::tcp::v4(),
+			PORT_NUMBER)));
 	}
 }
 
@@ -28,52 +49,13 @@ GameNetwork::~GameNetwork()
 void GameNetwork::connectThread(const unsigned int threadId){
 	std::cout << "Create Thread Id :: "  << threadId << std::endl;
 	boost::this_thread::sleep(boost::posix_time::seconds(3));
-	
-	/*while (1){
-		if ((pClient = m_pClientManager->connectClient(threadId, m_uThreadCount)) == nullptr) {
-			boost::this_thread::sleep(boost::posix_time::seconds(1)); 
-			continue;
-		}
-
-		m_bIsAccepting = true;
-
-		cout << pClient->getObject()->getObjId() << " 클라이언트 접속 대기 " << endl;
-
-
-		m_acceptor.accept(pClient->Socket());
-
-		std::cout << "클라이언트 접속 성공. ClientInfoID: " << pClient->getObject()->getObjId() << std::endl;
-		pClient->setSocketOpt(boost::asio::ip::tcp::no_delay(true));
-		pClient->Init();
-
-		PacketInit initPack;
-		initPack.Init();
-
-		initPack.id = pClient->getObject()->getObjId();
-
-		initPack.pos_x = pClient->getObject()->m_pPosition->x;
-		initPack.pos_y = pClient->getObject()->m_pPosition->y;
-		initPack.pos_z = pClient->getObject()->m_pPosition->z;
-
-		initPack.dir_x = pClient->getObject()->m_pDirect->x;
-		initPack.dir_y = pClient->getObject()->m_pDirect->y;
-		initPack.dir_z = pClient->getObject()->m_pDirect->z;
-
-		initPack.iAxis = pClient->getObject()->m_iAxis;
-
-		//최초 접속 시 패킷 전송
-		
-		pClient->PostSend(false, initPack.packetSize, (char*)&initPack);
-
-		pClient->PostReceive();
-
-	}*/
+	ServiceManager* pManager = ServiceManager::getInstance();
 	
 	PostAccept(threadId);
 
 	boost::shared_ptr<boost::asio::io_service::work> work;
-	work.reset(new boost::asio::io_service::work(m_io_service[threadId]));
-	m_io_service[threadId].run();
+	work.reset(new boost::asio::io_service::work(*(pManager->getIo_Service(threadId))));
+	pManager->getIo_Service(threadId)->run();
 
 	//접속...처리 도코....
 	std::cout << threadId << "번 thread 종료" << endl;
