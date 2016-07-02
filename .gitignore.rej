@@ -1,6 +1,0 @@
-diff a/.gitignore b/.gitignore	(rejected hunks)
-@@ -154,3 +154,4 @@
- 
- # Mac desktop service store files
- .DS_Store
-+docs/운영체제가 MMO서버 성능에 미치는 영향에 관한연구_서아람_제안서.pptx
