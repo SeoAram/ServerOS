@@ -56,21 +56,6 @@ ClientInfo* ClientInfoManager::connectClient(const unsigned int nObjId, const un
 	return m_vClient[nConnId];
 }
 
-bool ClientInfoManager::initClientInfoManager(){
-	ServiceManager* pManager = ServiceManager::getInstance();
-	if (!m_bInit){
-		const unsigned int maxService = pManager->getMaxService();
-		for (unsigned int i = 0; i < MAX_CONNECT_CLIENT; ++i){
-			m_vClient.push_back(new ClientInfo(	i, *(pManager->getIo_Service(i%maxService)), GameNetwork::getInstance()));
-			m_qWaitNum.push(i);
-		}
-		cout << "Create Object :: " << m_vClient.size() << " :: " << m_qWaitNum.front() << endl;
-		m_bInit = true;
-		return true;
-	}
-	return false;
-}
-
 bool ClientInfoManager::initClientInfoManager(boost::asio::io_service& io_service){
 	if (!m_bInit){
 		for (unsigned int i = 0; i < MAX_CONNECT_CLIENT; ++i){
@@ -83,7 +68,6 @@ bool ClientInfoManager::initClientInfoManager(boost::asio::io_service& io_servic
 	}
 	return false;
 }
-
 
 bool ClientInfoManager::initClientInfoManager(boost::asio::ip::tcp::acceptor& acceptor){
 	if (!m_bInit){

@@ -60,8 +60,6 @@ void ClientInfo::setSendQueue(const bool bImmediately, const int nSize, char* pD
 	}
 	m_SendDataQueue.push(pSendData);
 	//이제 샌드작업 하게 합시다 :3c
-	//그냥 이걸 이용해서 샌드 리시브 처리하도록 변경하는게 더 나을지도 모르겠다.
-	//thread번호와 맞는 작업만 처리 하도록
 
 }
 

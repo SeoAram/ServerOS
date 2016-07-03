@@ -15,14 +15,9 @@ public:
 		static GameNetwork instance(io_service);
 		return &instance;
 	}
-	static GameNetwork* getInstance(){
-		static GameNetwork instance;
-		return &instance;
-	}
 
 private:
 	GameNetwork(boost::asio::io_service& io_service);
-	GameNetwork();
 
 	~GameNetwork();
 
@@ -40,13 +35,15 @@ private:
 
 	boost::mutex m_mutex;
 	boost::mutex* m_pMutex;
-	//boost::asio::ip::tcp::acceptor m_acceptor;
+	boost::mutex::scoped_lock* m_pLock;
+	boost::asio::ip::tcp::acceptor m_acceptor;
 	ClientInfoManager* m_pClientManager;
 
-	std::vector<boost::asio::ip::tcp::acceptor*> m_vAcceptor;
+	boost::thread_group* m_pTheadPool;
+
 	vector<boost::thread*> m_vThread;
 
-	//boost::asio::io_service* m_io_service;
+	boost::asio::io_service* m_io_service;
 
 	const unsigned int m_uThreadCount;
 };

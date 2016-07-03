@@ -51,8 +51,6 @@ const unsigned short PORT_NUMBER = 31400;
 #include "../../Common/iniRead.h"
 #include "../../Common/PointVector3D.h"
 
-#include "ServiceManager.h"
-
 #include "MemoryPool.h"
 
 #include "GameObject.h"

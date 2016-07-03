@@ -14,17 +14,16 @@ GameServer::~GameServer()
 void GameServer::initServer(boost::asio::io_service& io_service){
 	//서버 실행을 할 때 필요한 초기화 작업들을 해줌
 	//싱글톤 객체들 생성, 필요한 메모리들 미리 할당 받음
-	ServiceManager* pSManager = ServiceManager::getInstance();
 	IniData* pIniData = IniData::getInstance();
 	GameMap* pGMap = GameMap::getInstance();
 	ClientInfoManager* pClientManager = ClientInfoManager::getInstance();
 	MemoryPool* pMemory = MemoryPool::getInstance();
 	
 
-	pClientManager->initClientInfoManager();
+	pClientManager->initClientInfoManager(io_service);
 	pMemory->createMemoryPool();
 
-	m_pGameNet = GameNetwork::getInstance();
+	m_pGameNet = GameNetwork::getInstance(io_service);
 }
 
 void GameServer::startServer(boost::asio::io_service& io_service){

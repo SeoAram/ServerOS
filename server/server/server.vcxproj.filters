@@ -75,9 +75,6 @@
     <ClInclude Include="GameNetwork.h">
       <Filter>소스 파일\Engine</Filter>
     </ClInclude>
-    <ClInclude Include="ServiceManager.h">
-      <Filter>소스 파일\Manager</Filter>
-    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="stdafx.cpp">
@@ -115,9 +112,6 @@
     </ClCompile>
     <ClCompile Include="GameNetwork.cpp">
       <Filter>소스 파일\Engine</Filter>
-    </ClCompile>
-    <ClCompile Include="ServiceManager.cpp">
-      <Filter>소스 파일\Manager</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

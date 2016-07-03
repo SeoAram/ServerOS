@@ -25,7 +25,6 @@ public:
 		return &instance;
 	}
 
-	bool initClientInfoManager();
 	bool initClientInfoManager(boost::asio::io_service& io_service);
 	bool initClientInfoManager(boost::asio::ip::tcp::acceptor& acceptor);
 
