@@ -2,19 +2,19 @@
 #include "ClientInfo.h"
 
 ClientInfo::ClientInfo(boost::asio::io_service& io_service)
-: m_Socket(io_service)
+: m_Socket(io_service), m_strand(io_service)
 {
 	m_pObject = new GameObject(0);
 }
 
 ClientInfo::ClientInfo(boost::asio::io_service& io_service, GameNetwork* pGameNet)
-: m_Socket(io_service), m_pGameNet(pGameNet)
+: m_Socket(io_service), m_pGameNet(pGameNet), m_strand(io_service)
 {
 	m_pObject = new GameObject(0);
 }
 
 ClientInfo::ClientInfo(unsigned int i, boost::asio::io_service& io_service, GameNetwork* pGameNet)
-: m_Socket(io_service), m_pGameNet(pGameNet)
+: m_Socket(io_service), m_pGameNet(pGameNet), m_strand(io_service)
 {
 	m_pObject = new GameObject(i);
 }
@@ -34,13 +34,14 @@ void ClientInfo::setSocketOpt(boost::asio::ip::tcp::no_delay& option){
 
 void ClientInfo::PostReceive()
 {
-	m_Socket.async_read_some
-		(
+	m_Socket.async_read_some(
 		boost::asio::buffer(m_ReceiveBuffer),
-		boost::bind(&ClientInfo::handle_receive, this,
-		boost::asio::placeholders::error,
-		boost::asio::placeholders::bytes_transferred)
-		);
+		m_strand.wrap(
+			boost::bind(&ClientInfo::handle_receive, this,
+			boost::asio::placeholders::error,
+			boost::asio::placeholders::bytes_transferred)
+		)
+	);
 }
 
 void ClientInfo::setSendQueue(const bool bImmediately, const int nSize, char* pData){
@@ -91,10 +92,14 @@ void ClientInfo::PostSend(const bool bImmediately, const int nSize, char* pData)
 	}
 
 
-	boost::asio::async_write(m_Socket, boost::asio::buffer(pSendData->buf, ((PacketHeader*)pSendData->buf)->packetSize),
-		boost::bind(&ClientInfo::handle_write, this,
-		boost::asio::placeholders::error,
-		boost::asio::placeholders::bytes_transferred)
+	boost::asio::async_write(
+		m_Socket, 
+		boost::asio::buffer(pSendData->buf, ((PacketHeader*)pSendData->buf)->packetSize),
+		m_strand.wrap(
+			boost::bind(&ClientInfo::handle_write, this,
+			boost::asio::placeholders::error,
+			boost::asio::placeholders::bytes_transferred)
+			)
 		);
 }
 

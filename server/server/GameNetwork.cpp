@@ -4,18 +4,16 @@
 
 GameNetwork::GameNetwork(boost::asio::io_service& io_service)
 : m_acceptor(io_service, boost::asio::ip::tcp::endpoint(boost::asio::ip::tcp::v4(), PORT_NUMBER)),
+m_io_service(io_service),
 m_pClientManager(ClientInfoManager::getInstance()),
 m_uThreadCount(boost::thread::hardware_concurrency() -1 )
 {
 	m_bIsAccepting = false;
 	m_pMutex = new boost::mutex();
 	m_pLock = new boost::mutex::scoped_lock(m_mutex);
-	/*m_pTheadPool = new boost::thread_group();
-	for (int i = 0; i < WORKED_THREAD; ++i)
-		m_pTheadPool->create_thread(boost::bind(&boost::asio::io_service::run, &io_service));*/
 	for (int i = 0; i < m_uThreadCount; ++i){
-		m_vThread.push_back(new boost::thread(&GameNetwork::connectThread, this, i));
-		m_io_service = new boost::asio::io_service[m_uThreadCount];
+		m_threadGroup.create_thread(boost::bind(&boost::asio::io_service::run, &m_io_service));
+		//m_vThread.push_back(new boost::thread(&GameNetwork::connectThread, this, i));
 	}
 }
 
@@ -68,8 +66,8 @@ void GameNetwork::connectThread(const unsigned int threadId){
 
 	}*/
 
-	PostAccept(threadId);
-	m_io_service[threadId].run();
+	//PostAccept(threadId);
+	//m_io_service.run();
 
 	// 여전히 메모리 릭이 심하다....흑흐흐히ㅏㅏㅣ거ㅏ허뮤ㅠㅠㅠㅠㅠ
 }
@@ -78,9 +76,9 @@ void GameNetwork::Start()
 {
 	std::cout << "서버 시작....." << std::endl;
 
-	for (int i = 0; i < m_uThreadCount; ++i){
+	/*for (int i = 0; i < m_uThreadCount; ++i){
 		m_vThread[i]->join();
-	}
+	}*/
 	//PostAccept();
 }
 

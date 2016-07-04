@@ -37,13 +37,11 @@ private:
 	boost::mutex* m_pMutex;
 	boost::mutex::scoped_lock* m_pLock;
 	boost::asio::ip::tcp::acceptor m_acceptor;
+	boost::asio::io_service& m_io_service;
 	ClientInfoManager* m_pClientManager;
 
-	boost::thread_group* m_pTheadPool;
-
 	vector<boost::thread*> m_vThread;
-
-	boost::asio::io_service* m_io_service;
+	boost::thread_group m_threadGroup;
 
 	const unsigned int m_uThreadCount;
 };

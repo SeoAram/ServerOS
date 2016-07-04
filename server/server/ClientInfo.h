@@ -45,6 +45,8 @@ private:
 	int m_nPacketBufferMark;	//수신 패킷의 위치
 	char m_PacketBuffer[MAX_RECEIVE_BUFFER_LEN * 2];	//...??
 
+	boost::asio::io_service::strand m_strand;
+
 	std::queue< Data* > m_SendDataQueue;
 };
 
