@@ -118,6 +118,15 @@ void ClientInfo::handle_write(const boost::system::error_code& /*error*/, size_t
 	
 	//std::cout << "send Success~" << m_pObject->getObjId() << std::endl;
 
+	if (m_pObject->m_wState == IniData::getInstance()->getData("GAME_OBJECT_LOGOUT")){
+		std::cout << m_pObject->getObjId() << " Object socket close, send queue clear" << std::endl;
+		while (m_SendDataQueue.empty() != false){
+			memory = m_SendDataQueue.front();
+			m_SendDataQueue.pop();
+			MemoryPool::getInstance()->pushMemory(memory);
+		}
+	}
+
 	if (m_SendDataQueue.empty() == false)
 	{
 		memory = m_SendDataQueue.front();

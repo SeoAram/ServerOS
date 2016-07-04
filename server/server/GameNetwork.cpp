@@ -5,6 +5,7 @@
 GameNetwork::GameNetwork(boost::asio::io_service& io_service)
 : m_acceptor(io_service, boost::asio::ip::tcp::endpoint(boost::asio::ip::tcp::v4(), PORT_NUMBER)),
 m_io_service(io_service),
+m_strand(io_service),
 m_pClientManager(ClientInfoManager::getInstance()),
 m_uThreadCount(boost::thread::hardware_concurrency() -1 )
 {
@@ -12,14 +13,16 @@ m_uThreadCount(boost::thread::hardware_concurrency() -1 )
 	m_pMutex = new boost::mutex();
 	m_pLock = new boost::mutex::scoped_lock(m_mutex);
 	for (int i = 0; i < m_uThreadCount; ++i){
-		m_threadGroup.create_thread(boost::bind(&boost::asio::io_service::run, &m_io_service));
+		//m_threadGroup.create_thread(boost::bind(&GameNetwork::connectThread, this, i));
+		//m_threadGroup.create_thread(boost::bind(&boost::asio::io_service::run, &m_io_service));
 		//m_vThread.push_back(new boost::thread(&GameNetwork::connectThread, this, i));
+		//m_vThread.push_back(new boost::thread(boost::bind(&boost::asio::io_service::run, &m_io_service)));
 	}
 }
 
 GameNetwork::~GameNetwork()
 {
-
+	m_threadGroup.join_all();
 }
 
 void GameNetwork::connectThread(const unsigned int threadId){
@@ -66,8 +69,8 @@ void GameNetwork::connectThread(const unsigned int threadId){
 
 	}*/
 
-	//PostAccept(threadId);
-	//m_io_service.run();
+	PostAccept();
+	m_io_service.run();
 
 	// 여전히 메모리 릭이 심하다....흑흐흐히ㅏㅏㅣ거ㅏ허뮤ㅠㅠㅠㅠㅠ
 }
@@ -76,10 +79,12 @@ void GameNetwork::Start()
 {
 	std::cout << "서버 시작....." << std::endl;
 
+	PostAccept();
+	//m_threadGroup.join_all();
 	/*for (int i = 0; i < m_uThreadCount; ++i){
 		m_vThread[i]->join();
 	}*/
-	//PostAccept();
+
 }
 
 void GameNetwork::CloseClientInfo(const unsigned int nClientInfoID)
@@ -104,7 +109,6 @@ void GameNetwork::CloseClientInfo(const unsigned int nClientInfoID)
 	//GameMap::getInstance()->sendObjId(pClient->getObject()->m_wBlockX, pClient->getObject()->m_wBlockZ, nClientInfoID, (char*)&pData);
 	pClient->closeSocket();
 	pClient->getObject()->m_wState = IniData::getInstance()->getData("GAME_OBJECT_LOGOUT");
-	//pClient->Socket().close();
 	m_pClientManager->returnClient(nClientInfoID);
 
 	if (m_bIsAccepting == false)
@@ -209,59 +213,103 @@ void GameNetwork::ProcessPacket(const unsigned int nClientInfoID, const char*pDa
 	return;
 }
 
+//일반 스레드에서 이거 씀
 bool GameNetwork::PostAccept()
 {
+	ClientInfo* pClient = nullptr;
+	//while (1){
+	//	if ((pClient = m_pClientManager->connectClient()) == nullptr) {
+	//		boost::this_thread::sleep(boost::posix_time::seconds(1));
+	//		continue;
+	//	}
 
-	//while (true){
-		ClientInfo* pClient = nullptr;
-		while ((pClient = m_pClientManager->connectClient()) == nullptr){
-			boost::this_thread::sleep(boost::posix_time::seconds(1));
-			continue;
-		}
+	//	m_bIsAccepting = true;
 
-		m_bIsAccepting = true;
+	//	cout << pClient->getObject()->getObjId() << " 클라이언트 접속 대기 " << endl;
 
-		cout << "클라이언트 접속 대기 " << endl;
 
-		m_acceptor.async_accept(pClient->Socket(),
+	//	m_acceptor.accept(pClient->Socket());
+
+	//	std::cout << "클라이언트 접속 성공. ClientInfoID: " << pClient->getObject()->getObjId() << std::endl;
+	//	pClient->setSocketOpt(boost::asio::ip::tcp::no_delay(true));
+	//	pClient->Init();
+
+	//	PacketInit initPack;
+	//	initPack.Init();
+
+	//	initPack.id = pClient->getObject()->getObjId();
+
+	//	initPack.pos_x = pClient->getObject()->m_pPosition->x;
+	//	initPack.pos_y = pClient->getObject()->m_pPosition->y;
+	//	initPack.pos_z = pClient->getObject()->m_pPosition->z;
+
+	//	initPack.dir_x = pClient->getObject()->m_pDirect->x;
+	//	initPack.dir_y = pClient->getObject()->m_pDirect->y;
+	//	initPack.dir_z = pClient->getObject()->m_pDirect->z;
+
+	//	initPack.iAxis = pClient->getObject()->m_iAxis;
+
+	//	//최초 접속 시 패킷 전송
+
+	//	pClient->PostSend(false, initPack.packetSize, (char*)&initPack);
+
+	//	pClient->PostReceive();
+
+	//}
+	
+	 while ((pClient = m_pClientManager->connectClient()) == nullptr){
+		boost::this_thread::sleep(boost::posix_time::seconds(1));
+		continue;
+	}
+
+	m_bIsAccepting = true;
+
+	cout << "클라이언트 접속 대기 " << endl;
+
+	m_acceptor.async_accept(
+		pClient->Socket(),
+		m_strand.wrap(
 			boost::bind(&GameNetwork::handle_accept,
-			this,
-			pClient,
-			boost::asio::placeholders::error)
-			);
+				this,
+				pClient,
+				boost::asio::placeholders::error)
+			)
+		);
+	boost::shared_ptr<boost::asio::io_service::work> work;
+	work.reset(new boost::asio::io_service::work(m_io_service));
+	m_io_service.run();
 	return true;
 }
 
 bool GameNetwork::PostAccept(const unsigned int threadId)
 {
-
-	//while (true){
 	ClientInfo* pClient = nullptr;
 	while ((pClient = m_pClientManager->connectClient()) == nullptr){
 		boost::this_thread::sleep(boost::posix_time::seconds(1));
 		continue;
 	}
-	if (pClient->getObject()->getObjId() % m_uThreadCount != threadId){
+	/*if (pClient->getObject()->getObjId() % m_uThreadCount != threadId){
 		m_pClientManager->returnClient(pClient->getObject()->getObjId());
 		pClient = nullptr;
 		while ((pClient = m_pClientManager->connectClient()) == nullptr){
 			boost::this_thread::sleep(boost::posix_time::seconds(1));
 			continue;
 		}
-	}
+	}*/
 
 	m_bIsAccepting = true;
 
 	cout << pClient->getObject()->getObjId() << " 클라이언트 접속 대기 " << endl;
 
 	m_acceptor.async_accept(pClient->Socket(),
-		boost::bind(&GameNetwork::handle_accept,
-		this,
-		pClient,
-		threadId,
-		boost::asio::placeholders::error)
+		m_strand.wrap(
+			boost::bind(&GameNetwork::handle_accept,
+				this,
+				pClient,
+				threadId,
+				boost::asio::placeholders::error)
+			)
 		);
-	//}
 	return true;
 }
 
@@ -272,6 +320,7 @@ void GameNetwork::handle_accept(ClientInfo* pClientInfo, const boost::system::er
 		std::cout << "클라이언트 접속 성공. ClientInfoID: " << pClientInfo->getObject()->getObjId() << std::endl;
 		pClientInfo->setSocketOpt(boost::asio::ip::tcp::no_delay(true));
 		pClientInfo->Init();
+		pClientInfo->getObject()->m_wState = IniData::getInstance()->getData("GAME_OBJECT_LOGIN");
 
 		PacketInit initPack;
 		initPack.Init();
@@ -306,7 +355,7 @@ void GameNetwork::handle_accept(ClientInfo* pClientInfo, const unsigned int thre
 {
 	if (!error)
 	{
-		std::cout << "클라이언트 접속 성공. ClientInfoID: " << pClientInfo->getObject()->getObjId() << std::endl;
+		std::cout << GetCurrentThreadId() << "번 thread에서 클라이언트 접속 성공. ClientInfoID: " << pClientInfo->getObject()->getObjId() << std::endl;
 		pClientInfo->setSocketOpt(boost::asio::ip::tcp::no_delay(true));
 		pClientInfo->Init();
 

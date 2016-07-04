@@ -38,6 +38,7 @@ private:
 	boost::mutex::scoped_lock* m_pLock;
 	boost::asio::ip::tcp::acceptor m_acceptor;
 	boost::asio::io_service& m_io_service;
+	boost::asio::io_service::strand m_strand;
 	ClientInfoManager* m_pClientManager;
 
 	vector<boost::thread*> m_vThread;
