@@ -41,7 +41,15 @@ void GameMap::sendObjId(short x, short z, const bool memoryCheck, unsigned int o
 
 	short tmpX, tmpY;
 
-	if (_x == 0 && _z == 0){
+	if ((0 <= x && x < BLOCK_COUNT) && (0 <= z && z < BLOCK_COUNT)){
+		for (int i : m_vObjIdBlock[z][x]){
+			if (objId != i)
+				m_pClientManager->getClient(i)->PostSend(memoryCheck, ((PacketHeader*)pData)->packetSize, pData);
+			
+		}
+	}
+
+	/*if (_x == 0 && _z == 0){
 		for (int i = 0; i < SIGHT_BLOCK; ++i){
 			for (int j = 0; j < SIGHT_BLOCK; ++j){
 				tmpX = x + block[i][j].x;
@@ -70,5 +78,5 @@ void GameMap::sendObjId(short x, short z, const bool memoryCheck, unsigned int o
 				}
 			}
 		}
-	}
+	}*/
 }

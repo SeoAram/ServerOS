@@ -147,6 +147,7 @@ void GameNetwork::ProcessPacket(const unsigned int nClientInfoID, const char*pDa
 
 									 //최초 접속 시 패킷 전송
 									 GameMap::getInstance()->insertObjId(pClient->getObject()->m_wBlockX, pClient->getObject()->m_wBlockZ, nClientInfoID);
+									 //GameMap::getInstance()->sendObjId(initPack.pos_x / BLOCK_COUNT, initPack.pos_z / BLOCK_COUNT, pPacket->id, false, (char*)&initPack);
 									 
 									 PacketInit iPack;
 									 iPack.Init();
