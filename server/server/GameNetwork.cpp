@@ -106,7 +106,6 @@ void GameNetwork::CloseClientInfo(const unsigned int nClientInfoID)
 	}
 
 	GameMap::getInstance()->deleteObjId(pClient->getObject()->m_wBlockX, pClient->getObject()->m_wBlockZ, nClientInfoID);
-	//GameMap::getInstance()->sendObjId(pClient->getObject()->m_wBlockX, pClient->getObject()->m_wBlockZ, nClientInfoID, (char*)&pData);
 	pClient->closeSocket();
 	pClient->getObject()->m_wState = IniData::getInstance()->getData("GAME_OBJECT_LOGOUT");
 	m_pClientManager->returnClient(nClientInfoID);
@@ -148,6 +147,7 @@ void GameNetwork::ProcessPacket(const unsigned int nClientInfoID, const char*pDa
 									 //최초 접속 시 패킷 전송
 									 GameMap::getInstance()->insertObjId(pClient->getObject()->m_wBlockX, pClient->getObject()->m_wBlockZ, nClientInfoID);
 									 //GameMap::getInstance()->sendObjId(initPack.pos_x / BLOCK_COUNT, initPack.pos_z / BLOCK_COUNT, pPacket->id, false, (char*)&initPack);
+									 std::vector<int>& v = GameMap::getInstance()->getObjIdList(pClient->getObject()->m_wBlockX, pClient->getObject()->m_wBlockZ, pPacket->id);
 									 
 									 PacketInit iPack;
 									 iPack.Init();
@@ -155,8 +155,8 @@ void GameNetwork::ProcessPacket(const unsigned int nClientInfoID, const char*pDa
 
 									 ClientInfo* pClient2;
 
-									 for (unsigned int i = 0; i < MAX_CONNECT_CLIENT; ++i){
-										 pClient2 = m_pClientManager->getClient(i);
+									 for (unsigned int i = 0; i < v.size() ; ++i){
+										 pClient2 = m_pClientManager->getClient(v[i]);
 										 if (pClient2->Socket().is_open() && initPack.id != i){
 											 pClient2->PostSend(false, initPack.packetSize, (char*)&initPack);
 											 if (pClient2->getObject()->m_wState != IniData::getInstance()->getData("GAME_OBJECT_LOGOUT")){
@@ -176,7 +176,6 @@ void GameNetwork::ProcessPacket(const unsigned int nClientInfoID, const char*pDa
 
 										 }
 									 }
-									 //GameMap::getInstance()->sendObjId(pClient->getObject()->m_wBlockX, false, pClient->getObject()->m_wBlockZ, nClientInfoID, (char*)&initPack);
 									 m_pMutex->unlock();
 									 std::cout << "내가 반납했다 :: " << nClientInfoID << std::endl;
 	}
@@ -276,9 +275,6 @@ bool GameNetwork::PostAccept()
 				boost::asio::placeholders::error)
 			)
 		);
-	boost::shared_ptr<boost::asio::io_service::work> work;
-	work.reset(new boost::asio::io_service::work(m_io_service));
-	m_io_service.run();
 	return true;
 }
 

@@ -36,6 +36,10 @@ bool GameMap::deleteObjId(short x, short z, unsigned int objId){// false°¡ ¹ÝÈ¯µ
 
 }
 
+std::vector<int>& GameMap::getObjIdList(short x, short z, unsigned int objId){
+	return m_vObjIdBlock[z][x];
+}
+
 void GameMap::sendObjId(short x, short z, const bool memoryCheck, unsigned int objId, char* pData, short _x, short _z){
 	int size = m_vObjIdBlock[z][x].size();
 
