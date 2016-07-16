@@ -17,10 +17,10 @@ void GameEventProcess::addGameEvent(const unsigned int objID, const unsigned int
 }
 
 void GameEventProcess::funcRegisterd(){
-	//m_mapEventRoutine[EventType::MONSTER_MOVE] = bind(&GameEventProcess::monsterMove, this, placeholders::_1);
+	m_mapEventRoutine[EventType::CHARACTER_MOVE] = bind(&GameEventProcess::characterMove, this, placeholders::_1);
 }
 
-void GameEventProcess::eventProcess(/*const DWORD& objID, OVER_EX* overlapped*/){
+void GameEventProcess::eventProcess(/*const DWORD& objID*/){
 	//SendOver* packet = reinterpret_cast<SendOver*>(overlapped);
 	//auto iter = m_mapEventRoutine.find(packet->m_eGameEventType);
 	//if (iter != m_mapEventRoutine.end()){
@@ -39,6 +39,6 @@ void GameEventProcess::eventThread(){
 	
 }
 
-void GameEventProcess::monsterMove(unsigned int objID){
+void GameEventProcess::characterMove(unsigned int objID){
 	
 }

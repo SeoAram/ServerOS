@@ -199,6 +199,9 @@ void GameNetwork::ProcessPacket(const unsigned int nClientInfoID, const char*pDa
 
 									// std::cout << pPacket->id << " - (" << pPacket->pos_x << ", " << pPacket->pos_y << ", " << pPacket->pos_z << ") \n";
 
+									std::vector<int>& v = GameMap::getInstance()->getObjIdList(pClient->getObject()->m_wBlockX, pClient->getObject()->m_wBlockZ, pPacket->id);
+
+
 									for (unsigned int i = 0; i < MAX_CONNECT_CLIENT; ++i){
 										pClient = m_pClientManager->getClient(i);
 										if (pClient->Socket().is_open() && nClientInfoID != i 

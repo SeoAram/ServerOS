@@ -40,6 +40,6 @@ public:
 	void eventProcess(/*const DWORD& objID, OVER_EX* overlapped*/);
 	void eventToWorkerthread(const GameEvent& myEvent);
 	
-	void monsterMove(unsigned int objID);
+	void characterMove(unsigned int objID);
 };
 
