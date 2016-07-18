@@ -4,7 +4,7 @@ enum class EventType : unsigned char;
 
 struct GameEvent{
 	unsigned int objID;
-	unsigned int wakeTime;
+	boost::posix_time::ptime wakeTime;
 
 	EventType eType;
 };
@@ -23,7 +23,10 @@ private:
 	~GameEventProcess();
 	boost::asio::io_service& m_io_service;
 	boost::thread* m_pEventThread;
-	boost::mutex m_mLock;  //lock 필요함
+	boost::mutex* m_pLock;  //lock 필요함
+
+	void lock(){ m_pLock->lock(); }
+	void unlock(){ m_pLock->unlock(); }
 public:
 	static GameEventProcess* getInstance(boost::asio::io_service& io_service){
 		static GameEventProcess instance(io_service);
@@ -35,7 +38,7 @@ public:
 	unordered_map<EventType, function<void(unsigned int)>> m_mapEventRoutine;
 
 	void eventThread();
-	void addGameEvent(const unsigned int objID, const unsigned int time, const EventType& type);
+	void addGameEvent(const unsigned int objID, const boost::posix_time::ptime& time, const EventType& type);
 	void funcRegisterd();
 	void eventProcess(/*const DWORD& objID, OVER_EX* overlapped*/);
 	void eventToWorkerthread(const GameEvent& myEvent);

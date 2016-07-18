@@ -30,27 +30,27 @@ void setTimer(){
 			if (60 <= count){
 				count = 0;
 				for (int i = 0; i < MAX_CONNECT; ++i){
-					
-					ClientInfo* pClient = pClientManager->getClient(i);
-	
-					std::cout << "id : " << pClient->getObject()->getObjId() << " ";
-					pClient->getObject()->m_pvPos->operator<<(std::cout) << " - " << pClient->getObject()->getAxis() << "\n";
-					PacketMove pData;
-					pData.Init();
-					pData.id = pClient->getObject()->getObjId();
-					pData.dir_x = pClient->getObject()->m_pvDir->x;
-					pData.dir_y = pClient->getObject()->m_pvDir->y;
-					pData.dir_z = pClient->getObject()->m_pvDir->z;
-					pData.pos_x = pClient->getObject()->m_pvPos->x;
-					pData.pos_y = pClient->getObject()->m_pvPos->y;
-					pData.pos_z = pClient->getObject()->m_pvPos->z;
-
-					pData.wAxis = pClient->getObject()->getAxis();
-					pClient->PostSend(false, pData.packetSize, (char*)&pData);
-
 					++moveCheck[i];
 
 					if (moveSet[i] < moveCheck[i]){
+
+						ClientInfo* pClient = pClientManager->getClient(i);
+
+						std::cout << "id : " << pClient->getObject()->getObjId() << " ";
+						pClient->getObject()->m_pvPos->operator<<(std::cout) << " - " << pClient->getObject()->getAxis() << "\n";
+						PacketMove pData;
+						pData.Init();
+						pData.id = pClient->getObject()->getObjId();
+						pData.dir_x = pClient->getObject()->m_pvDir->x;
+						pData.dir_y = pClient->getObject()->m_pvDir->y;
+						pData.dir_z = pClient->getObject()->m_pvDir->z;
+						pData.pos_x = pClient->getObject()->m_pvPos->x;
+						pData.pos_y = pClient->getObject()->m_pvPos->y;
+						pData.pos_z = pClient->getObject()->m_pvPos->z;
+
+						pData.wAxis = pClient->getObject()->getAxis();
+						pClient->PostSend(false, pData.packetSize, (char*)&pData);
+
 						moveCheck[i] = 0;
 						moveSet[i] = rand() % 60;
 						pClient->getObject()->setAxis(rand() % 360);

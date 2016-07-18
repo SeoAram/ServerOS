@@ -11,7 +11,7 @@ enum class PacketType : unsigned char{
 };
 
 enum class EventType : unsigned char{
-	CHARACTER_MOVE = 1
+	CHARACTER_MOVE = 0
 };
 
 struct PacketHeader{

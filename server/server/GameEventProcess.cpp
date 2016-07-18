@@ -4,6 +4,7 @@
 GameEventProcess::GameEventProcess(boost::asio::io_service& io_service) :
 m_io_service(io_service)
 {
+	m_pLock = new boost::mutex();
 	m_pEventThread = new boost::thread(mem_fun(&GameEventProcess::eventThread), this);
 	cout << "create Event Thread" << endl;
 }
@@ -12,8 +13,10 @@ GameEventProcess::~GameEventProcess()
 {
 }
 
-void GameEventProcess::addGameEvent(const unsigned int objID, const unsigned int time, const EventType& type){
+void GameEventProcess::addGameEvent(const unsigned int objID, const boost::posix_time::ptime& time, const EventType& type){
+	lock();
 	m_EventQueue.push(GameEvent{ objID, time, type });
+	unlock();
 }
 
 void GameEventProcess::funcRegisterd(){
@@ -32,7 +35,20 @@ void GameEventProcess::eventProcess(/*const DWORD& objID*/){
 }
 
 void GameEventProcess::eventToWorkerthread(const GameEvent& myEvent){
-	
+	GameEvent gEvent;
+
+	while (true){
+		boost::this_thread::sleep(boost::posix_time::milliseconds(1));
+		lock();
+		gEvent = m_EventQueue.top();
+		if (boost::posix_time::microsec_clock::local_time() < gEvent.wakeTime){
+			unlock();
+			continue;
+		}
+		m_mapEventRoutine[gEvent.eType](gEvent.objID);
+		m_EventQueue.pop();
+		unlock();
+	}
 }
 
 void GameEventProcess::eventThread(){
@@ -40,5 +56,6 @@ void GameEventProcess::eventThread(){
 }
 
 void GameEventProcess::characterMove(unsigned int objID){
-	
+	ClientInfo* cInfo = ClientInfoManager::getInstance()->getClient(objID);
+	cInfo->getObject()->moveObject();
 }
