@@ -40,6 +40,8 @@ void GameEventProcess::eventToWorkerthread(const GameEvent& myEvent){
 	while (true){
 		boost::this_thread::sleep(boost::posix_time::milliseconds(1));
 		lock();
+		if (m_EventQueue.size() == 0)
+			continue;
 		gEvent = m_EventQueue.top();
 		if (boost::posix_time::microsec_clock::local_time() < gEvent.wakeTime){
 			unlock();
