@@ -36,7 +36,7 @@ bool GameMap::deleteObjId(short x, short z, unsigned int objId){// false°¡ ¹ÝÈ¯µ
 
 }
 
-std::vector<int>& GameMap::getObjIdList(short x, short z, unsigned int objId){
+std::vector<int>& GameMap::getObjIdList(short x, short z){
 	return m_vObjIdBlock[z][x];
 }
 

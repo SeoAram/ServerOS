@@ -119,30 +119,8 @@ void GameObject::moveObject(const float second){
 		else if (IniData::getInstance()->getData("MAP_HEIGHT") <= m_pPosition->z)
 			m_pPosition->z = IniData::getInstance()->getData("MAP_HEIGHT");
 
-		int bx = ((int)m_pPosition->x / pGameMap->getBlockW());
-		int bz = ((int)m_pPosition->z / pGameMap->getBlockH());
+		m_wBlockX = ((int)m_pPosition->x / pGameMap->getBlockW());
+		m_wBlockZ = ((int)m_pPosition->z / pGameMap->getBlockH());
 
-		PacketMove movePack;
-		movePack.Init();
-		movePack.id = m_iObjId;
-
-		if (m_wBlockX != bx || m_wBlockZ != bz){
-
-			//기존 블록에서 objID제거 -> 다른 블록에 objID입력
-			//주변 8개 블록에서도 제거해주어야 함
-			//새로 이동한 주변 8개 블록에 등장 알려야함
-			if (pGameMap->deleteObjId(m_wBlockX, m_wBlockZ, m_iObjId)){ // 성공했을 때만
-				ClientInfoManager* cManager = ClientInfoManager::getInstance();
-				vector<int>& v= pGameMap->getObjIdList(m_wBlockX, m_wBlockZ, m_iObjId); // 위치 여기 아님, 이전 위치랑 다른 곳임 최대 세군데
-				PacketLogout lPack;
-				lPack.Init();
-				lPack.id = m_iObjId;
-				pGameMap->insertObjId(bx, bz, m_iObjId);
-				vector<int>& v = pGameMap->getObjIdList(bx, bz, m_iObjId);
-				for (auto a : v){
-					cManager->getClient(a)->setSendQueue(false, lPack.packetSize, (char*)&lPack);
-				}
-			}
-		}
 	}
 }

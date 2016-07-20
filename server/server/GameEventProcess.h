@@ -5,7 +5,7 @@ enum class EventType : unsigned char;
 struct GameEvent{
 	unsigned int objID;
 	boost::posix_time::ptime wakeTime;
-
+	float delayTime_ms;
 	EventType eType;
 };
 
@@ -35,14 +35,14 @@ public:
 
 	priority_queue<GameEvent, vector<GameEvent>, Comparison> m_EventQueue;
 
-	unordered_map<EventType, function<void(unsigned int)>> m_mapEventRoutine;
+	unordered_map<EventType, function<void(unsigned int, float)>> m_mapEventRoutine;
 
 	void eventThread();
-	void addGameEvent(const unsigned int objID, const boost::posix_time::ptime& time, const EventType& type);
+	void addGameEvent(const unsigned int objID, float delayTime_ms, const EventType& type);
 	void funcRegisterd();
 	void eventProcess(/*const DWORD& objID, OVER_EX* overlapped*/);
 	void eventToWorkerthread(const GameEvent& myEvent);
 	
-	void characterMove(unsigned int objID);
+	void characterMove(unsigned int objID, float delayTime);
 };
 

@@ -72,6 +72,12 @@ int main()
 	char cIPAddr[CHAR_MAX];
 	u_short usPort;
 
+	boost::posix_time::ptime m1 = boost::posix_time::microsec_clock::local_time() + boost::posix_time::seconds(0.5);
+	boost::this_thread::sleep(boost::posix_time::seconds(1));
+	boost::posix_time::ptime m2 = boost::posix_time::microsec_clock::local_time();
+
+	boost::posix_time::time_duration diff = m2 - m1;
+	std::cout << diff.total_milliseconds() << std::endl;
 
 	cout << "IPAddress (xxx.xxx.xxx.xxx) : "; cin >> cIPAddr;
 	cout << "Port Number : "; cin >> usPort;
@@ -84,6 +90,7 @@ int main()
 	
 	pClientManager->connect(io_service, endpoint);
 	boost::thread thread(boost::bind(&boost::asio::io_service::run, &io_service));
+
 
 	//이벤트 등록제로 갈까 아니면 그냥 랜덤으로 할까
 	
