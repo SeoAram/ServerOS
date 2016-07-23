@@ -147,7 +147,7 @@ void GameNetwork::ProcessPacket(const unsigned int nClientInfoID, const char*pDa
 									 //최초 접속 시 패킷 전송
 									 GameMap::getInstance()->insertObjId(pClient->getObject()->m_wBlockX, pClient->getObject()->m_wBlockZ, nClientInfoID);
 									 //GameMap::getInstance()->sendObjId(initPack.pos_x / BLOCK_COUNT, initPack.pos_z / BLOCK_COUNT, pPacket->id, false, (char*)&initPack);
-									 std::vector<int>& v = GameMap::getInstance()->getObjIdList(pClient->getObject()->m_wBlockX, pClient->getObject()->m_wBlockZ, pPacket->id);
+									 std::vector<int>& v = GameMap::getInstance()->getObjIdList(pClient->getObject()->m_wBlockX, pClient->getObject()->m_wBlockZ);
 									 
 									 PacketInit iPack;
 									 iPack.Init();
@@ -199,7 +199,7 @@ void GameNetwork::ProcessPacket(const unsigned int nClientInfoID, const char*pDa
 
 									// std::cout << Ppacket->id << " - (" << pPacket->pos_x << ", " << pPacket->pos_y << ", " << pPacket->pos_z << ") \n";
 
-									std::vector<int>& v = GameMap::getInstance()->getObjIdList(pClient->getObject()->m_wBlockX, pClient->getObject()->m_wBlockZ, pPacket->id);
+									std::vector<int>& v = GameMap::getInstance()->getObjIdList(pClient->getObject()->m_wBlockX, pClient->getObject()->m_wBlockZ);
 
 
 									for (unsigned int i = 0; i < MAX_CONNECT_CLIENT; ++i){

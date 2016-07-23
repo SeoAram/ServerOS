@@ -85,7 +85,14 @@ void GameEventProcess::characterMove(unsigned int objID, float delayTime){
 			short difX = gObj->m_wBlockX - a_bx;
 			short difZ = gObj->m_wBlockZ - a_bz;
 
-			std::vector<int>& v = pGameMap->getObjIdList(a_bx - difX, a_bz);
+			std::vector<int>& v = pGameMap->getObjIdList(a_bx, a_bz);
+			for (auto& a : v)
+				pManage->getClient(a)->setSendQueue(false, lPack.packetSize, (char*)&lPack);
+			v = pGameMap->getObjIdList(gObj->m_wBlockX, gObj->m_wBlockZ);
+			for (auto& a : v)
+				pManage->getClient(a)->setSendQueue(false, lPack.packetSize, (char*)&lPack);
+
+			/*std::vector<int>& v = pGameMap->getObjIdList(a_bx - difX, a_bz);
 			for (auto& a : v)
 				pManage->getClient(a)->setSendQueue(false, lPack.packetSize, (char*)&lPack);
 			v = pGameMap->getObjIdList(a_bx, a_bz - difZ);
@@ -107,7 +114,7 @@ void GameEventProcess::characterMove(unsigned int objID, float delayTime){
 				pManage->getClient(a)->setSendQueue(false, lPack.packetSize, (char*)&lPack);
 			v = pGameMap->getObjIdList(gObj->m_wBlockX + difX, gObj->m_wBlockZ + difZ);
 			for (auto& a : v)
-				pManage->getClient(a)->setSendQueue(false, lPack.packetSize, (char*)&lPack);
+				pManage->getClient(a)->setSendQueue(false, lPack.packetSize, (char*)&lPack);*/
 		}
 	}
 }
