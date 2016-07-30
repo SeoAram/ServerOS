@@ -155,6 +155,7 @@ void GameNetwork::ProcessPacket(const unsigned int nClientInfoID, const char*pDa
 
 									 ClientInfo* pClient2;
 
+									 std::cout << nClientInfoID << " :: sector(" << pClient->getObject()->m_wBlockX << ", " << pClient->getObject()->m_wBlockZ << ") :: size :: " << v.size() << std::endl;
 									 for (unsigned int i = 0; i < v.size() ; ++i){
 										 pClient2 = m_pClientManager->getClient(v[i]);
 										 if (pClient2->Socket().is_open() && initPack.id != i){
@@ -202,7 +203,7 @@ void GameNetwork::ProcessPacket(const unsigned int nClientInfoID, const char*pDa
 									std::vector<int>& v = GameMap::getInstance()->getObjIdList(pClient->getObject()->m_wBlockX, pClient->getObject()->m_wBlockZ);
 
 
-									for (unsigned int i = 0; i < MAX_CONNECT_CLIENT; ++i){
+									for (unsigned int i = 0; i < v.size(); ++i){
 										pClient = m_pClientManager->getClient(i);
 										if (pClient->Socket().is_open() && nClientInfoID != i 
 											&& pClient->getObject()->m_wState != IniData::getInstance()->getData("GAME_OBJECT_LOGOUT")){

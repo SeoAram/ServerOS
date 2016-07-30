@@ -16,8 +16,8 @@ private:
 	boost::shared_mutex m_sharedMutex;	//맵 접근에 대한 권한 관리
 	std::vector<int> m_vObjIdBlock[BLOCK_COUNT][BLOCK_COUNT];
 	ClientInfoManager* m_pClientManager;
-	unsigned short m_uBlockSizeW;
-	unsigned short m_uBlockSizeH;
+	const unsigned short m_uBlockSizeW;
+	const unsigned short m_uBlockSizeH;
 	GameMap();
 public:
 	static GameMap* getInstance(){

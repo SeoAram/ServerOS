@@ -1,11 +1,11 @@
 #include "stdafx.h"
 #include "GameMap.h"
 
-GameMap::GameMap(){
-	m_pClientManager = ClientInfoManager::getInstance();
-	m_uBlockSizeH = IniData::getInstance()->getData("MAP_HEIGHT") / BLOCK_COUNT;
-	m_uBlockSizeW = IniData::getInstance()->getData("MAP_WIDTH") / BLOCK_COUNT;
-
+GameMap::GameMap():
+m_uBlockSizeH(IniData::getInstance()->getData("MAP_HEIGHT") / BLOCK_COUNT),
+m_uBlockSizeW(IniData::getInstance()->getData("MAP_WIDTH") / BLOCK_COUNT), 
+m_pClientManager(ClientInfoManager::getInstance())
+{
 	for (int i = 0; i < SIGHT_BLOCK; ++i){
 		for (int j = 0; j < SIGHT_BLOCK; ++j){
 			block[i][j].x = j - 1;
