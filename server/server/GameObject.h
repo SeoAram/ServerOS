@@ -26,6 +26,7 @@ class GameObject
 private:
 	unsigned int m_iObjId;		//객체 Id//함부로 변경 불가
 	unsigned short m_wSpeed;
+	boost::posix_time::ptime m_lastChangeTime;
 
 public:
 	GameObject();
@@ -42,4 +43,8 @@ public:
 	void moveObject();
 	void moveObject(const PacketMove& mPack);
 	void moveObject(const float second);
+
+	void setData(const PacketMove* const pData);
+
+	boost::posix_time::ptime getLastChangeTime(){ return m_lastChangeTime; }
 };

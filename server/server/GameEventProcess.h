@@ -35,7 +35,7 @@ public:
 
 	priority_queue<GameEvent, vector<GameEvent>, Comparison> m_EventQueue;
 
-	unordered_map<EventType, function<void(unsigned int, float)>> m_mapEventRoutine;
+	unordered_map<EventType, function<void(unsigned int, GameEvent)>> m_mapEventRoutine;
 
 	void eventThread();
 	void addGameEvent(const unsigned int objID, float delayTime_ms, const EventType& type);
@@ -43,6 +43,6 @@ public:
 	void eventProcess(/*const DWORD& objID, OVER_EX* overlapped*/);
 	void eventToWorkerthread(const GameEvent& myEvent);
 	
-	void characterMove(unsigned int objID, float delayTime);
+	void characterMove(unsigned int objID, GameEvent& gEvent);
 };
 

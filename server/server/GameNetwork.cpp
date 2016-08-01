@@ -7,11 +7,12 @@ GameNetwork::GameNetwork(boost::asio::io_service& io_service)
 m_io_service(io_service),
 m_strand(io_service),
 m_pClientManager(ClientInfoManager::getInstance()),
-m_uThreadCount(boost::thread::hardware_concurrency() -1 )
+m_uThreadCount(boost::thread::hardware_concurrency() - 1)
 {
 	m_bIsAccepting = false;
 	m_pMutex = new boost::mutex();
 	m_pLock = new boost::mutex::scoped_lock(m_mutex);
+	m_pEventProcess = GameEventProcess::getInstance(io_service);
 	for (int i = 0; i < m_uThreadCount; ++i){
 		//m_threadGroup.create_thread(boost::bind(&GameNetwork::connectThread, this, i));
 		//m_threadGroup.create_thread(boost::bind(&boost::asio::io_service::run, &m_io_service));
@@ -185,23 +186,15 @@ void GameNetwork::ProcessPacket(const unsigned int nClientInfoID, const char*pDa
 	{
 									PacketMove* pPacket = (PacketMove*)pData;
 									ClientInfo* pClient = m_pClientManager->getClient(nClientInfoID);
+									if (pClient->getObject()->m_wState != IniData::getInstance()->getData("GAME_OBJECT_ALIVE") && pClient->getObject()->m_wState != IniData::getInstance()->getData("GAME_OBJECT_LOGOUT")){
+										m_pEventProcess->addGameEvent(nClientInfoID, 500, EventType::CHARACTER_MOVE);
+									}
 
-									pClient->getObject()->m_pPosition->x = pPacket->pos_x;
-									pClient->getObject()->m_pPosition->y = pPacket->pos_y;
-									pClient->getObject()->m_pPosition->z = pPacket->pos_z;
-
-									pClient->getObject()->m_pDirect->x = pPacket->dir_x;
-									pClient->getObject()->m_pDirect->y = pPacket->dir_y;
-									pClient->getObject()->m_pDirect->z = pPacket->dir_z;
-
-									pClient->getObject()->m_iAxis = pPacket->wAxis;
-
-									pClient->getObject()->m_wState = IniData::getInstance()->getData("GAME_OBJECT_ALIVE");
+									pClient->getObject()->setData(pPacket);
 
 									// std::cout << Ppacket->id << " - (" << pPacket->pos_x << ", " << pPacket->pos_y << ", " << pPacket->pos_z << ") \n";
 
 									std::vector<int>& v = GameMap::getInstance()->getObjIdList(pClient->getObject()->m_wBlockX, pClient->getObject()->m_wBlockZ);
-
 
 									for (unsigned int i = 0; i < v.size(); ++i){
 										pClient = m_pClientManager->getClient(i);

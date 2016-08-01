@@ -40,6 +40,7 @@ private:
 	boost::asio::io_service& m_io_service;
 	boost::asio::io_service::strand m_strand;
 	ClientInfoManager* m_pClientManager;
+	GameEventProcess* m_pEventProcess;
 
 	vector<boost::thread*> m_vThread;
 	boost::thread_group m_threadGroup;

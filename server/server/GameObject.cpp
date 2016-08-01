@@ -3,14 +3,15 @@
 
 
 GameObject::GameObject() :m_iObjId(MAX_CONNECT_CLIENT), 
-m_wSpeed(3)
+m_wSpeed(3), m_lastChangeTime(boost::posix_time::microsec_clock::local_time())
 {
 }
 
 GameObject::GameObject(unsigned int i) : 
 m_iObjId(i),
 m_wSpeed(IniData::getInstance()->getData("OBJECT_SPEED")),
-m_wState(IniData::getInstance()->getData("GAME_OBJECT_STAT"))
+m_wState(IniData::getInstance()->getData("GAME_OBJECT_STAT")),
+m_lastChangeTime(boost::posix_time::microsec_clock::local_time())
 {
 	m_pPosition = new PointVector3D();
 	m_pDirect = new PointVector3D(1, 0, 1);
@@ -43,12 +44,13 @@ void GameObject::resetObject(){
 
 	m_wBlockX = (int)m_pPosition->x / GameMap::getInstance()->getBlockW();
 	m_wBlockZ = (int)m_pPosition->z / GameMap::getInstance()->getBlockH();
+	m_lastChangeTime = boost::posix_time::microsec_clock::local_time();
 }
 
 void GameObject::moveObject(){
 	//Map 범위에 맞는지 확인 후 방향 벡터에 따라 이동
 
-	if (m_wState == IniData::getInstance()->getData("GAME_OBJECT_MOVE")){
+	if (m_wState != IniData::getInstance()->getData("GAME_OBJECT_LOGOUT")){
 		GameMap* pGameMap = GameMap::getInstance();
 
 		*m_pPosition = (*m_pPosition + &(*m_pDirect * (m_wSpeed*(1.0 / IniData::getInstance()->getData("FRAME_RATE")))));
@@ -70,12 +72,13 @@ void GameObject::moveObject(){
 			}
 		}
 	}
+	m_lastChangeTime = boost::posix_time::microsec_clock::local_time();
 }
 
 void GameObject::moveObject(const PacketMove& mPack){
 	//Map 범위에 맞는지 확인 후 방향 벡터에 따라 이동
 
-	if (true || m_wState == IniData::getInstance()->getData("GAME_OBJECT_MOVE")){
+	if (m_wState != IniData::getInstance()->getData("GAME_OBJECT_LOGOUT")){
 		GameMap* pGameMap = GameMap::getInstance();
 
 		m_pPosition->x = mPack.pos_x;
@@ -99,13 +102,14 @@ void GameObject::moveObject(const PacketMove& mPack){
 			}
 		}
 	}
+	m_lastChangeTime = boost::posix_time::microsec_clock::local_time();
 }
 
 
 void GameObject::moveObject(const float second){
 	//Map 범위에 맞는지 확인 후 방향 벡터에 따라 이동
 
-	if (m_wState == IniData::getInstance()->getData("GAME_OBJECT_MOVE")){
+	if (m_wState != IniData::getInstance()->getData("GAME_OBJECT_LOGOUT")){
 		GameMap* pGameMap = GameMap::getInstance();
 
 		*m_pPosition = (*m_pPosition + &(*m_pDirect * (m_wSpeed * (1.0 / second))));
@@ -121,6 +125,21 @@ void GameObject::moveObject(const float second){
 
 		m_wBlockX = ((int)m_pPosition->x / pGameMap->getBlockW());
 		m_wBlockZ = ((int)m_pPosition->z / pGameMap->getBlockH());
-
+		m_lastChangeTime = boost::posix_time::microsec_clock::local_time();
 	}
+}
+
+void GameObject::setData(const PacketMove* const pData){
+	m_pPosition->x = pData->pos_x;
+	m_pPosition->y = pData->pos_y;
+	m_pPosition->z = pData->pos_z;
+
+	m_pDirect->x = pData->dir_x;
+	m_pDirect->y = pData->dir_y;
+	m_pDirect->z = pData->dir_z;
+
+	m_iAxis = pData->wAxis;
+
+	m_wState = IniData::getInstance()->getData("GAME_OBJECT_ALIVE");
+	m_lastChangeTime = boost::posix_time::microsec_clock::local_time();
 }

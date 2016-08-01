@@ -16,7 +16,7 @@ GameEventProcess::~GameEventProcess()
 void GameEventProcess::addGameEvent(const unsigned int objID, float delayTime_ms, const EventType& type){
 	lock();
 	m_EventQueue.push(GameEvent{ objID, 
-		boost::posix_time::microsec_clock::local_time() + boost::posix_time::seconds(delayTime_ms), 
+		boost::posix_time::microsec_clock::local_time() + boost::posix_time::milliseconds(delayTime_ms), 
 		delayTime_ms,
 		type });
 	unlock();
@@ -53,7 +53,7 @@ void GameEventProcess::eventToWorkerthread(const GameEvent& myEvent){
 			unlock();
 			continue;
 		}
-		m_mapEventRoutine[gEvent.eType](gEvent.objID, gEvent.delayTime_ms);
+		m_mapEventRoutine[gEvent.eType](gEvent.objID, gEvent);
 		m_EventQueue.pop();
 		unlock();
 	}
@@ -63,14 +63,17 @@ void GameEventProcess::eventThread(){
 	
 }
 
-void GameEventProcess::characterMove(unsigned int objID, float delayTime){
+void GameEventProcess::characterMove(unsigned int objID, GameEvent& gEvent){
 	static ClientInfoManager* pManage = ClientInfoManager::getInstance();
 	ClientInfo* cInfo = pManage->getClient(objID);
 	GameObject* gObj = cInfo->getObject();
 	GameMap* pGameMap = GameMap::getInstance();
 	unsigned short a_bx = gObj->m_wBlockX;
 	unsigned short a_bz = gObj->m_wBlockZ;
-	cInfo->getObject()->moveObject(delayTime * 0.001);
+
+	//gEvent.wakeTime - gObj->getLastChangeTime(); //시간 차 확인
+
+	cInfo->getObject()->moveObject(gEvent.delayTime_ms * 0.001);
 
 	if (gObj->m_wBlockX != a_bx || gObj->m_wBlockZ != a_bz){
 
@@ -91,6 +94,7 @@ void GameEventProcess::characterMove(unsigned int objID, float delayTime){
 			v = pGameMap->getObjIdList(gObj->m_wBlockX, gObj->m_wBlockZ);
 			for (auto& a : v)
 				pManage->getClient(a)->setSendQueue(false, lPack.packetSize, (char*)&lPack);
+			cInfo->setSendQueue(false, lPack.packetSize, (char*)&lPack);
 
 			/*std::vector<int>& v = pGameMap->getObjIdList(a_bx - difX, a_bz);
 			for (auto& a : v)
@@ -117,4 +121,5 @@ void GameEventProcess::characterMove(unsigned int objID, float delayTime){
 				pManage->getClient(a)->setSendQueue(false, lPack.packetSize, (char*)&lPack);*/
 		}
 	}
+	addGameEvent(objID, 500, EventType::CHARACTER_MOVE);
 }
