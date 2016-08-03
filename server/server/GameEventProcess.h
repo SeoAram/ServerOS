@@ -19,17 +19,16 @@ public:
 class GameEventProcess
 {
 private:
-	GameEventProcess(boost::asio::io_service& io_service);
+	GameEventProcess();
 	~GameEventProcess();
-	boost::asio::io_service& m_io_service;
 	boost::thread* m_pEventThread;
 	boost::mutex* m_pLock;  //lock ÇÊ¿äÇÔ
 
 	void lock(){ m_pLock->lock(); }
 	void unlock(){ m_pLock->unlock(); }
 public:
-	static GameEventProcess* getInstance(boost::asio::io_service& io_service){
-		static GameEventProcess instance(io_service);
+	static GameEventProcess* getInstance(){
+		static GameEventProcess instance;
 		return &instance;
 	}
 

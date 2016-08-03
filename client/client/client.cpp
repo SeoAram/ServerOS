@@ -23,7 +23,7 @@ void setTimer(){
 
 				ClientInfo* pClient = pClientManager->getClient(i);
 
-
+				pClient->getObject()->m_cObjState = IniData::getInstance()->getData("GAME_OBJECT_MOVE");
 				pClient->getObject()->move();
 			}
 

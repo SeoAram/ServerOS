@@ -12,7 +12,7 @@ m_uThreadCount(boost::thread::hardware_concurrency() - 1)
 	m_bIsAccepting = false;
 	m_pMutex = new boost::mutex();
 	m_pLock = new boost::mutex::scoped_lock(m_mutex);
-	m_pEventProcess = GameEventProcess::getInstance(io_service);
+	m_pEventProcess = GameEventProcess::getInstance();
 	for (int i = 0; i < m_uThreadCount; ++i){
 		//m_threadGroup.create_thread(boost::bind(&GameNetwork::connectThread, this, i));
 		//m_threadGroup.create_thread(boost::bind(&boost::asio::io_service::run, &m_io_service));
@@ -186,10 +186,9 @@ void GameNetwork::ProcessPacket(const unsigned int nClientInfoID, const char*pDa
 	{
 									PacketMove* pPacket = (PacketMove*)pData;
 									ClientInfo* pClient = m_pClientManager->getClient(nClientInfoID);
-									if (pClient->getObject()->m_wState != IniData::getInstance()->getData("GAME_OBJECT_ALIVE") && pClient->getObject()->m_wState != IniData::getInstance()->getData("GAME_OBJECT_LOGOUT")){
+									if (pClient->getObject()->m_wState != IniData::getInstance()->getData("GAME_OBJECT_MOVE") && pClient->getObject()->m_wState != IniData::getInstance()->getData("GAME_OBJECT_LOGOUT")){
 										m_pEventProcess->addGameEvent(nClientInfoID, 500, EventType::CHARACTER_MOVE);
 									}
-
 									pClient->getObject()->setData(pPacket);
 
 									// std::cout << Ppacket->id << " - (" << pPacket->pos_x << ", " << pPacket->pos_y << ", " << pPacket->pos_z << ") \n";

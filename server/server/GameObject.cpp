@@ -109,7 +109,7 @@ void GameObject::moveObject(const PacketMove& mPack){
 void GameObject::moveObject(const float second){
 	//Map 범위에 맞는지 확인 후 방향 벡터에 따라 이동
 
-	if (m_wState != IniData::getInstance()->getData("GAME_OBJECT_LOGOUT")){
+	if (m_wState == IniData::getInstance()->getData("GAME_OBJECT_MOVE")){
 		GameMap* pGameMap = GameMap::getInstance();
 
 		*m_pPosition = (*m_pPosition + &(*m_pDirect * (m_wSpeed * (1.0 / second))));
@@ -140,6 +140,6 @@ void GameObject::setData(const PacketMove* const pData){
 
 	m_iAxis = pData->wAxis;
 
-	m_wState = IniData::getInstance()->getData("GAME_OBJECT_ALIVE");
+	m_wState = IniData::getInstance()->getData("GAME_OBJECT_MOVE");
 	m_lastChangeTime = boost::posix_time::microsec_clock::local_time();
 }

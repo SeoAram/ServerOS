@@ -1,16 +1,17 @@
 #include "stdafx.h"
 #include "GameEventProcess.h"
 
-GameEventProcess::GameEventProcess(boost::asio::io_service& io_service) :
-m_io_service(io_service)
+GameEventProcess::GameEventProcess()
 {
 	m_pLock = new boost::mutex();
+	m_EventQueue.empty();
 	m_pEventThread = new boost::thread(mem_fun(&GameEventProcess::eventThread), this);
 	cout << "create Event Thread" << endl;
 }
 
 GameEventProcess::~GameEventProcess()
 {
+	m_pEventThread->join();
 }
 
 void GameEventProcess::addGameEvent(const unsigned int objID, float delayTime_ms, const EventType& type){
@@ -19,6 +20,8 @@ void GameEventProcess::addGameEvent(const unsigned int objID, float delayTime_ms
 		boost::posix_time::microsec_clock::local_time() + boost::posix_time::milliseconds(delayTime_ms), 
 		delayTime_ms,
 		type });
+
+	std::cout << "add Event :: " << objID << std::endl;
 	unlock();
 }
 
@@ -43,12 +46,16 @@ void GameEventProcess::eventProcess(/*const DWORD& objID*/){
 void GameEventProcess::eventToWorkerthread(const GameEvent& myEvent){
 	GameEvent gEvent;
 
-	while (true){
+	/*while (true){
 		boost::this_thread::sleep(boost::posix_time::milliseconds(1));
 		lock();
-		if (m_EventQueue.size() == 0)
+		if (m_EventQueue.size() == 0){
+			unlock();
 			continue;
+		}
 		gEvent = m_EventQueue.top();
+		boost::posix_time::time_duration diff = (boost::posix_time::microsec_clock::local_time() - gEvent.wakeTime);
+		std::cout << diff.total_milliseconds() << std::endl;
 		if (boost::posix_time::microsec_clock::local_time() < gEvent.wakeTime){
 			unlock();
 			continue;
@@ -56,11 +63,30 @@ void GameEventProcess::eventToWorkerthread(const GameEvent& myEvent){
 		m_mapEventRoutine[gEvent.eType](gEvent.objID, gEvent);
 		m_EventQueue.pop();
 		unlock();
-	}
+	}*/
 }
 
 void GameEventProcess::eventThread(){
-	
+	GameEvent gEvent;
+
+	std::cout << "Event Thread run " << std::endl;
+
+	while (true){
+		boost::this_thread::sleep(boost::posix_time::milliseconds(1));
+		lock();
+		if (m_EventQueue.size() == 0){
+			unlock();
+			continue;
+		}
+		gEvent = m_EventQueue.top();
+		if (boost::posix_time::microsec_clock::local_time() < gEvent.wakeTime){
+			unlock();
+			continue;
+		}
+		m_EventQueue.pop();
+		unlock();
+		m_mapEventRoutine[gEvent.eType](gEvent.objID, gEvent);
+	}
 }
 
 void GameEventProcess::characterMove(unsigned int objID, GameEvent& gEvent){
@@ -71,10 +97,19 @@ void GameEventProcess::characterMove(unsigned int objID, GameEvent& gEvent){
 	unsigned short a_bx = gObj->m_wBlockX;
 	unsigned short a_bz = gObj->m_wBlockZ;
 
-	//gEvent.wakeTime - gObj->getLastChangeTime(); //시간 차 확인
+	boost::posix_time::time_duration diff = gEvent.wakeTime - gObj->getLastChangeTime(); //시간 차 확인
+	cInfo->getObject()->moveObject(diff.total_milliseconds() * 0.001);
 
-	cInfo->getObject()->moveObject(gEvent.delayTime_ms * 0.001);
+	/*if (diff.total_milliseconds() < gEvent.delayTime_ms){
+		cInfo->getObject()->moveObject(diff.total_milliseconds() * 0.001);
+	}
+	else{
+		cInfo->getObject()->moveObject(gEvent.delayTime_ms * 0.001);
+	}*/
 
+
+	addGameEvent(objID, 1000, EventType::CHARACTER_MOVE);
+	
 	if (gObj->m_wBlockX != a_bx || gObj->m_wBlockZ != a_bz){
 
 		//기존 블록에서 objID제거 -> 다른 블록에 objID입력
@@ -90,11 +125,11 @@ void GameEventProcess::characterMove(unsigned int objID, GameEvent& gEvent){
 
 			std::vector<int>& v = pGameMap->getObjIdList(a_bx, a_bz);
 			for (auto& a : v)
-				pManage->getClient(a)->setSendQueue(false, lPack.packetSize, (char*)&lPack);
+				pManage->getClient(a)->PostSend(false, lPack.packetSize, (char*)&lPack);
 			v = pGameMap->getObjIdList(gObj->m_wBlockX, gObj->m_wBlockZ);
 			for (auto& a : v)
-				pManage->getClient(a)->setSendQueue(false, lPack.packetSize, (char*)&lPack);
-			cInfo->setSendQueue(false, lPack.packetSize, (char*)&lPack);
+				pManage->getClient(a)->PostSend(false, lPack.packetSize, (char*)&lPack);
+			cInfo->PostSend(false, lPack.packetSize, (char*)&lPack);
 
 			/*std::vector<int>& v = pGameMap->getObjIdList(a_bx - difX, a_bz);
 			for (auto& a : v)
@@ -121,5 +156,4 @@ void GameEventProcess::characterMove(unsigned int objID, GameEvent& gEvent){
 				pManage->getClient(a)->setSendQueue(false, lPack.packetSize, (char*)&lPack);*/
 		}
 	}
-	addGameEvent(objID, 500, EventType::CHARACTER_MOVE);
 }
