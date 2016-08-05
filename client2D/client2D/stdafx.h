@@ -46,6 +46,9 @@ using namespace std;
 #include "../../commonClient/ClientInfoManager.h"
 #include "../../commonClient/GameNetwork.h"
 
+#include "ImageResource.h"
+#include "GamePlayer.h"
+
 #include "ClientInfo2D.h"
 
 #ifdef _DEBUG

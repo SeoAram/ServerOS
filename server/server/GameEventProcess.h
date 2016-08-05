@@ -24,6 +24,9 @@ private:
 	boost::thread* m_pEventThread;
 	boost::mutex* m_pLock;  //lock 필요함
 
+	boost::mutex* m_pMemoryLock;  //lock 필요함
+	queue<GameEvent*> m_pEvnetMemory;
+
 	void lock(){ m_pLock->lock(); }
 	void unlock(){ m_pLock->unlock(); }
 public:

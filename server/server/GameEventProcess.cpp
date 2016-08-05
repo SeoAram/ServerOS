@@ -78,7 +78,7 @@ void GameEventProcess::eventThread(){
 			unlock();
 			continue;
 		}
-		gEvent = m_EventQueue.top();
+		gEvent = m_EventQueue.top(); 
 		if (boost::posix_time::microsec_clock::local_time() < gEvent.wakeTime){
 			unlock();
 			continue;
