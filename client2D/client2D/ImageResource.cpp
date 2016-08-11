@@ -2,13 +2,24 @@
 #include "ImageResource.h"
 
 
-ImageResource::ImageResource()
+ImageResource::ImageResource() :
+IMAGE_MULTI_ANIM(IniData::getInstance()->getData("IMAGE_MULTI_ANIM")),
+IMAGE_MULTIPLE_FRAME(IniData::getInstance()->getData("IMAGE_MULTIPLE_FRAME")),
+IMAGE_SINGLE_FRAME(IniData::getInstance()->getData("IMAGE_SINGLE_FRAME")),
+IMAGE_LOAD_SUCCESS(IniData::getInstance()->getData("IMAGE_LOAD_SUCCESS")),
+IMAGE_LOAD_FAIL(IniData::getInstance()->getData("IMAGE_LOAD_FAIL"))
 {
 	currentFrame = 0;
 	currentImgCnt = 0;
 }
 
-ImageResource::ImageResource(const ImageResource& img){
+ImageResource::ImageResource(const ImageResource& img):
+IMAGE_MULTI_ANIM(IniData::getInstance()->getData("IMAGE_MULTI_ANIM")),
+IMAGE_MULTIPLE_FRAME(IniData::getInstance()->getData("IMAGE_MULTIPLE_FRAME")),
+IMAGE_SINGLE_FRAME(IniData::getInstance()->getData("IMAGE_SINGLE_FRAME")),
+IMAGE_LOAD_SUCCESS(IniData::getInstance()->getData("IMAGE_LOAD_SUCCESS")),
+IMAGE_LOAD_FAIL(IniData::getInstance()->getData("IMAGE_LOAD_FAIL"))
+{
 	imgResource = img.imgResource;
 	frameCnt = img.frameCnt;
 	imgCnt = imgCnt;
@@ -52,7 +63,7 @@ int ImageResource::setImgResource(const int& resourceImg, const int& imgCount, c
 
 	imgResource = (HBITMAP)LoadBitmap(((LPCREATESTRUCT)lParam)->hInstance, MAKEINTRESOURCE(resourceImg));
 	if (imgResource == NULL)
-		return IMAGELOAD_FAIL;
+		return IMAGE_LOAD_FAIL;
 
 	imgCnt = imgCount;
 	frameCnt = imgFrame;
@@ -70,11 +81,11 @@ int ImageResource::setImgResource(const int& resourceImg, const int& imgCount, c
 	green = g;
 	blue = b;
 
-	return IMAGELOAD_SUCCESS;
+	return IMAGE_LOAD_SUCCESS;
 }
 
 void ImageResource::Animate(){
-	if (IMAGE_SINGLE_FRAME == imgMode){
+	/*if (IMAGE_SINGLE_FRAME == imgMode){
 		currentFrame = 0;
 	}
 	else if (IMAGE_MULTIPLE_FRAME == imgMode){
@@ -86,11 +97,11 @@ void ImageResource::Animate(){
 			currentImgCnt = 3;
 			imgState = CHARACTER_STOP;
 		}
-	}
+	}*/
 }
 
 int ImageResource::Animate(const char CharacterView){
-	if (IMAGE_SINGLE_FRAME == imgMode){
+	/*if (IMAGE_SINGLE_FRAME == imgMode){
 		currentFrame = 0;
 	}
 	else if (IMAGE_MULTIPLE_FRAME == imgMode){
@@ -102,7 +113,7 @@ int ImageResource::Animate(const char CharacterView){
 			currentImgCnt = CharacterView + CHARACTER_STOP;
 			imgState = CHARACTER_STOP;
 		}
-	}
+	}*/
 	return currentFrame;
 }
 
@@ -113,7 +124,7 @@ void ImageResource::Render(HWND& hWnd, HDC& hdc){
 	hdc = GetDC(hWnd);
 
 	if (hBit1 == NULL){
-		hBit1 = CreateCompatibleBitmap(hdc, WINDOW_WIDTH, WINDOW_HEIGHT);
+		hBit1 = CreateCompatibleBitmap(hdc, IniData::getInstance()->getData("WINDOW_WIDTH"), IniData::getInstance()->getData("WINDOW_HEIGHT"));
 	}
 
 	mem1dc = CreateCompatibleDC(hdc);
@@ -132,7 +143,7 @@ void ImageResource::Render(HWND& hWnd, HDC& hdc){
 	SetBkMode(mem1dc, TRANSPARENT);
 
 
-	BitBlt(hdc, 0, 0, WINDOW_WIDTH, WINDOW_HEIGHT, mem1dc, 0, 0, SRCCOPY);
+	BitBlt(hdc, 0, 0, IniData::getInstance()->getData("WINDOW_WIDTH"), IniData::getInstance()->getData("WINDOW_HEIGHT"), mem1dc, 0, 0, SRCCOPY);
 
 	SelectObject(mem2dc, oldBit2); DeleteDC(mem2dc);
 	SelectObject(mem1dc, oldBit1); DeleteDC(mem1dc);
@@ -143,8 +154,8 @@ void ImageResource::Render(HWND& hWnd, HDC& hdc){
 void ImageResource::Render(HDC& mem1dc, HDC& mem2dc, const int& x, const int& y){
 	SelectObject(mem2dc, (HBITMAP)imgResource);
 	if (IMAGE_MULTI_ANIM == imgMode || IMAGE_MULTIPLE_FRAME == imgMode){
-		TransparentBlt(mem1dc, x - imgFrameWidth / 2, y - imgFrameHeight + BLOCK_SIZE / 2, imgFrameWidth, imgFrameHeight,
-			mem2dc, currentFrame*imgFrameWidth, currentImgCnt*imgFrameHeight, imgFrameWidth, imgFrameHeight, RGB(red, green, blue));
+		/*TransparentBlt(mem1dc, x - imgFrameWidth / 2, y - imgFrameHeight + BLOCK_SIZE / 2, imgFrameWidth, imgFrameHeight,
+			mem2dc, currentFrame*imgFrameWidth, currentImgCnt*imgFrameHeight, imgFrameWidth, imgFrameHeight, RGB(red, green, blue));*/
 	}
 	else if (IMAGE_SINGLE_FRAME == imgMode){
 		TransparentBlt(mem1dc, x, y, imgWidth, imgHeight,

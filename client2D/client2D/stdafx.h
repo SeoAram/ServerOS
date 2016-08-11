@@ -50,6 +50,7 @@ using namespace std;
 #include "GamePlayer.h"
 
 #include "ClientInfo2D.h"
+#include "Resource.h"
 
 #ifdef _DEBUG
 #pragma comment(linker, "/entry:wWinMainCRTStartup /subsystem:console")

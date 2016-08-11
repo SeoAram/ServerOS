@@ -154,7 +154,7 @@ BOOL InitInstance(HINSTANCE hInstance, int nCmdShow)
    hInst = hInstance; // 인스턴스 핸들을 전역 변수에 저장합니다.
 
    hWnd = CreateWindow(szWindowClass, szTitle, WS_OVERLAPPEDWINDOW,
-	   CW_USEDEFAULT, 0, IniData::getInstance()->getData("MAP_WIDTH")/4, IniData::getInstance()->getData("MAP_HEIGHT")/4, 
+	   CW_USEDEFAULT, 0, IniData::getInstance()->getData("WINDOW_WIDTH"), IniData::getInstance()->getData("WINDOW_HEIGHT"),
 	   NULL, NULL, hInstance, NULL);
 
    if (!hWnd)
@@ -211,9 +211,15 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 	int wmId, wmEvent;
 	PAINTSTRUCT ps;
 	HDC hdc;
+	static HDC mem1dc, mem2dc;
+	static HBITMAP hBit1, oldBit1, oldBit2;
 	static GameObjectManager* pObjectManager;
 	static ClientInfo2D* pGamePlayer;
 	GameObject* playerObj;
+	static IniData* iData;
+
+	static ImageResource backImage;
+	static ImageResource slimeImage;
 
 	static boost::thread* pRecvThread;
 
@@ -257,20 +263,51 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 		}
 		break;
 	case WM_PAINT:
+		//CGameTimer::waitClock(WINDOW_FRAME);
 		hdc = BeginPaint(hWnd, &ps);
 		// TODO: 여기에 그리기 코드를 추가합니다.
+
+
+		if (hBit1 == NULL){
+			hBit1 = CreateCompatibleBitmap(hdc, IniData::getInstance()->getData("WINDOW_WIDTH"), IniData::getInstance()->getData("WINDOW_HEIGHT"));
+		}
+
+		mem1dc = CreateCompatibleDC(hdc);
+		mem2dc = CreateCompatibleDC(mem1dc);
+
+		oldBit1 = (HBITMAP)SelectObject(mem1dc, hBit1);
+		oldBit2 = (HBITMAP)SelectObject(mem2dc, hBit1);
+
+		backImage.RenderX2(mem1dc, mem2dc);
 		playerObj = pGamePlayer->getObject();
 		{
-			float x = playerObj->m_pvPos->x/4;
-			float z = playerObj->m_pvPos->z/4;
+			float x = playerObj->m_pvPos->x / 4;
+			float z = playerObj->m_pvPos->z / 4;
+			slimeImage.Render(mem1dc, mem2dc, x, z);
+
+		}
+
+		SetBkMode(mem1dc, TRANSPARENT);
+
+		BitBlt(hdc, 0, 0, IniData::getInstance()->getData("WINDOW_WIDTH"), IniData::getInstance()->getData("WINDOW_HEIGHT"), mem1dc, 0, 0, SRCCOPY);
+
+		SelectObject(mem2dc, oldBit2); DeleteDC(mem2dc);
+		SelectObject(mem1dc, oldBit1); DeleteDC(mem1dc);
+
+
+		/*playerObj = pGamePlayer->getObject();
+		{
+			float x = playerObj->m_pvPos->x / 4;
+			float z = playerObj->m_pvPos->z / 4;
 			Rectangle(hdc, x - 2, z - 2, x + 2, z + 2);
 			std::vector<GameObject*> tmp = *pObjectManager->getObjectList();
 			for (int i = 0; i < tmp.size(); ++i){
-				x = tmp[i]->m_pvPos->x/4;
-				z = tmp[i]->m_pvPos->z/4;
+				x = tmp[i]->m_pvPos->x / 4;
+				z = tmp[i]->m_pvPos->z / 4;
 				Rectangle(hdc, x - 2, z - 2, x + 2, z + 2);
 			}
-		}
+		}*/
+
 		EndPaint(hWnd, &ps);
 		break;
 	case WM_KEYDOWN:
@@ -296,8 +333,9 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 		PostQuitMessage(0);
 		break;
 	case WM_CREATE:
-		IniData::getInstance();
+		
 	{
+					  iData = IniData::getInstance();
 					  pObjectManager = GameObjectManager::getInstance();
 					  char cIPAddr[CHAR_MAX];
 					  u_short usPort;
@@ -313,6 +351,9 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 
 					  SetTimer(hWnd, 0, IniData::getInstance()->getData("FRAME_RATE") / 1000, NULL);
 					  SetTimer(hWnd, 1, 1000, NULL);
+
+					  backImage.setImgResource(IMG_BACK, 1, 1, lParam, IniData::getInstance()->getData("IMAGE_SINGLE_FRAME"));
+					  slimeImage.setImgResource(SLIME, 1, 1, lParam, IniData::getInstance()->getData("IMAGE_SINGLE_FRAME"), 30, 89, 148);
 	}
 		break;
 	default:

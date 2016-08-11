@@ -93,6 +93,12 @@
     <Image Include="client2D.ico">
       <Filter>리소스 파일</Filter>
     </Image>
+    <Image Include="resource\slime.bmp">
+      <Filter>리소스 파일</Filter>
+    </Image>
+    <Image Include="resource\back.bmp">
+      <Filter>리소스 파일</Filter>
+    </Image>
   </ItemGroup>
   <ItemGroup>
     <None Include="..\..\common\data.dat">

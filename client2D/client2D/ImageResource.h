@@ -1,6 +1,5 @@
 #pragma once
 #include "stdafx.h"
-#include "Constant.h"
 
 class ImageResource
 {
@@ -16,6 +15,12 @@ private:
 	char			imgMode;				//이미지 모드 (단일 이미지 / 애니메이션 / 다중 애니메이션)
 	unsigned char	red, green, blue;		//이미지 배경 색(투명화)
 	char			imgState;				//한 번 반복하는 애니메이션인가
+
+	const unsigned int	IMAGE_MULTI_ANIM;
+	const unsigned int	IMAGE_MULTIPLE_FRAME;
+	const unsigned int	IMAGE_SINGLE_FRAME;
+	const int			IMAGE_LOAD_SUCCESS;
+	const int			IMAGE_LOAD_FAIL;
 public:
 	ImageResource();
 	ImageResource(const ImageResource& img);
@@ -65,6 +70,6 @@ public:
 	void Render(HDC& mem1dc, HDC& mem2dc, const int& x = 0, const int& y = 0);
 	void RenderX2(HDC& mem1dc, HDC& mem2dc, const int x = 0, const int y = 0);
 
-	void setAnimate(unsigned int animNum = 0, char state = CHARACTER_STOP);
+	void setAnimate(unsigned int animNum = 0, char state = IniData::getInstance()->getData("GAME_OBJECT_ALIVE"));
 };
 

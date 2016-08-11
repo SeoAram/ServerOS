@@ -107,8 +107,8 @@ void GameEventProcess::characterMove(unsigned int objID, GameEvent& gEvent){
 		cInfo->getObject()->moveObject(gEvent.delayTime_ms * 0.001);
 	}*/
 
-
-	addGameEvent(objID, 1000, EventType::CHARACTER_MOVE);
+	if (gObj->m_wState == IniData::getInstance()->getData("GAME_OBJECT_MOVE"))
+		addGameEvent(objID, 1000, EventType::CHARACTER_MOVE);
 	
 	if (gObj->m_wBlockX != a_bx || gObj->m_wBlockZ != a_bz){
 
