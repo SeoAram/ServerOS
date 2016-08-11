@@ -246,6 +246,7 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 	case WM_TIMER:
 		if (0 == wParam){
 			if (IniData::getInstance()->getData("GAME_OBJECT_STAT") != pGamePlayer->getObject()->m_cObjState){
+				pGamePlayer->getObject()->m_cObjState = IniData::getInstance()->getData("GAME_OBJECT_MOVE");
 				pGamePlayer->getObject()->move();
 			}
 			std::vector<GameObject*> tmp = *pObjectManager->getObjectList();
