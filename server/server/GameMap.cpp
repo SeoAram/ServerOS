@@ -19,11 +19,14 @@ GameMap::~GameMap()
 }
 
 void GameMap::insertObjId(short x, short z, unsigned int objId){
+	m_sharedMutex[z][x].lock();
 	m_vObjIdBlock[z][x].push_back(objId);
 	std::cout << "Insert " << objId << std::endl;
+	m_sharedMutex[z][x].unlock();
 }
 
 bool GameMap::deleteObjId(short x, short z, unsigned int objId){// false가 반환되는 경우 삭제 실패
+	m_sharedMutex[z][x].lock();
 	vector<int>::iterator iter = find_if(m_vObjIdBlock[z][x].begin(), m_vObjIdBlock[z][x].end(), [&](int x){return x == objId; });
 	bool result = false;
 	if (iter != m_vObjIdBlock[z][x].end()){
@@ -31,13 +34,16 @@ bool GameMap::deleteObjId(short x, short z, unsigned int objId){// false가 반환�
 		result = true;
 		std::cout << "Delete " << objId << std::endl;
 	}
-
+	m_sharedMutex[z][x].unlock();
 	return result;
 
 }
 
 std::vector<int>& GameMap::getObjIdList(short x, short z){
-	return m_vObjIdBlock[z][x];
+	m_sharedMutex[z][x].lock();
+	std::vector<int>& result = m_vObjIdBlock[z][x];
+	m_sharedMutex[z][x].unlock();
+	return result;
 }
 
 void GameMap::sendObjId(short x, short z, const bool memoryCheck, unsigned int objId, char* pData, short _x, short _z){

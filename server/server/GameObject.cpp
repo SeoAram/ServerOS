@@ -126,6 +126,7 @@ void GameObject::moveObject(const float second){
 		m_wBlockX = ((int)m_pPosition->x / pGameMap->getBlockW());
 		m_wBlockZ = ((int)m_pPosition->z / pGameMap->getBlockH());
 		m_lastChangeTime = boost::posix_time::microsec_clock::local_time();
+		std::cout << m_iObjId << " : Position : (" << m_pPosition->x << ", " << m_pPosition->z << ")" << std::endl;
 	}
 }
 

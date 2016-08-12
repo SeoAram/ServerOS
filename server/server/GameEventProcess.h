@@ -11,8 +11,8 @@ struct GameEvent{
 
 class Comparison{
 public:
-	bool operator()(const GameEvent& lhs, const GameEvent& rhs){
-		return rhs.wakeTime < lhs.wakeTime;
+	bool operator()(const GameEvent* lhs, const GameEvent* rhs){
+		return rhs->wakeTime < lhs->wakeTime;
 	}
 };
 
@@ -25,8 +25,10 @@ private:
 	boost::mutex* m_pLock;  //lock 필요함
 
 	boost::mutex* m_pMemoryLock;  //lock 필요함
-	queue<GameEvent*> m_pEvnetMemory;
+	queue<GameEvent*> m_pEventMemory;
 
+	void memoryLock(){ m_pMemoryLock->lock(); }
+	void memoryUnlock(){ m_pMemoryLock->unlock(); }
 	void lock(){ m_pLock->lock(); }
 	void unlock(){ m_pLock->unlock(); }
 public:
@@ -35,9 +37,9 @@ public:
 		return &instance;
 	}
 
-	priority_queue<GameEvent, vector<GameEvent>, Comparison> m_EventQueue;
+	priority_queue<GameEvent, vector<GameEvent*>, Comparison> m_EventQueue;
 
-	unordered_map<EventType, function<void(unsigned int, GameEvent)>> m_mapEventRoutine;
+	unordered_map<EventType, function<void(unsigned int, GameEvent*)>> m_mapEventRoutine;
 
 	void eventThread();
 	void addGameEvent(const unsigned int objID, float delayTime_ms, const EventType& type);
@@ -45,6 +47,6 @@ public:
 	void eventProcess(/*const DWORD& objID, OVER_EX* overlapped*/);
 	void eventToWorkerthread(const GameEvent& myEvent);
 	
-	void characterMove(unsigned int objID, GameEvent& gEvent);
+	void characterMove(unsigned int objID, GameEvent* gEvent);
 };
 

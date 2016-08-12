@@ -282,8 +282,8 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 		backImage.RenderX2(mem1dc, mem2dc);
 		playerObj = pGamePlayer->getObject();
 		{
-			float x = playerObj->m_pvPos->x / 4;
-			float z = playerObj->m_pvPos->z / 4;
+			float x = (playerObj->m_pvPos->x / 16) * 4;
+			float z = (playerObj->m_pvPos->z / 16) * 4;
 			slimeImage.Render(mem1dc, mem2dc, x, z);
 
 		}

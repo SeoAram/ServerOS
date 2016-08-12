@@ -191,7 +191,7 @@ void GameNetwork::ProcessPacket(const unsigned int nClientInfoID, const char*pDa
 									}
 									pClient->getObject()->setData(pPacket);
 
-									// std::cout << Ppacket->id << " - (" << pPacket->pos_x << ", " << pPacket->pos_y << ", " << pPacket->pos_z << ") \n";
+									std::cout << pPacket->id << " - (" << pPacket->pos_x << ", " << pPacket->pos_y << ", " << pPacket->pos_z << ") \n";
 
 									std::vector<int>& v = GameMap::getInstance()->getObjIdList(pClient->getObject()->m_wBlockX, pClient->getObject()->m_wBlockZ);
 
