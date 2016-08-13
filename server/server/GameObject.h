@@ -42,7 +42,7 @@ public:
 	unsigned int getObjId(){ return m_iObjId; }
 	void moveObject();
 	void moveObject(const PacketMove& mPack);
-	void moveObject(const float second);
+	void moveObject(float second);
 
 	void setData(const PacketMove* const pData);
 

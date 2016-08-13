@@ -187,7 +187,7 @@ void GameNetwork::ProcessPacket(const unsigned int nClientInfoID, const char*pDa
 									PacketMove* pPacket = (PacketMove*)pData;
 									ClientInfo* pClient = m_pClientManager->getClient(nClientInfoID);
 									if (pClient->getObject()->m_wState != IniData::getInstance()->getData("GAME_OBJECT_MOVE") && pClient->getObject()->m_wState != IniData::getInstance()->getData("GAME_OBJECT_LOGOUT")){
-										m_pEventProcess->addGameEvent(nClientInfoID, 500, EventType::CHARACTER_MOVE);
+										//m_pEventProcess->addGameEvent(nClientInfoID, 500, EventType::CHARACTER_MOVE);
 									}
 									pClient->getObject()->setData(pPacket);
 

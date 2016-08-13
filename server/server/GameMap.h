@@ -13,7 +13,7 @@ class GameMap
 {
 private:
 	struct __Block block[SIGHT_BLOCK][SIGHT_BLOCK];
-	boost::shared_mutex m_sharedMutex[BLOCK_COUNT][BLOCK_COUNT];	//맵 접근에 대한 권한 관리
+	boost::mutex* m_sharedMutex[BLOCK_COUNT][BLOCK_COUNT];	//맵 접근에 대한 권한 관리
 	std::vector<int> m_vObjIdBlock[BLOCK_COUNT][BLOCK_COUNT];
 	ClientInfoManager* m_pClientManager;
 	const unsigned short m_uBlockSizeW;

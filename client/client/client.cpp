@@ -14,7 +14,7 @@ void setTimer(){
 	int moveCheck[MAX_CONNECT] = { 0 };
 	while (1){
 		Sleep(1);
-		if (time + boost::chrono::seconds(1/60) < boost::chrono::system_clock::now()){
+		if (time + boost::chrono::seconds(1) < boost::chrono::system_clock::now()){
 			time = boost::chrono::system_clock::now();
 			++count;
 			//std::cout << "===========setTimer==============" << std::endl;
@@ -24,10 +24,10 @@ void setTimer(){
 				ClientInfo* pClient = pClientManager->getClient(i);
 
 				pClient->getObject()->m_cObjState = IniData::getInstance()->getData("GAME_OBJECT_MOVE");
-				pClient->getObject()->move();
+				pClient->getObject()->move(1);
 			}
 
-			if (60 <= count){
+			//if (60 <= count){
 				count = 0;
 				for (int i = 0; i < MAX_CONNECT; ++i){
 					++moveCheck[i];
@@ -57,7 +57,7 @@ void setTimer(){
 					}
 				
 				}
-			}
+			//}
 		}
 
 	}

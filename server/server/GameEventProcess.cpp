@@ -8,13 +8,13 @@ GameEventProcess::GameEventProcess()
 	m_EventQueue.empty();
 	for (int i = 0; i < 3001; ++i)
 		m_pEventMemory.push(new GameEvent);
-	m_pEventThread = new boost::thread(mem_fun(&GameEventProcess::eventThread), this);
+	//m_pEventThread = new boost::thread(mem_fun(&GameEventProcess::eventThread), this);
 	cout << "create Event Thread" << endl;
 }
 
 GameEventProcess::~GameEventProcess()
 {
-	m_pEventThread->join();
+	//m_pEventThread->join();
 }
 
 void GameEventProcess::addGameEvent(const unsigned int objID, float delayTime_ms, const EventType& type){

@@ -12,6 +12,11 @@ m_pClientManager(ClientInfoManager::getInstance())
 			block[i][j].y = i - 1;
 		}
 	}
+
+	for (int i = 0; i < BLOCK_COUNT; ++i){
+		for (int j = 0; j < BLOCK_COUNT; ++j)
+			m_sharedMutex[i][j] = new boost::mutex();
+	}
 }
 
 GameMap::~GameMap()
@@ -19,14 +24,30 @@ GameMap::~GameMap()
 }
 
 void GameMap::insertObjId(short x, short z, unsigned int objId){
-	m_sharedMutex[z][x].lock();
+	if (BLOCK_COUNT <= x)
+		x = BLOCK_COUNT - 1;
+	else if (x < 0)
+		x = 0;
+	if (BLOCK_COUNT <= z)
+		z = BLOCK_COUNT - 1;
+	else if (z < 0)
+		z = 0;
+	m_sharedMutex[z][x]->lock();
 	m_vObjIdBlock[z][x].push_back(objId);
 	std::cout << "Insert " << objId << std::endl;
-	m_sharedMutex[z][x].unlock();
+	m_sharedMutex[z][x]->unlock();
 }
 
 bool GameMap::deleteObjId(short x, short z, unsigned int objId){// false가 반환되는 경우 삭제 실패
-	m_sharedMutex[z][x].lock();
+	if (BLOCK_COUNT <= x)
+		x = BLOCK_COUNT - 1;
+	else if (x < 0)
+		x = 0;
+	if (BLOCK_COUNT <= z)
+		z = BLOCK_COUNT - 1;
+	else if (z < 0)
+		z = 0;
+	m_sharedMutex[z][x]->lock();
 	vector<int>::iterator iter = find_if(m_vObjIdBlock[z][x].begin(), m_vObjIdBlock[z][x].end(), [&](int x){return x == objId; });
 	bool result = false;
 	if (iter != m_vObjIdBlock[z][x].end()){
@@ -34,15 +55,24 @@ bool GameMap::deleteObjId(short x, short z, unsigned int objId){// false가 반환�
 		result = true;
 		std::cout << "Delete " << objId << std::endl;
 	}
-	m_sharedMutex[z][x].unlock();
+	m_sharedMutex[z][x]->unlock();
 	return result;
 
 }
 
 std::vector<int>& GameMap::getObjIdList(short x, short z){
-	m_sharedMutex[z][x].lock();
+	if (BLOCK_COUNT <= x)
+		x = BLOCK_COUNT - 1;
+	else if (x < 0)
+		x = 0;
+	if (BLOCK_COUNT <= z)
+		z = BLOCK_COUNT - 1;
+	else if (z < 0)
+		z = 0;
+	m_sharedMutex[z][x]->lock();
 	std::vector<int>& result = m_vObjIdBlock[z][x];
-	m_sharedMutex[z][x].unlock();
+	std::cout << "(" << x << ", " << z << ") :: " << result.size() << std::endl;
+	m_sharedMutex[z][x]->unlock();
 	return result;
 }
 

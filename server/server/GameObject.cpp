@@ -106,13 +106,15 @@ void GameObject::moveObject(const PacketMove& mPack){
 }
 
 
-void GameObject::moveObject(const float second){
+void GameObject::moveObject(float second){
 	//Map 범위에 맞는지 확인 후 방향 벡터에 따라 이동
-
 	if (m_wState == IniData::getInstance()->getData("GAME_OBJECT_MOVE")){
 		GameMap* pGameMap = GameMap::getInstance();
 
-		*m_pPosition = (*m_pPosition + &(*m_pDirect * (m_wSpeed * (1.0 / second))));
+		//second = second * IniData::getInstance()->getData("FRAME_RATE");
+
+		m_pDirect->vectorNormalization();
+		*m_pPosition = (*m_pPosition + &(*m_pDirect * (m_wSpeed * second)));
 		if (m_pPosition->x < 0)
 			m_pPosition->x = 0;
 		else if (IniData::getInstance()->getData("MAP_WIDTH") <= m_pPosition->x)
