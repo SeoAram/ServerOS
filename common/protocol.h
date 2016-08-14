@@ -8,7 +8,8 @@ enum class PacketType : unsigned char{
 	MOVE_PACKET,
 	STOP_PACKET,
 	LOGOUT_PACKET,
-	LOGOUT_PACKET_LIST
+	LOGOUT_PACKET_LIST,
+	LOGIN_PACKET_LIST
 };
 
 enum class EventType : unsigned char{
@@ -62,11 +63,11 @@ struct PacketMove : public PacketHeader{
 	int wAxis;
 };
 
-struct PacketLogoutList : public PacketHeader{
+struct PacketIdList : public PacketHeader{
 	void Init()
 	{
 		protocol = PacketType::LOGOUT_PACKET_LIST;
-		packetSize = sizeof(PacketLogoutList);
+		packetSize = sizeof(PacketIdList);
 		id = -1;
 	}
 	int idList[10];

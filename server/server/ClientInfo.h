@@ -46,6 +46,7 @@ private:
 	char m_PacketBuffer[MAX_RECEIVE_BUFFER_LEN * 2];	//...??
 
 	boost::asio::io_service::strand m_strand;
+	boost::mutex m_mutex;
 
 	std::queue< Data* > m_SendDataQueue;
 };

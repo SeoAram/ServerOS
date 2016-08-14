@@ -60,7 +60,25 @@ bool GameMap::deleteObjId(short x, short z, unsigned int objId){// false°¡ ¹ÝÈ¯µ
 
 }
 
-std::vector<int>& GameMap::getObjIdList(short x, short z){
+//std::vector<int>& GameMap::getObjIdList(short x, short z){
+//	if (BLOCK_COUNT <= x)
+//		x = BLOCK_COUNT - 1;
+//	else if (x < 0)
+//		x = 0;
+//	if (BLOCK_COUNT <= z)
+//		z = BLOCK_COUNT - 1;
+//	else if (z < 0)
+//		z = 0;
+//	m_sharedMutex[z][x]->lock();
+//	std::vector<int>& result = m_vObjIdBlock[z][x];
+//	std::cout << "(" << x << ", " << z << ") :: " << result.size() << std::endl;
+//	m_sharedMutex[z][x]->unlock();
+//	return result;
+//}
+
+void GameMap::sendObjId(short x, short z, const bool memoryCheck, unsigned int objId, char* pData, PacketType pType){
+	ClientInfoManager* pManage = ClientInfoManager::getInstance();
+	ClientInfo* cInfo;
 	if (BLOCK_COUNT <= x)
 		x = BLOCK_COUNT - 1;
 	else if (x < 0)
@@ -70,14 +88,53 @@ std::vector<int>& GameMap::getObjIdList(short x, short z){
 	else if (z < 0)
 		z = 0;
 	m_sharedMutex[z][x]->lock();
-	std::vector<int>& result = m_vObjIdBlock[z][x];
-	std::cout << "(" << x << ", " << z << ") :: " << result.size() << std::endl;
+	int i = 0;
+	PacketIdList lListPack;
+	lListPack.Init();
+	lListPack.protocol = pType;
+	lListPack.id = objId;
+
+	for (auto& a : m_vObjIdBlock[z][x]){
+		cInfo = pManage->getClient(a);
+		if (a != objId 
+			&& cInfo->Socket().is_open() 
+			&& cInfo->getObject()->m_wState != IniData::getInstance()->getData("GAME_OBJECT_LOGOUT")){
+
+			cInfo->PostSend(memoryCheck, ((PacketHeader*)pData)->packetSize, pData);
+
+			if (pType == PacketType::LOGIN_PACKET_LIST || pType == PacketType::LOGOUT_PACKET_LIST)
+				lListPack.idList[i++] = a;
+			/*if (pType == PacketType::LOGIN_PACKET_LIST){
+				PacketInit iPack;
+				iPack.Init();
+				iPack.id = a;
+				iPack.pos_x = cInfo->getObject()->m_pPosition->x;
+				iPack.pos_y = cInfo->getObject()->m_pPosition->y;
+				iPack.pos_z = cInfo->getObject()->m_pPosition->z;
+				iPack.dir_x = cInfo->getObject()->m_pDirect->x;
+				iPack.dir_y = cInfo->getObject()->m_pDirect->y;
+				iPack.dir_z = cInfo->getObject()->m_pDirect->z;
+				iPack.iAxis = cInfo->getObject()->m_iAxis;
+				pManage->getClient(objId)->PostSend(false, iPack.packetSize, (char*)&iPack);
+			}*/
+		}
+
+		if (i == 10){
+			i = 0;
+			pManage->getClient(objId)->PostSend(false, lListPack.packetSize, (char*)&lListPack);
+		}
+	}
+	if (i != 0){
+		pManage->getClient(objId)->PostSend(false, lListPack.packetSize, (char*)&lListPack);
+	}
 	m_sharedMutex[z][x]->unlock();
-	return result;
 }
 
 void GameMap::sendObjId(short x, short z, const bool memoryCheck, unsigned int objId, char* pData, short _x, short _z){
-	int size = m_vObjIdBlock[z][x].size();
+
+
+
+	/*int size = m_vObjIdBlock[z][x].size();
 
 	short tmpX, tmpY;
 
@@ -87,7 +144,7 @@ void GameMap::sendObjId(short x, short z, const bool memoryCheck, unsigned int o
 				m_pClientManager->getClient(i)->PostSend(memoryCheck, ((PacketHeader*)pData)->packetSize, pData);
 			
 		}
-	}
+	}*/
 
 	/*if (_x == 0 && _z == 0){
 		for (int i = 0; i < SIGHT_BLOCK; ++i){

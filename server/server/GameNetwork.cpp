@@ -148,10 +148,11 @@ void GameNetwork::ProcessPacket(const unsigned int nClientInfoID, const char*pDa
 									 //최초 접속 시 패킷 전송
 									 GameMap::getInstance()->insertObjId(pClient->getObject()->m_wBlockX, pClient->getObject()->m_wBlockZ, nClientInfoID);
 									 //GameMap::getInstance()->sendObjId(initPack.pos_x / BLOCK_COUNT, initPack.pos_z / BLOCK_COUNT, pPacket->id, false, (char*)&initPack);
-									 std::vector<int>& v = GameMap::getInstance()->getObjIdList(pClient->getObject()->m_wBlockX, pClient->getObject()->m_wBlockZ);
+									 //std::vector<int>& v = GameMap::getInstance()->getObjIdList(pClient->getObject()->m_wBlockX, pClient->getObject()->m_wBlockZ);
 									 
-									 PacketInit iPack;
-									 iPack.Init();
+									 //GameMap::getInstance()->sendObjId(pClient->getObject()->m_wBlockX, pClient->getObject()->m_wBlockZ, false, pPacket->id, (char*)&initPack, PacketType::LOGIN_PACKET_LIST);
+									/*PacketInit iPack;
+									iPack.Init();
 
 
 									 ClientInfo* pClient2;
@@ -177,7 +178,7 @@ void GameNetwork::ProcessPacket(const unsigned int nClientInfoID, const char*pDa
 											 }
 
 										 }
-									 }
+									 }*/
 									 m_pMutex->unlock();
 									 std::cout << "내가 반납했다 :: " << nClientInfoID << std::endl;
 	}
@@ -193,15 +194,8 @@ void GameNetwork::ProcessPacket(const unsigned int nClientInfoID, const char*pDa
 
 									std::cout << pPacket->id << " - (" << pPacket->pos_x << ", " << pPacket->pos_y << ", " << pPacket->pos_z << ") \n";
 
-									std::vector<int>& v = GameMap::getInstance()->getObjIdList(pClient->getObject()->m_wBlockX, pClient->getObject()->m_wBlockZ);
-
-									for (unsigned int i = 0; i < v.size(); ++i){
-										pClient = m_pClientManager->getClient(i);
-										if (pClient->Socket().is_open() && nClientInfoID != i 
-											&& pClient->getObject()->m_wState != IniData::getInstance()->getData("GAME_OBJECT_LOGOUT")){
-											pClient->PostSend(false, pPacket->packetSize, (char*)pPacket);
-										}
-									}
+									//GameMap::getInstance()->sendObjId(pClient->getObject()->m_wBlockX, pClient->getObject()->m_wBlockZ, false, pPacket->id, (char*)pPacket, PacketType::MOVE_PACKET);
+									
 	}
 		break;
 	}

@@ -31,7 +31,8 @@ public:
 
 	void insertObjId(short x, short z, unsigned int objId);
 	bool deleteObjId(short x, short z, unsigned int objId);
-	std::vector<int>& getObjIdList(short x, short z);
+	//std::vector<int>& getObjIdList(short x, short z);
 	void sendObjId(short x, short z, const bool memoryCheck, unsigned int objId, char* pData, short _x = 0, short _z = 0);
+	void sendObjId(short x, short z, const bool memoryCheck, unsigned int objId, char* pData, PacketType pType);
 };
 

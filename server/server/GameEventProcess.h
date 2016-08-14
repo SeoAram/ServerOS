@@ -22,10 +22,13 @@ private:
 	GameEventProcess();
 	~GameEventProcess();
 	boost::thread* m_pEventThread;
+	std::vector<boost::thread*> m_vThread;
 	boost::mutex* m_pLock;  //lock 필요함
 
 	boost::mutex* m_pMemoryLock;  //lock 필요함
 	queue<GameEvent*> m_pEventMemory;
+
+	const int MAX_EVENT_THREAD = 3;
 
 	void memoryLock(){ m_pMemoryLock->lock(); }
 	void memoryUnlock(){ m_pMemoryLock->unlock(); }
@@ -45,7 +48,7 @@ public:
 	void addGameEvent(const unsigned int objID, float delayTime_ms, const EventType& type);
 	void funcRegisterd();
 	void eventProcess(/*const DWORD& objID, OVER_EX* overlapped*/);
-	void eventToWorkerthread(const GameEvent& myEvent);
+	void eventToWorkerthread(const int threadNum);
 	
 	void characterMove(unsigned int objID, GameEvent* gEvent);
 };

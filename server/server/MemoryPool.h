@@ -5,8 +5,6 @@
 
 struct Data{
 	char* buf;
-	unsigned int objId;
-	MsgType msgType;
 	Data(){ buf = new char[PACKET_BUF_SIZE]; }
 };
 

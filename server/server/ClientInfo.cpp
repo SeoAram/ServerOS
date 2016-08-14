@@ -47,7 +47,6 @@ void ClientInfo::PostReceive()
 void ClientInfo::setSendQueue(const bool bImmediately, const int nSize, char* pData){
 	Data* pSendData = nullptr;
 
-
 	if (bImmediately == false)
 	{
 		while ((pSendData = MemoryPool::getInstance()->popMemory()) == nullptr) boost::this_thread::sleep(boost::posix_time::seconds(1));
@@ -68,7 +67,7 @@ void ClientInfo::PostSend(const bool bImmediately, const int nSize, char* pData)
 	Data* pSendData = nullptr;
 
 	//std::cout << "ClientInfo PostSend() - " << m_pObject->getObjId() << " :: " << ((PacketHeader*)pData)->id << " :: " << nSize << std::endl;
-
+	m_mutex.lock();
 	if (bImmediately == false)
 	{
 		while ((pSendData = MemoryPool::getInstance()->popMemory()) == nullptr) boost::this_thread::sleep(boost::posix_time::seconds(1));
@@ -76,7 +75,7 @@ void ClientInfo::PostSend(const bool bImmediately, const int nSize, char* pData)
 		memcpy((char*)pSendData->buf, pData, nSize);
 
 		//std::cout << "ClientInfo PostSend(false) - " << m_pObject->getObjId() << " :: " << ((PacketHeader*)pSendData->buf)->id << " :: " << ((PacketHeader*)pSendData->buf)->packetSize << std::endl;
-
+		
 		m_SendDataQueue.push(pSendData);
 	}
 	else
@@ -88,9 +87,10 @@ void ClientInfo::PostSend(const bool bImmediately, const int nSize, char* pData)
 
 	if (bImmediately == false && m_SendDataQueue.size() > 1)
 	{
+		m_mutex.unlock();
 		return;
 	}
-
+	m_mutex.unlock();
 
 	boost::asio::async_write(
 		m_Socket, 
@@ -111,9 +111,10 @@ void ClientInfo::Init()
 
 void ClientInfo::handle_write(const boost::system::error_code& /*error*/, size_t /*bytes_transferred*/)
 {
-
+	m_mutex.lock();
 	Data* memory = m_SendDataQueue.front();
 	m_SendDataQueue.pop();
+	m_mutex.unlock();
 	MemoryPool::getInstance()->pushMemory(memory);
 	
 	//std::cout << "send Success~" << m_pObject->getObjId() << std::endl;
