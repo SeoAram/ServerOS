@@ -85,7 +85,6 @@ void GameEventProcess::eventToWorkerthread(const int threadNum){
 							//주변 8개 블록에서도 제거해주어야 함
 							//새로 이동한 주변 8개 블록에 등장 알려야함
 							if (pGameMap->deleteObjId(a_bx, a_bz, gObj->getObjId())){ // 성공했을 때만
-								pGameMap->insertObjId(gObj->m_wBlockX, gObj->m_wBlockZ, gObj->getObjId());
 								PacketLogout lPack;
 								lPack.Init();
 								lPack.id = gObj->getObjId();
@@ -104,8 +103,10 @@ void GameEventProcess::eventToWorkerthread(const int threadNum){
 								iPack.dir_z = gObj->m_pDirect->z;
 								iPack.iAxis = gObj->m_iAxis;
 								iPack.id = gObj->getObjId();
+								lPack.protocol = PacketType::LOGIN_PACKET;
 								//아래 함수 하면 에러남
-								//pGameMap->sendObjId(gObj->m_wBlockX, gObj->m_wBlockZ, false, gObj->getObjId(), (char*)&iPack, PacketType::LOGIN_PACKET_LIST);
+								pGameMap->sendObjId(gObj->m_wBlockX, gObj->m_wBlockZ, false, gObj->getObjId(), (char*)&iPack, PacketType::LOGIN_PACKET_LIST);
+								pGameMap->insertObjId(gObj->m_wBlockX, gObj->m_wBlockZ, gObj->getObjId());
 							}
 						}
 					}

@@ -94,17 +94,19 @@ void GameMap::sendObjId(short x, short z, const bool memoryCheck, unsigned int o
 	lListPack.protocol = pType;
 	lListPack.id = objId;
 
-	for (auto& a : m_vObjIdBlock[z][x]){
+	for (auto a : m_vObjIdBlock[z][x]){
+		if (a == objId)
+			continue;
 		cInfo = pManage->getClient(a);
-		if (a != objId 
-			&& cInfo->Socket().is_open() 
+		if (cInfo->Socket().is_open() 
 			&& cInfo->getObject()->m_wState != IniData::getInstance()->getData("GAME_OBJECT_LOGOUT")){
 
 			cInfo->PostSend(memoryCheck, ((PacketHeader*)pData)->packetSize, pData);
 
-			if (pType == PacketType::LOGIN_PACKET_LIST || pType == PacketType::LOGOUT_PACKET_LIST)
+			if (pType == PacketType::LOGOUT_PACKET_LIST)
 				lListPack.idList[i++] = a;
-			/*if (pType == PacketType::LOGIN_PACKET_LIST){
+			if (pType == PacketType::LOGIN_PACKET_LIST){
+				lListPack.idList[i++] = a;
 				PacketInit iPack;
 				iPack.Init();
 				iPack.id = a;
@@ -116,7 +118,7 @@ void GameMap::sendObjId(short x, short z, const bool memoryCheck, unsigned int o
 				iPack.dir_z = cInfo->getObject()->m_pDirect->z;
 				iPack.iAxis = cInfo->getObject()->m_iAxis;
 				pManage->getClient(objId)->PostSend(false, iPack.packetSize, (char*)&iPack);
-			}*/
+			}
 		}
 
 		if (i == 10){
@@ -124,10 +126,10 @@ void GameMap::sendObjId(short x, short z, const bool memoryCheck, unsigned int o
 			pManage->getClient(objId)->PostSend(false, lListPack.packetSize, (char*)&lListPack);
 		}
 	}
+	m_sharedMutex[z][x]->unlock();
 	if (i != 0){
 		pManage->getClient(objId)->PostSend(false, lListPack.packetSize, (char*)&lListPack);
 	}
-	m_sharedMutex[z][x]->unlock();
 }
 
 void GameMap::sendObjId(short x, short z, const bool memoryCheck, unsigned int objId, char* pData, short _x, short _z){

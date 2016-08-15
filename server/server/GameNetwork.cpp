@@ -187,11 +187,45 @@ void GameNetwork::ProcessPacket(const unsigned int nClientInfoID, const char*pDa
 	{
 									PacketMove* pPacket = (PacketMove*)pData;
 									ClientInfo* pClient = m_pClientManager->getClient(nClientInfoID);
-									if (pClient->getObject()->m_wState != IniData::getInstance()->getData("GAME_OBJECT_MOVE") && pClient->getObject()->m_wState != IniData::getInstance()->getData("GAME_OBJECT_LOGOUT")){
-										//m_pEventProcess->addGameEvent(nClientInfoID, 500, EventType::CHARACTER_MOVE);
-									}
-									pClient->getObject()->setData(pPacket);
+									GameObject* gObj = pClient->getObject();
 
+
+									unsigned short a_bx;
+									unsigned short a_bz;
+									a_bx = gObj->m_wBlockX;
+									a_bz = gObj->m_wBlockZ;
+									gObj->setData(pPacket);
+
+									if (gObj->m_wBlockX != a_bx || gObj->m_wBlockZ != a_bz){
+										GameMap::getInstance()->insertObjId(gObj->m_wBlockX, gObj->m_wBlockZ, gObj->getObjId());
+										//기존 블록에서 objID제거 -> 다른 블록에 objID입력
+										//주변 8개 블록에서도 제거해주어야 함
+										//새로 이동한 주변 8개 블록에 등장 알려야함
+										if (GameMap::getInstance()->deleteObjId(a_bx, a_bz, gObj->getObjId())){ // 성공했을 때만
+											PacketLogout lPack;
+											lPack.Init();
+											lPack.id = gObj->getObjId();
+
+											short difX = gObj->m_wBlockX - a_bx;
+											short difZ = gObj->m_wBlockZ - a_bz;
+
+											GameMap::getInstance()->sendObjId(a_bx, a_bz, false, gObj->getObjId(), (char*)&lPack, PacketType::LOGOUT_PACKET_LIST);
+											PacketInit iPack;
+											iPack.Init();
+											iPack.pos_x = gObj->m_pPosition->x;
+											iPack.pos_y = gObj->m_pPosition->y;
+											iPack.pos_z = gObj->m_pPosition->z;
+											iPack.dir_x = gObj->m_pDirect->x;
+											iPack.dir_y = gObj->m_pDirect->y;
+											iPack.dir_z = gObj->m_pDirect->z;
+											iPack.iAxis = gObj->m_iAxis;
+											iPack.id = gObj->getObjId();
+											lPack.protocol = PacketType::LOGIN_PACKET;
+											//아래 함수 하면 에러남
+											GameMap::getInstance()->sendObjId(gObj->m_wBlockX, gObj->m_wBlockZ, false, gObj->getObjId(), (char*)&iPack, PacketType::LOGIN_PACKET_LIST);
+											
+										}
+									}
 									std::cout << pPacket->id << " - (" << pPacket->pos_x << ", " << pPacket->pos_y << ", " << pPacket->pos_z << ") \n";
 
 									//GameMap::getInstance()->sendObjId(pClient->getObject()->m_wBlockX, pClient->getObject()->m_wBlockZ, false, pPacket->id, (char*)pPacket, PacketType::MOVE_PACKET);

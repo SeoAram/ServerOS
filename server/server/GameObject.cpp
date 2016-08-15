@@ -118,17 +118,17 @@ void GameObject::moveObject(float second){
 		if (m_pPosition->x < 0)
 			m_pPosition->x = 0;
 		else if (IniData::getInstance()->getData("MAP_WIDTH") <= m_pPosition->x)
-			m_pPosition->x = IniData::getInstance()->getData("MAP_WIDTH");
+			m_pPosition->x = IniData::getInstance()->getData("MAP_WIDTH") - 1 ;
 
 		if (m_pPosition->z < 0)
 			m_pPosition->z = 0;
 		else if (IniData::getInstance()->getData("MAP_HEIGHT") <= m_pPosition->z)
-			m_pPosition->z = IniData::getInstance()->getData("MAP_HEIGHT");
+			m_pPosition->z = IniData::getInstance()->getData("MAP_HEIGHT") - 1;
 
 		m_wBlockX = ((int)m_pPosition->x / pGameMap->getBlockW());
 		m_wBlockZ = ((int)m_pPosition->z / pGameMap->getBlockH());
 		m_lastChangeTime = boost::posix_time::microsec_clock::local_time();
-		std::cout << m_iObjId << " : Position : (" << m_pPosition->x << ", " << m_pPosition->z << ")" << std::endl;
+		std::cout << m_iObjId << " : Position : (" << m_pPosition->x << ", " << m_pPosition->z << ") / (" << m_wBlockX << ", " << m_wBlockZ << ")" << std::endl;
 	}
 }
 
@@ -141,8 +141,22 @@ void GameObject::setData(const PacketMove* const pData){
 	m_pDirect->y = pData->dir_y;
 	m_pDirect->z = pData->dir_z;
 
+	if (m_pPosition->x < 0)
+		m_pPosition->x = 0;
+	else if (IniData::getInstance()->getData("MAP_WIDTH") <= m_pPosition->x)
+		m_pPosition->x = IniData::getInstance()->getData("MAP_WIDTH") - 1;
+
+	if (m_pPosition->z < 0)
+		m_pPosition->z = 0;
+	else if (IniData::getInstance()->getData("MAP_HEIGHT") <= m_pPosition->z)
+		m_pPosition->z = IniData::getInstance()->getData("MAP_HEIGHT") - 1;
+
+	m_pDirect->vectorNormalization();
+
 	m_iAxis = pData->wAxis;
 
+	m_wBlockX = ((int)m_pPosition->x / GameMap::getInstance()->getBlockW());
+	m_wBlockZ = ((int)m_pPosition->z / GameMap::getInstance()->getBlockH());
 	m_wState = IniData::getInstance()->getData("GAME_OBJECT_MOVE");
 	m_lastChangeTime = boost::posix_time::microsec_clock::local_time();
 }
