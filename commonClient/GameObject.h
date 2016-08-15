@@ -1,6 +1,7 @@
 #pragma once
 
 #include <vector>
+//#include <boost/date_time/local_time/local_time.hpp>
 
 #include "../common/iniRead.h"
 #include "../common/protocol.h"
@@ -13,6 +14,7 @@ class GameObject
 private:
 	int m_iAxis;
 	unsigned int m_uObjId;
+	boost::posix_time::ptime m_lastChangeTime;
 public:
 	unsigned char m_cObjState;
 	PointVector3D* m_pvPos;
@@ -24,6 +26,8 @@ public:
 	int getAxis(){ return m_iAxis; }
 	void setObjId(unsigned int i){ m_uObjId = i; }
 	void setAxis(int a){ m_iAxis = a; }
+
+	boost::posix_time::ptime getLastChangeTime(){ return m_lastChangeTime; }
 
 	void turnLeft()
 	{
@@ -105,6 +109,7 @@ public:
 
 	void move()
 	{
+		m_cObjState = IniData::getInstance()->getData("GAME_OBJECT_MOVE");
 		m_pvDir->x = cosf(m_iAxis * RADIAN) * 1;
 		m_pvDir->z = sinf(m_iAxis * RADIAN) * 1;
 		m_pvDir->vectorNormalization();
@@ -113,18 +118,20 @@ public:
 			m_pvPos->x = 0;
 		}
 		else if (IniData::getInstance()->getData("MAP_WIDTH") <= m_pvPos->x){
-			m_pvPos->x = IniData::getInstance()->getData("MAP_WIDTH");
+			m_pvPos->x = IniData::getInstance()->getData("MAP_WIDTH") - 1;
 		}
 		if (m_pvPos->z < 0){
 			m_pvPos->z = 0;
 		}
 		else if (IniData::getInstance()->getData("MAP_HEIGHT") <= m_pvPos->z){
-			m_pvPos->z = IniData::getInstance()->getData("MAP_HEIGHT");
+			m_pvPos->z = IniData::getInstance()->getData("MAP_HEIGHT") -1 ;
 		}
+		m_lastChangeTime = boost::posix_time::microsec_clock::local_time();
 	}
 
 	void move(float second)
 	{
+		m_cObjState = IniData::getInstance()->getData("GAME_OBJECT_MOVE");
 		m_pvDir->x = cosf(m_iAxis * RADIAN) * 1;
 		m_pvDir->z = sinf(m_iAxis * RADIAN) * 1;
 		m_pvDir->vectorNormalization();
@@ -133,14 +140,15 @@ public:
 			m_pvPos->x = 0;
 		}
 		else if (IniData::getInstance()->getData("MAP_WIDTH") <= m_pvPos->x){
-			m_pvPos->x = IniData::getInstance()->getData("MAP_WIDTH");
+			m_pvPos->x = IniData::getInstance()->getData("MAP_WIDTH") - 1;
 		}
 		if (m_pvPos->z < 0){
 			m_pvPos->z = 0;
 		}
 		else if (IniData::getInstance()->getData("MAP_HEIGHT") <= m_pvPos->z){
-			m_pvPos->z = IniData::getInstance()->getData("MAP_HEIGHT");
+			m_pvPos->z = IniData::getInstance()->getData("MAP_HEIGHT") - 1;
 		}
+		m_lastChangeTime = boost::posix_time::microsec_clock::local_time();
 	}
 
 	void initData(PacketInit& pData){
@@ -149,26 +157,29 @@ public:
 		m_pvDir->setXYZ(pData.dir_x, pData.dir_y, pData.dir_z);
 		m_pvDir->vectorNormalization();
 		m_iAxis = pData.iAxis;
+		m_lastChangeTime = boost::posix_time::microsec_clock::local_time();
 	}
 
 	GameObject() :m_uObjId(-1), m_iAxis(90), m_wSpeed(IniData::getInstance()->getData("OBJECT_SPEED")), m_cObjState(IniData::getInstance()->getData("GAME_OBJECT_STAT"))
 	{
-		float z = IniData::getInstance()->getData("MAP_HEIGHT");
-		float x = IniData::getInstance()->getData("MAP_WIDTH");
+		float z = IniData::getInstance()->getData("MAP_HEIGHT") - 1;
+		float x = IniData::getInstance()->getData("MAP_WIDTH") - 1;
 
 		m_pvDir = new PointVector3D(1, 0, 1);
 		m_pvPos = new PointVector3D(x, 0, z);
 		m_pvDir->vectorNormalization();
+		m_lastChangeTime = boost::posix_time::microsec_clock::local_time();
 	}
 
 	GameObject(unsigned int id) :m_uObjId(id), m_iAxis(90), m_wSpeed(IniData::getInstance()->getData("OBJECT_SPEED")), m_cObjState(IniData::getInstance()->getData("GAME_OBJECT_STAT"))
 	{
-		float z = IniData::getInstance()->getData("MAP_HEIGHT");
-		float x = IniData::getInstance()->getData("MAP_WIDTH");
+		float z = IniData::getInstance()->getData("MAP_HEIGHT") - 1;
+		float x = IniData::getInstance()->getData("MAP_WIDTH") - 1;
 
 		m_pvDir = new PointVector3D(1, 0, 1);
 		m_pvPos = new PointVector3D(x, 0, z);
 		m_pvDir->vectorNormalization();
+		m_lastChangeTime = boost::posix_time::microsec_clock::local_time();
 	}
 
 	~GameObject(){}

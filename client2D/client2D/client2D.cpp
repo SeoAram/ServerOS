@@ -245,14 +245,18 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 		break;
 	case WM_TIMER:
 		if (0 == wParam){
+			boost::posix_time::time_duration diff;
 			if (IniData::getInstance()->getData("GAME_OBJECT_STAT") != pGamePlayer->getObject()->m_cObjState){
 				pGamePlayer->getObject()->m_cObjState = IniData::getInstance()->getData("GAME_OBJECT_MOVE");
-				pGamePlayer->getObject()->move();
+
+				diff = boost::posix_time::microsec_clock::local_time() - pGamePlayer->getObject()->getLastChangeTime(); //시간 차 확인
+				pGamePlayer->getObject()->move(diff.total_milliseconds() * 0.001);
 			}
 			std::vector<GameObject*> tmp = *pObjectManager->getObjectList();
 			for (int i = 0; i < tmp.size(); ++i){
 				if (IniData::getInstance()->getData("GAME_OBJECT_STAT") != tmp[i]->m_cObjState){
-					tmp[i]->move();
+					diff = boost::posix_time::microsec_clock::local_time() - tmp[i]->getLastChangeTime(); //시간 차 확인
+					tmp[i]->move(diff.total_milliseconds() * 0.001);
 				}
 			}
 			InvalidateRgn(hWnd, NULL, FALSE);
@@ -282,10 +286,20 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 		backImage.RenderX2(mem1dc, mem2dc);
 		playerObj = pGamePlayer->getObject();
 		{
-			float x = (playerObj->m_pvPos->x / 16) * 4;
-			float z = (playerObj->m_pvPos->z / 16) * 4;
+			float x = ((int)playerObj->m_pvPos->x % 128) * 4;
+			float z = ((int)playerObj->m_pvPos->z % 128) * 4;
+			/*float x = (playerObj->m_pvPos->x / 16) * 4;
+			float z = (playerObj->m_pvPos->z / 16) * 4;*/
 			slimeImage.Render(mem1dc, mem2dc, x, z);
 
+			std::vector<GameObject*> tmp = *pObjectManager->getObjectList();
+			for (int i = 0; i < tmp.size(); ++i){
+				x = ((int)tmp[i]->m_pvPos->x % 128) / 4;
+				z = ((int)tmp[i]->m_pvPos->z % 128) / 4;
+				/*x = tmp[i]->m_pvPos->x / 4;
+				z = tmp[i]->m_pvPos->z / 4;*/
+				slimeImage.Render(mem1dc, mem2dc, x, z);
+			}
 		}
 
 		SetBkMode(mem1dc, TRANSPARENT);
@@ -296,18 +310,6 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 		SelectObject(mem1dc, oldBit1); DeleteDC(mem1dc);
 
 
-		/*playerObj = pGamePlayer->getObject();
-		{
-			float x = playerObj->m_pvPos->x / 4;
-			float z = playerObj->m_pvPos->z / 4;
-			Rectangle(hdc, x - 2, z - 2, x + 2, z + 2);
-			std::vector<GameObject*> tmp = *pObjectManager->getObjectList();
-			for (int i = 0; i < tmp.size(); ++i){
-				x = tmp[i]->m_pvPos->x / 4;
-				z = tmp[i]->m_pvPos->z / 4;
-				Rectangle(hdc, x - 2, z - 2, x + 2, z + 2);
-			}
-		}*/
 
 		EndPaint(hWnd, &ps);
 		break;
@@ -325,6 +327,8 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 			if (VK_RIGHT == wParam){
 				pGamePlayer->getObject()->turnRight();
 			}
+
+			pGamePlayer->sendPacket(PacketType::MOVE_PACKET);
 		}
 		pGamePlayer->getObject()->m_pvDir->operator<<(cout) << endl;
 		break;

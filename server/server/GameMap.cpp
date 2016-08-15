@@ -34,7 +34,7 @@ void GameMap::insertObjId(short x, short z, unsigned int objId){
 		z = 0;
 	m_sharedMutex[z][x]->lock();
 	m_vObjIdBlock[z][x].push_back(objId);
-	std::cout << "Insert " << objId << std::endl;
+	std::cout << "Insert (" << x << ", " << z << "): " << objId << " size :: " << m_vObjIdBlock[z][x].size() << std::endl; 
 	m_sharedMutex[z][x]->unlock();
 }
 
@@ -106,7 +106,6 @@ void GameMap::sendObjId(short x, short z, const bool memoryCheck, unsigned int o
 			if (pType == PacketType::LOGOUT_PACKET_LIST)
 				lListPack.idList[i++] = a;
 			if (pType == PacketType::LOGIN_PACKET_LIST){
-				lListPack.idList[i++] = a;
 				PacketInit iPack;
 				iPack.Init();
 				iPack.id = a;
@@ -122,12 +121,14 @@ void GameMap::sendObjId(short x, short z, const bool memoryCheck, unsigned int o
 		}
 
 		if (i == 10){
-			i = 0;
+			lListPack.idSize = i;
 			pManage->getClient(objId)->PostSend(false, lListPack.packetSize, (char*)&lListPack);
+			i = 0;
 		}
 	}
 	m_sharedMutex[z][x]->unlock();
 	if (i != 0){
+		lListPack.idSize = i;
 		pManage->getClient(objId)->PostSend(false, lListPack.packetSize, (char*)&lListPack);
 	}
 }

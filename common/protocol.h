@@ -71,4 +71,5 @@ struct PacketIdList : public PacketHeader{
 		id = -1;
 	}
 	int idList[10];
+	int idSize;
 };

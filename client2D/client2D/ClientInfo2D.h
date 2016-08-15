@@ -80,7 +80,7 @@ public:
 		if (bImmediately == false)
 		{
 			pSendData = new char[nSize];
-			memcpy(pSendData, pData, nSize); 
+			memcpy(pSendData, pData, nSize);
 
 			m_SendDataQueue.push_back(pSendData);
 		}
@@ -128,14 +128,14 @@ private:
 		case PacketType::INIT_PACKET:
 		{
 										PacketInit* pPacket = (PacketInit*)pData;
-										
+
 										if (m_pObject->m_cObjState == IniData::getInstance()->getData("GAME_OBJECT_STAT")){
 
 											m_pObject->setObjId(pPacket->id);
 											m_pObject->m_pvPos->setXYZ(pPacket->pos_x, pPacket->pos_y, pPacket->pos_z);
 											m_pObject->m_pvDir->setXYZ(pPacket->dir_x, pPacket->dir_y, pPacket->dir_z);
 											m_pObject->setAxis(pPacket->iAxis);
-											
+
 											m_pObject->m_cObjState = IniData::getInstance()->getData("GAME_OBJECT_ALIVE");
 											std::cout << "Recv Client :: " << pPacket->id << " ";
 											getObject()->m_pvPos->operator<<(std::cout);
@@ -146,11 +146,15 @@ private:
 											PostSend(false, lPack.packetSize, (char*)&lPack);
 											break;
 										}
-										
+
+										if (m_pObject->getObjId() != pPacket->id){
+											GameObjectManager::getInstance()->setObject(pPacket->id, *pPacket);
+										}
+
 										std::cout << "Recv New Client :: " << pPacket->id << std::endl;
 										GameObjectManager::getInstance()->setObject(pPacket->id, *pPacket);
-										
-										
+
+
 		}
 			break;
 		case PacketType::MOVE_PACKET:
@@ -175,7 +179,7 @@ private:
 			break;
 		case PacketType::LOGOUT_PACKET:
 		{
-										  PacketMove* pPacket = (PacketMove*)pData;
+										  PacketLogout* pPacket = (PacketLogout*)pData;
 										  if (m_pObject->getObjId() == pPacket->id){
 
 										  }
@@ -183,6 +187,20 @@ private:
 											  GameObjectManager::getInstance()->deleteObject(pPacket->id);
 										  }
 		}
+			break;
+		case PacketType::LOGOUT_PACKET_LIST:
+		{
+											   PacketIdList* pPacket = (PacketIdList*)pData;
+											   for (int i = 0; i < pPacket->idSize; ++i){
+												   GameObjectManager::getInstance()->deleteObject(pPacket->idList[i]);
+											   }
+		}
+			break;
+		case PacketType::LOGIN_PACKET_LIST:
+		{
+											   PacketIdList* pPacket = (PacketIdList*)pData;
+		}
+			break;
 		}
 
 		return;
@@ -260,7 +278,7 @@ private:
 	boost::asio::ip::tcp::socket m_Socket;
 
 	GameObject* m_pObject;	//object클래스(객체 이동 관리)
-	
+
 	std::array<char, MAX_RECEIVE_BUFFER_LEN> m_ReceiveBuffer; // 받는패킷 버퍼
 
 	int m_nPacketBufferMark;	//수신 패킷의 위치
