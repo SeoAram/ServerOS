@@ -89,7 +89,6 @@ void GameMap::sendObjId(short x, short z, const bool memoryCheck, unsigned int o
 		z = BLOCK_COUNT - 1;
 	else if (z < 0)
 		z = 0;
-	std::cout << "sendObjId :: " << objId << " (" << x << ", " << z << ")" << std::endl;
 	m_sharedMutex[z][x]->lock();
 	int i = 0;
 	PacketIdList lListPack;
@@ -120,6 +119,7 @@ void GameMap::sendObjId(short x, short z, const bool memoryCheck, unsigned int o
 				iPack.dir_y = cInfo->getObject()->m_pDirect->y;
 				iPack.dir_z = cInfo->getObject()->m_pDirect->z;
 				iPack.iAxis = cInfo->getObject()->m_iAxis;
+				std::cout << "sendObjId :: " << objId << " (" << x << ", " << z << ")" << std::endl;
 				sendClient->PostSend(false, iPack.packetSize, (char*)&iPack);
 			}
 		}

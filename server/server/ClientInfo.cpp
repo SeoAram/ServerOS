@@ -125,7 +125,7 @@ void ClientInfo::handle_write(const boost::system::error_code& /*error*/, size_t
 
 	m_mutex.lock();
 	bool tmp = true;
-	if (m_SendDataQueue.size() || m_SendDataQueue.empty() == false)
+	if (m_SendDataQueue.size()/* || m_SendDataQueue.empty() == false*/)
 	{
 		memory = m_SendDataQueue.front();
 		PacketHeader* pHeader = (PacketHeader*)memory->buf;

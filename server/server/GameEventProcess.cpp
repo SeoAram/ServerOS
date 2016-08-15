@@ -1,7 +1,8 @@
 #include "stdafx.h"
 #include "GameEventProcess.h"
 
-GameEventProcess::GameEventProcess()
+GameEventProcess::GameEventProcess():
+MAX_EVENT_THREAD(IniData::getInstance()->getData("MAX_THREAD"))
 {
 	m_pLock = new boost::mutex();
 	m_pMemoryLock = new boost::mutex();
@@ -80,11 +81,11 @@ void GameEventProcess::eventToWorkerthread(const int threadNum){
 						cInfo->getObject()->moveObject(diff.total_milliseconds() * 0.001);
 
 						if (gObj->m_wBlockX != a_bx || gObj->m_wBlockZ != a_bz){
-
 							//기존 블록에서 objID제거 -> 다른 블록에 objID입력
 							//주변 8개 블록에서도 제거해주어야 함
 							//새로 이동한 주변 8개 블록에 등장 알려야함
 							if (pGameMap->deleteObjId(a_bx, a_bz, gObj->getObjId())){ // 성공했을 때만
+								pGameMap->insertObjId(gObj->m_wBlockX, gObj->m_wBlockZ, gObj->getObjId());
 								PacketLogout lPack;
 								lPack.Init();
 								lPack.id = gObj->getObjId();
@@ -105,7 +106,6 @@ void GameEventProcess::eventToWorkerthread(const int threadNum){
 								iPack.id = gObj->getObjId();
 								//아래 함수 하면 에러남
 								pGameMap->sendObjId(gObj->m_wBlockX, gObj->m_wBlockZ, false, i, (char*)&iPack, PacketType::LOGIN_PACKET_LIST);
-								pGameMap->insertObjId(gObj->m_wBlockX, gObj->m_wBlockZ, gObj->getObjId());
 							}
 						}
 					}

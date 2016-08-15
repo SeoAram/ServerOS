@@ -28,7 +28,7 @@ private:
 	boost::mutex* m_pMemoryLock;  //lock « ø‰«‘
 	queue<GameEvent*> m_pEventMemory;
 
-	const int MAX_EVENT_THREAD = 1;
+	const int MAX_EVENT_THREAD;
 
 	void memoryLock(){ m_pMemoryLock->lock(); }
 	void memoryUnlock(){ m_pMemoryLock->unlock(); }
