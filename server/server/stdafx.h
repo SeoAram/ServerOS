@@ -34,7 +34,7 @@ using namespace std;
 
 
 #define WORKED_THREAD 3
-#define BLOCK_COUNT 16
+#define DEF_BLOCK_COUNT 4
 
 
 enum class MsgType : unsigned char{

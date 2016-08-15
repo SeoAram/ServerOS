@@ -44,6 +44,14 @@ void GameObject::resetObject(){
 
 	m_wBlockX = (int)m_pPosition->x / GameMap::getInstance()->getBlockW();
 	m_wBlockZ = (int)m_pPosition->z / GameMap::getInstance()->getBlockH();
+	if (m_wBlockX < 0)
+		m_wBlockX = 0;
+	else if (GameMap::getInstance()->getBlockCount() <= m_wBlockX)
+		m_wBlockX = GameMap::getInstance()->getBlockCount() - 1;
+	if (m_wBlockZ < 0)
+		m_wBlockZ = 0;
+	else if (GameMap::getInstance()->getBlockCount() <= m_wBlockZ)
+		m_wBlockZ = GameMap::getInstance()->getBlockCount() - 1;
 	m_lastChangeTime = boost::posix_time::microsec_clock::local_time();
 }
 
@@ -111,22 +119,28 @@ void GameObject::moveObject(float second){
 	if (m_wState == IniData::getInstance()->getData("GAME_OBJECT_MOVE")){
 		GameMap* pGameMap = GameMap::getInstance();
 
-		//second = second * IniData::getInstance()->getData("FRAME_RATE");
-
 		m_pDirect->vectorNormalization();
 		*m_pPosition = (*m_pPosition + &(*m_pDirect * (m_wSpeed * second)));
 		if (m_pPosition->x < 0)
 			m_pPosition->x = 0;
 		else if (IniData::getInstance()->getData("MAP_WIDTH") <= m_pPosition->x)
-			m_pPosition->x = IniData::getInstance()->getData("MAP_WIDTH") - 1 ;
+			m_pPosition->x = IniData::getInstance()->getData("MAP_WIDTH") - 5 ;
 
 		if (m_pPosition->z < 0)
 			m_pPosition->z = 0;
 		else if (IniData::getInstance()->getData("MAP_HEIGHT") <= m_pPosition->z)
-			m_pPosition->z = IniData::getInstance()->getData("MAP_HEIGHT") - 1;
+			m_pPosition->z = IniData::getInstance()->getData("MAP_HEIGHT") - 5;
 
 		m_wBlockX = ((int)m_pPosition->x / pGameMap->getBlockW());
 		m_wBlockZ = ((int)m_pPosition->z / pGameMap->getBlockH());
+		if (m_wBlockX < 0)
+			m_wBlockX = 0;
+		else if (GameMap::getInstance()->getBlockCount() <= m_wBlockX)
+			m_wBlockX = GameMap::getInstance()->getBlockCount() - 1;
+		if (m_wBlockZ < 0)
+			m_wBlockZ = 0;
+		else if (GameMap::getInstance()->getBlockCount() <= m_wBlockZ)
+			m_wBlockZ = GameMap::getInstance()->getBlockCount() - 1;
 		m_lastChangeTime = boost::posix_time::microsec_clock::local_time();
 		std::cout << m_iObjId << " : Position : (" << m_pPosition->x << ", " << m_pPosition->z << ") / (" << m_wBlockX << ", " << m_wBlockZ << ")" << std::endl;
 	}
@@ -144,19 +158,25 @@ void GameObject::setData(const PacketMove* const pData){
 	if (m_pPosition->x < 0)
 		m_pPosition->x = 0;
 	else if (IniData::getInstance()->getData("MAP_WIDTH") <= m_pPosition->x)
-		m_pPosition->x = IniData::getInstance()->getData("MAP_WIDTH") - 1;
+		m_pPosition->x = IniData::getInstance()->getData("MAP_WIDTH") - 5;
 
 	if (m_pPosition->z < 0)
 		m_pPosition->z = 0;
 	else if (IniData::getInstance()->getData("MAP_HEIGHT") <= m_pPosition->z)
-		m_pPosition->z = IniData::getInstance()->getData("MAP_HEIGHT") - 1;
-
-	m_pDirect->vectorNormalization();
+		m_pPosition->z = IniData::getInstance()->getData("MAP_HEIGHT") - 5;
 
 	m_iAxis = pData->wAxis;
 
 	m_wBlockX = ((int)m_pPosition->x / GameMap::getInstance()->getBlockW());
 	m_wBlockZ = ((int)m_pPosition->z / GameMap::getInstance()->getBlockH());
+	if (m_wBlockX < 0)
+		m_wBlockX = 0;
+	else if (GameMap::getInstance()->getBlockCount() <= m_wBlockX)
+		m_wBlockX = GameMap::getInstance()->getBlockCount() - 1;
+	if (m_wBlockZ < 0)
+		m_wBlockZ = 0;
+	else if (GameMap::getInstance()->getBlockCount() <= m_wBlockZ)
+		m_wBlockZ = GameMap::getInstance()->getBlockCount() - 1;
 	m_wState = IniData::getInstance()->getData("GAME_OBJECT_MOVE");
 	m_lastChangeTime = boost::posix_time::microsec_clock::local_time();
 }

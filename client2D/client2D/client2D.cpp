@@ -221,6 +221,8 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 	static ImageResource backImage;
 	static ImageResource slimeImage;
 
+	static int BLOCK_WIDTH, BLOCK_HEIGHT;
+
 	static boost::thread* pRecvThread;
 
 	static boost::asio::io_service io_service;
@@ -286,16 +288,16 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 		backImage.RenderX2(mem1dc, mem2dc);
 		playerObj = pGamePlayer->getObject();
 		{
-			float x = ((int)playerObj->m_pvPos->x % 128) * 4;
-			float z = ((int)playerObj->m_pvPos->z % 128) * 4;
+			float x = ((int)playerObj->m_pvPos->x % BLOCK_WIDTH);// * 4;
+			float z = ((int)playerObj->m_pvPos->z % BLOCK_HEIGHT);// * 4;
 			/*float x = (playerObj->m_pvPos->x / 16) * 4;
 			float z = (playerObj->m_pvPos->z / 16) * 4;*/
 			slimeImage.Render(mem1dc, mem2dc, x, z);
 
 			std::vector<GameObject*> tmp = *pObjectManager->getObjectList();
 			for (int i = 0; i < tmp.size(); ++i){
-				x = ((int)tmp[i]->m_pvPos->x % 128) / 4;
-				z = ((int)tmp[i]->m_pvPos->z % 128) / 4;
+				x = ((int)tmp[i]->m_pvPos->x % BLOCK_WIDTH);// * 4;
+				z = ((int)tmp[i]->m_pvPos->z % BLOCK_HEIGHT);// * 4;
 				/*x = tmp[i]->m_pvPos->x / 4;
 				z = tmp[i]->m_pvPos->z / 4;*/
 				slimeImage.Render(mem1dc, mem2dc, x, z);
@@ -359,6 +361,8 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 
 					  backImage.setImgResource(IMG_BACK, 1, 1, lParam, IniData::getInstance()->getData("IMAGE_SINGLE_FRAME"));
 					  slimeImage.setImgResource(SLIME, 1, 1, lParam, IniData::getInstance()->getData("IMAGE_SINGLE_FRAME"), 30, 89, 148);
+					  BLOCK_WIDTH = IniData::getInstance()->getData("BLOCK_SIZE");
+					  BLOCK_HEIGHT = IniData::getInstance()->getData("BLOCK_SIZE");
 	}
 		break;
 	default:

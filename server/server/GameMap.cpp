@@ -2,8 +2,9 @@
 #include "GameMap.h"
 
 GameMap::GameMap():
-m_uBlockSizeH(IniData::getInstance()->getData("MAP_HEIGHT") / BLOCK_COUNT),
-m_uBlockSizeW(IniData::getInstance()->getData("MAP_WIDTH") / BLOCK_COUNT), 
+m_uBlockSizeH(IniData::getInstance()->getData("BLOCK_SIZE")),
+m_uBlockSizeW(IniData::getInstance()->getData("BLOCK_SIZE")), 
+BLOCK_COUNT(IniData::getInstance()->getData("MAP_WIDTH") / IniData::getInstance()->getData("BLOCK_SIZE")),
 m_pClientManager(ClientInfoManager::getInstance())
 {
 	for (int i = 0; i < SIGHT_BLOCK; ++i){
@@ -79,6 +80,7 @@ bool GameMap::deleteObjId(short x, short z, unsigned int objId){// false°¡ ¹ÝÈ¯µ
 void GameMap::sendObjId(short x, short z, const bool memoryCheck, unsigned int objId, char* pData, PacketType pType){
 	ClientInfoManager* pManage = ClientInfoManager::getInstance();
 	ClientInfo* cInfo;
+	ClientInfo* sendClient;
 	if (BLOCK_COUNT <= x)
 		x = BLOCK_COUNT - 1;
 	else if (x < 0)
@@ -87,6 +89,7 @@ void GameMap::sendObjId(short x, short z, const bool memoryCheck, unsigned int o
 		z = BLOCK_COUNT - 1;
 	else if (z < 0)
 		z = 0;
+	std::cout << "sendObjId :: " << objId << " (" << x << ", " << z << ")" << std::endl;
 	m_sharedMutex[z][x]->lock();
 	int i = 0;
 	PacketIdList lListPack;
@@ -94,6 +97,7 @@ void GameMap::sendObjId(short x, short z, const bool memoryCheck, unsigned int o
 	lListPack.protocol = pType;
 	lListPack.id = objId;
 
+	sendClient = pManage->getClient(objId);
 	for (auto a : m_vObjIdBlock[z][x]){
 		if (a == objId)
 			continue;
@@ -105,7 +109,7 @@ void GameMap::sendObjId(short x, short z, const bool memoryCheck, unsigned int o
 
 			if (pType == PacketType::LOGOUT_PACKET_LIST)
 				lListPack.idList[i++] = a;
-			if (pType == PacketType::LOGIN_PACKET_LIST){
+			else if (pType == PacketType::LOGIN_PACKET_LIST){
 				PacketInit iPack;
 				iPack.Init();
 				iPack.id = a;
@@ -116,20 +120,20 @@ void GameMap::sendObjId(short x, short z, const bool memoryCheck, unsigned int o
 				iPack.dir_y = cInfo->getObject()->m_pDirect->y;
 				iPack.dir_z = cInfo->getObject()->m_pDirect->z;
 				iPack.iAxis = cInfo->getObject()->m_iAxis;
-				pManage->getClient(objId)->PostSend(false, iPack.packetSize, (char*)&iPack);
+				sendClient->PostSend(false, iPack.packetSize, (char*)&iPack);
 			}
 		}
 
 		if (i == 10){
 			lListPack.idSize = i;
-			pManage->getClient(objId)->PostSend(false, lListPack.packetSize, (char*)&lListPack);
+			sendClient->PostSend(false, lListPack.packetSize, (char*)&lListPack);
 			i = 0;
 		}
 	}
 	m_sharedMutex[z][x]->unlock();
 	if (i != 0){
 		lListPack.idSize = i;
-		pManage->getClient(objId)->PostSend(false, lListPack.packetSize, (char*)&lListPack);
+		sendClient->PostSend(false, lListPack.packetSize, (char*)&lListPack);
 	}
 }
 

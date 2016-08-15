@@ -174,6 +174,9 @@ private:
 												std::cout << "id : " << pObj->getObjId() << " ";
 												pObj->m_pvPos->operator<<(std::cout) << " - " << pObj->getAxis() << "\n";
 											}
+											else{
+												GameObjectManager::getInstance()->setObject(pPacket->id, *(PacketInit*)pPacket);
+											}
 										}
 		}
 			break;

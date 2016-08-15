@@ -103,9 +103,8 @@ void GameEventProcess::eventToWorkerthread(const int threadNum){
 								iPack.dir_z = gObj->m_pDirect->z;
 								iPack.iAxis = gObj->m_iAxis;
 								iPack.id = gObj->getObjId();
-								lPack.protocol = PacketType::LOGIN_PACKET;
 								//아래 함수 하면 에러남
-								pGameMap->sendObjId(gObj->m_wBlockX, gObj->m_wBlockZ, false, gObj->getObjId(), (char*)&iPack, PacketType::LOGIN_PACKET_LIST);
+								pGameMap->sendObjId(gObj->m_wBlockX, gObj->m_wBlockZ, false, i, (char*)&iPack, PacketType::LOGIN_PACKET_LIST);
 								pGameMap->insertObjId(gObj->m_wBlockX, gObj->m_wBlockZ, gObj->getObjId());
 							}
 						}

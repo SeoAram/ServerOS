@@ -66,14 +66,11 @@ void ClientInfo::setSendQueue(const bool bImmediately, const int nSize, char* pD
 void ClientInfo::PostSend(const bool bImmediately, const int nSize, char* pData){
 	Data* pSendData = nullptr;
 
-	//std::cout << "ClientInfo PostSend() - " << m_pObject->getObjId() << " :: " << ((PacketHeader*)pData)->id << " :: " << nSize << std::endl;
 	m_mutex.lock();
 	if (bImmediately == false)
 	{
 		while ((pSendData = MemoryPool::getInstance()->popMemory()) == nullptr) boost::this_thread::sleep(boost::posix_time::seconds(1));
-		//pSendData->buf = pData;
 		memcpy((char*)pSendData->buf, pData, nSize);
-
 		//std::cout << "ClientInfo PostSend(false) - " << m_pObject->getObjId() << " :: " << ((PacketHeader*)pSendData->buf)->id << " :: " << ((PacketHeader*)pSendData->buf)->packetSize << std::endl;
 		
 		m_SendDataQueue.push(pSendData);
@@ -81,8 +78,6 @@ void ClientInfo::PostSend(const bool bImmediately, const int nSize, char* pData)
 	else
 	{
 		pSendData = (Data*)pData;
-		//memcpy(pSendData->buf, pData, nSize);
-		//pSendData->buf = pData;
 	}
 
 	if (bImmediately == false && m_SendDataQueue.size() > 1)
@@ -128,14 +123,19 @@ void ClientInfo::handle_write(const boost::system::error_code& /*error*/, size_t
 		}
 	}
 
-	if (m_SendDataQueue.empty() == false)
+	m_mutex.lock();
+	bool tmp = true;
+	if (m_SendDataQueue.size() || m_SendDataQueue.empty() == false)
 	{
 		memory = m_SendDataQueue.front();
 		PacketHeader* pHeader = (PacketHeader*)memory->buf;
 		//std::cout << "handle_write() - " << m_pObject->getObjId() << " :: " << pHeader->id << " :: " << pHeader->packetSize << std::endl;
-
+		tmp = false;
+		m_mutex.unlock();
 		PostSend(true, pHeader->packetSize, (char*)memory);
 	}
+	if (tmp)
+		m_mutex.unlock();
 }
 
 void ClientInfo::handle_receive(const boost::system::error_code& error, size_t bytes_transferred)

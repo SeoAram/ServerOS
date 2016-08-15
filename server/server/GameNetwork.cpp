@@ -147,38 +147,9 @@ void GameNetwork::ProcessPacket(const unsigned int nClientInfoID, const char*pDa
 
 									 //최초 접속 시 패킷 전송
 									 GameMap::getInstance()->insertObjId(pClient->getObject()->m_wBlockX, pClient->getObject()->m_wBlockZ, nClientInfoID);
-									 //GameMap::getInstance()->sendObjId(initPack.pos_x / BLOCK_COUNT, initPack.pos_z / BLOCK_COUNT, pPacket->id, false, (char*)&initPack);
-									 //std::vector<int>& v = GameMap::getInstance()->getObjIdList(pClient->getObject()->m_wBlockX, pClient->getObject()->m_wBlockZ);
 									 
-									 //GameMap::getInstance()->sendObjId(pClient->getObject()->m_wBlockX, pClient->getObject()->m_wBlockZ, false, pPacket->id, (char*)&initPack, PacketType::LOGIN_PACKET_LIST);
-									/*PacketInit iPack;
-									iPack.Init();
-
-
-									 ClientInfo* pClient2;
-
-									 std::cout << nClientInfoID << " :: sector(" << pClient->getObject()->m_wBlockX << ", " << pClient->getObject()->m_wBlockZ << ") :: size :: " << v.size() << std::endl;
-									 for (unsigned int i = 0; i < v.size() ; ++i){
-										 pClient2 = m_pClientManager->getClient(v[i]);
-										 if (pClient2->Socket().is_open() && initPack.id != i){
-											 pClient2->PostSend(false, initPack.packetSize, (char*)&initPack);
-											 if (pClient2->getObject()->m_wState != IniData::getInstance()->getData("GAME_OBJECT_LOGOUT")){
-												 iPack.id = pClient2->getObject()->getObjId();
-
-												 iPack.pos_x = pClient2->getObject()->m_pPosition->x;
-												 iPack.pos_y = pClient2->getObject()->m_pPosition->y;
-												 iPack.pos_z = pClient2->getObject()->m_pPosition->z;
-
-												 iPack.dir_x = pClient2->getObject()->m_pDirect->x;
-												 iPack.dir_y = pClient2->getObject()->m_pDirect->y;
-												 iPack.dir_z = pClient2->getObject()->m_pDirect->z;
-
-												 iPack.iAxis = pClient2->getObject()->m_iAxis;
-												 pClient->PostSend(false, iPack.packetSize, (char*)&iPack);
-											 }
-
-										 }
-									 }*/
+									 GameMap::getInstance()->sendObjId(pClient->getObject()->m_wBlockX, pClient->getObject()->m_wBlockZ, false, pPacket->id, (char*)&initPack, PacketType::LOGIN_PACKET_LIST);
+									
 									 m_pMutex->unlock();
 									 std::cout << "내가 반납했다 :: " << nClientInfoID << std::endl;
 	}
@@ -220,7 +191,6 @@ void GameNetwork::ProcessPacket(const unsigned int nClientInfoID, const char*pDa
 											iPack.dir_z = gObj->m_pDirect->z;
 											iPack.iAxis = gObj->m_iAxis;
 											iPack.id = gObj->getObjId();
-											lPack.protocol = PacketType::LOGIN_PACKET;
 											//아래 함수 하면 에러남
 											GameMap::getInstance()->sendObjId(gObj->m_wBlockX, gObj->m_wBlockZ, false, gObj->getObjId(), (char*)&iPack, PacketType::LOGIN_PACKET_LIST);
 											
@@ -228,8 +198,6 @@ void GameNetwork::ProcessPacket(const unsigned int nClientInfoID, const char*pDa
 									}
 									std::cout << pPacket->id << " - (" << pPacket->pos_x << ", " << pPacket->pos_y << ", " << pPacket->pos_z << ") \n";
 
-									//GameMap::getInstance()->sendObjId(pClient->getObject()->m_wBlockX, pClient->getObject()->m_wBlockZ, false, pPacket->id, (char*)pPacket, PacketType::MOVE_PACKET);
-									
 	}
 		break;
 	}

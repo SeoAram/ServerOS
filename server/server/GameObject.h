@@ -7,8 +7,9 @@ private:
 	std::uniform_real_distribution<float>* m_pDx;
 	std::uniform_real_distribution<float>* m_pDy;
 	Random(){ 
-		m_pDx = new std::uniform_real_distribution<float>(0, IniData::getInstance()->getData("MAP_WIDTH"));
-		m_pDy = new std::uniform_real_distribution<float>(0, IniData::getInstance()->getData("MAP_HEIGHT"));
+		m_pDx = new std::uniform_real_distribution<float>(0, IniData::getInstance()->getData("MAP_WIDTH") - 1);
+		m_pDy = new std::uniform_real_distribution<float>(0, IniData::getInstance()->getData("MAP_HEIGHT") - 1);
+		m_dre.seed(0);
 	}
 public:
 	static Random* getInstance(){
