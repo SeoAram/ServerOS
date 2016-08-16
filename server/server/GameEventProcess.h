@@ -23,6 +23,7 @@ private:
 	~GameEventProcess();
 	boost::thread* m_pEventThread;
 	std::vector<boost::thread*> m_vThread;
+
 	boost::mutex* m_pLock;  //lock 필요함
 
 	boost::mutex* m_pMemoryLock;  //lock 필요함

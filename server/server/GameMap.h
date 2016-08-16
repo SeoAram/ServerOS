@@ -15,10 +15,12 @@ private:
 	const unsigned short BLOCK_COUNT;
 	struct __Block block[SIGHT_BLOCK][SIGHT_BLOCK];
 	boost::mutex* m_sharedMutex[DEF_BLOCK_COUNT][DEF_BLOCK_COUNT];	//맵 접근에 대한 권한 관리
-	std::vector<int> m_vObjIdBlock[DEF_BLOCK_COUNT][DEF_BLOCK_COUNT];
+	std::vector<int*> m_vObjIdBlock[DEF_BLOCK_COUNT][DEF_BLOCK_COUNT];
 	ClientInfoManager* m_pClientManager;
 	const unsigned short m_uBlockSizeW;
 	const unsigned short m_uBlockSizeH;
+
+	std::queue<int*> m_qMemory;
 	GameMap();
 public:
 	static GameMap* getInstance(){

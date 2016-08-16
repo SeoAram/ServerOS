@@ -18,6 +18,9 @@ m_pClientManager(ClientInfoManager::getInstance())
 		for (int j = 0; j < BLOCK_COUNT; ++j)
 			m_sharedMutex[i][j] = new boost::mutex();
 	}
+
+	for (int i = 0; i < IniData::getInstance()->getData("MAX_CLIENT"); ++i)
+		m_qMemory.push(new int);
 }
 
 GameMap::~GameMap()
@@ -34,7 +37,10 @@ void GameMap::insertObjId(short x, short z, unsigned int objId){
 	else if (z < 0)
 		z = 0;
 	m_sharedMutex[z][x]->lock();
-	m_vObjIdBlock[z][x].push_back(objId);
+	int* i = m_qMemory.front();
+	m_qMemory.pop();
+	*i = objId;
+	m_vObjIdBlock[z][x].push_back(i);
 	std::cout << "Insert (" << x << ", " << z << "): " << objId << " size :: " << m_vObjIdBlock[z][x].size() << std::endl; 
 	m_sharedMutex[z][x]->unlock();
 }
@@ -49,9 +55,12 @@ bool GameMap::deleteObjId(short x, short z, unsigned int objId){// false°¡ ¹ÝÈ¯µ
 	else if (z < 0)
 		z = 0;
 	m_sharedMutex[z][x]->lock();
-	vector<int>::iterator iter = find_if(m_vObjIdBlock[z][x].begin(), m_vObjIdBlock[z][x].end(), [&](int x){return x == objId; });
+	int i = 0;
+	vector<int*>::iterator iter = find_if(m_vObjIdBlock[z][x].begin(), m_vObjIdBlock[z][x].end(), [&](int* x){++i; return *x == objId; });
 	bool result = false;
 	if (iter != m_vObjIdBlock[z][x].end()){
+		m_qMemory.push(m_vObjIdBlock[z][x][i-1]);
+
 		m_vObjIdBlock[z][x].erase(iter);
 		result = true;
 		std::cout << "Delete " << objId << std::endl;
@@ -98,20 +107,20 @@ void GameMap::sendObjId(short x, short z, const bool memoryCheck, unsigned int o
 
 	sendClient = pManage->getClient(objId);
 	for (auto a : m_vObjIdBlock[z][x]){
-		if (a == objId)
+		if (*a == objId)
 			continue;
-		cInfo = pManage->getClient(a);
+		cInfo = pManage->getClient(*a);
 		if (cInfo->Socket().is_open() 
 			&& cInfo->getObject()->m_wState != IniData::getInstance()->getData("GAME_OBJECT_LOGOUT")){
 
 			cInfo->PostSend(memoryCheck, ((PacketHeader*)pData)->packetSize, pData);
 
 			if (pType == PacketType::LOGOUT_PACKET_LIST)
-				lListPack.idList[i++] = a;
+				lListPack.idList[i++] = *a;
 			else if (pType == PacketType::LOGIN_PACKET_LIST){
 				PacketInit iPack;
 				iPack.Init();
-				iPack.id = a;
+				iPack.id = *a;
 				iPack.pos_x = cInfo->getObject()->m_pPosition->x;
 				iPack.pos_y = cInfo->getObject()->m_pPosition->y;
 				iPack.pos_z = cInfo->getObject()->m_pPosition->z;
